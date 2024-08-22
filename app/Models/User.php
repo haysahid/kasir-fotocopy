@@ -27,6 +27,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'address',
+        'phone',
+        'avatar',
+        'disabled_at',
     ];
 
     /**
@@ -61,5 +65,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function store()
+    {
+        return $this->hasOne(Store::class);
     }
 }
