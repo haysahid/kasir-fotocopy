@@ -14,15 +14,18 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
 
+            $table->string('code')->nullable();
             $table->string('name');
             $table->string('description', 2500)->nullable();
-            $table->integer('capital_price');
+            $table->integer('purchase_price');
             $table->integer('selling_price');
-            $table->integer('stock');
+            $table->integer('initial_stock');
             $table->string('unit');
             $table->string('category')->nullable();
+            $table->timestamp('expired_at');
+            $table->bigInteger('supplier_id')->nullable();
             $table->bigInteger('store_id')->unsigned();
-            $table->timestamp('disabled_at')->nullable();
+            $table->timestamp('disabled_at');
 
             $table->foreign('store_id')->references('id')->on('stores')->onUpdate('cascade')->onDelete('no action');
 

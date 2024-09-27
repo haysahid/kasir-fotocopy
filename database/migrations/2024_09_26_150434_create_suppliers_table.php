@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sales', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
 
-            $table->string('code')->nullable();
-            $table->string('note')->nullable();
-            $table->integer('payment');
+            $table->string('name');
             $table->string('address')->nullable();
-            $table->bigInteger('user_id')->unsigned();
+            $table->string('phone')->nullable();
+            $table->bigInteger('related_store_id')->unsigned()->nullable();
             $table->bigInteger('store_id')->unsigned();
-
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('no action');
 
             $table->softDeletes();
             $table->timestamps();
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sales');
+        Schema::dropIfExists('suppliers');
     }
 };

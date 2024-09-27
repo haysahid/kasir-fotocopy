@@ -20,13 +20,16 @@ class Store extends Model
         'name',
         'description',
         'address',
+        'phone',
         'logo',
         'banner',
+        'community_id',
+        'activated_at',
         'disabled_at',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class, 'user_stores');
     }
 }

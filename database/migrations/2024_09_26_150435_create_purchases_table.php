@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sales', function (Blueprint $table) {
+        Schema::create('purchases', function (Blueprint $table) {
             $table->id();
 
             $table->string('code')->nullable();
             $table->string('note')->nullable();
             $table->integer('payment');
             $table->string('address')->nullable();
+            $table->bigInteger('supplier_id')->unsigned()->nullable();
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('store_id')->unsigned();
 
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sales');
+        Schema::dropIfExists('purchases');
     }
 };

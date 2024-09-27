@@ -16,11 +16,12 @@ class Product extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'code',
         'name',
         'description',
-        'capital_price',
+        'purchase_price',
         'selling_price',
-        'stock',
+        'initial_stock',
         'unit',
         'category',
         'store_id',

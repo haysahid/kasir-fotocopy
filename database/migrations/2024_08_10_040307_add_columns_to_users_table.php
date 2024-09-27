@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->timestamp('disabled_at')->nullable()->after('email');
-            $table->enum('role', ['admin', 'enduser'])->after('email');
+            $table->foreignId('role_id')->constrained('roles')->onUpdate('cascade')->onDelete('no action')->after('email');
             $table->string('avatar')->nullable()->after('email');
             $table->string('phone')->nullable()->after('email');
             $table->string('address')->nullable()->after('email');
