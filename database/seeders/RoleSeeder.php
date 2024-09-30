@@ -19,6 +19,7 @@ class RoleSeeder extends Seeder
             'Paguyuban',
             'Pemilik Toko',
             'Kasir',
+            'Tamu',
         ];
 
         foreach ($roles as $role) {

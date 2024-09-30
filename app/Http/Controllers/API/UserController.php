@@ -19,6 +19,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string',
             'password' => ['required', 'string', new Password(8)],
         ]);
 
@@ -26,8 +27,9 @@ class UserController extends Controller
             User::create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
+                'phone' => $request->input('phone'),
                 'password' => Hash::make($request->password),
-                'role' => 'enduser',
+                'role_id' => 6,
             ]);
 
             $user = User::where('email', $request->input('email'))->first();
@@ -39,7 +41,7 @@ class UserController extends Controller
                 'user' => $user,
             ], 'Akun berhasil dibuat', 201);
         } catch (Exception $error) {
-            return ResponseFormatter::error('Ada yang salah. Autentikasi gagal.', 500);
+            return ResponseFormatter::error('Ada yang salah. Autentikasi gagal.' . $error, 500);
         }
     }
 
@@ -57,7 +59,7 @@ class UserController extends Controller
                 return ResponseFormatter::error('Email atau password salah. Autentikasi gagal.', 401);
             }
 
-            $user = User::where('email', $request->input('email'))->with('store')->first();
+            $user = User::where('email', $request->input('email'))->with(['store', 'role'])->first();
 
             if (!Hash::check($request->input('password'), $user->password, [])) {
                 throw new Exception('Invalid credentials');
@@ -81,7 +83,7 @@ class UserController extends Controller
 
     public function fetch()
     {
-        $user = User::with('store')->find(Auth::user()->id);
+        $user = User::with(['store', 'role'])->find(Auth::user()->id);
 
         return ResponseFormatter::success([
             'user' => $user,
@@ -117,7 +119,7 @@ class UserController extends Controller
                     Storage::delete($user->avatar);
                 }
 
-                // Store avatar 
+                // Store avatar
                 $avatar_path = $request->file('avatar')->store('user');
 
                 // Add to database
@@ -126,7 +128,7 @@ class UserController extends Controller
                 ]);
             }
 
-            $user = User::with('store')->find($user->id);
+            $user = User::with(['store', 'role'])->find($user->id);
 
             return ResponseFormatter::success([
                 'user' => $user,
