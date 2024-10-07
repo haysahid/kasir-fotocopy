@@ -21,6 +21,15 @@ class StoreController extends Controller
      */
     public function index(Request $request)
     {
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2];
+
+        if (!in_array($user->role_id, $allowedRoles)) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+
         $search = $request->input('search');
         $limit = $request->input('limit', 10);
 
@@ -57,6 +66,18 @@ class StoreController extends Controller
         $user = Auth::user();
 
         try {
+            $user = User::with('store')->find($user->id);
+
+            // Prevent admin from creating store
+            if ($user->role_id != 6) {
+                return ResponseFormatter::error('Anda tidak boleh membuat toko.', 401);
+            }
+
+            // Prevent multiple store
+            if ($user->store) {
+                return ResponseFormatter::error('Anda sudah memiliki toko.', 400);
+            }
+
             $store = Store::create([
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
@@ -112,6 +133,15 @@ class StoreController extends Controller
             return ResponseFormatter::error('Toko tidak ditemukan.', 404);
         }
 
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) || !$isOwner) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
         return ResponseFormatter::success([
             'store' => $store,
         ], 'Toko berhasil ditemukan.', 200);
@@ -142,7 +172,7 @@ class StoreController extends Controller
         $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
 
         if (!in_array($user->role_id, $allowedRoles) || (!$isOwner && $user->role_id != 4)) {
-            return ResponseFormatter::error('Anda tidak memiliki hak akses.' . $user, 401);
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
         }
 
         try {
@@ -206,7 +236,7 @@ class StoreController extends Controller
         $allowedRoles = [1, 2];
 
         if (!in_array($user->role_id, $allowedRoles)) {
-            return ResponseFormatter::error('Anda tidak memiliki hak akses.' . $user, 401);
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
         }
 
         // Delete relation
@@ -246,7 +276,7 @@ class StoreController extends Controller
         $allowedRoles = [1, 2];
 
         if (!in_array($user->role_id, $allowedRoles)) {
-            return ResponseFormatter::error('Anda tidak memiliki hak akses.' . $user, 401);
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
         }
 
         if ($store->activated_at) {
@@ -270,6 +300,38 @@ class StoreController extends Controller
             ], 'Toko berhasil diaktifkan.', 200);
         } catch (Exception $error) {
             return ResponseFormatter::error('Terjadi kesalahan. Toko gagal diaktifkan.' . $error, 500);
+        }
+    }
+
+    /**
+     * Reject store.
+     */
+    public function reject(string $id)
+    {
+        $store = Store::find($id);
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2];
+
+        if (!in_array($user->role_id, $allowedRoles)) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        try {
+            UserStore::where('store_id', $store->id)->delete();
+
+            $store->forceDelete();
+
+            return ResponseFormatter::success([
+                'store' => $store,
+            ], 'Toko berhasil ditolak.', 200);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal ditolak.' . $error, 500);
         }
     }
 
