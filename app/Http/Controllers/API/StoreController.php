@@ -5,6 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Store;
+use App\Models\User;
+use App\Models\UserStore;
+use Carbon\Carbon;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +32,7 @@ class StoreController extends Controller
                 ->orWhere('stores.description', 'like', '%' . $search . '%');
         }
 
-        $stores->with('user')->select('stores.*')->latest();
+        $stores->with('users')->select('stores.*')->latest();
 
         return ResponseFormatter::success(
             $stores->paginate($limit),
@@ -54,10 +58,10 @@ class StoreController extends Controller
 
         try {
             $store = Store::create([
-                'user_id' => $user->id,
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'address' => $request->input('address'),
+                'community_id' => 1,
             ]);
 
             // Logo
@@ -80,13 +84,20 @@ class StoreController extends Controller
                 ]);
             }
 
-            $store = Store::with('user')->find($store->id);
+            $store = Store::find($store->id);
+
+
+            // Relation
+            UserStore::create([
+                'user_id' => $user->id,
+                'store_id' => $store->id,
+            ]);
 
             return ResponseFormatter::success([
                 'store' => $store,
             ], 'Toko berhasil ditambahkan.', 201);
         } catch (Exception $error) {
-            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal ditambahkan.', 500);
+            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal ditambahkan.' . $error, 500);
         }
     }
 
@@ -95,7 +106,7 @@ class StoreController extends Controller
      */
     public function show(string $id)
     {
-        $store = Store::with('user')->find($id);
+        $store = Store::with(['users'])->find($id);
 
         if (!$store) {
             return ResponseFormatter::error('Toko tidak ditemukan.', 404);
@@ -127,9 +138,11 @@ class StoreController extends Controller
 
         // Authorization check
         $user = Auth::user();
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
 
-        if ($store->user_id != $user->id || $user->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan pemilik toko.', 401);
+        if (!in_array($user->role_id, $allowedRoles) || (!$isOwner && $user->role_id != 4)) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.' . $user, 401);
         }
 
         try {
@@ -167,7 +180,7 @@ class StoreController extends Controller
                 ]);
             }
 
-            $store = Store::with('user')->find($store->id);
+            $store = Store::with('users')->find($store->id);
 
             return ResponseFormatter::success([
                 'store' => $store,
@@ -190,17 +203,141 @@ class StoreController extends Controller
 
         // Authorization check
         $user = Auth::user();
+        $allowedRoles = [1, 2];
 
-        if ($store->user_id != $user->id || $user->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan pemilik toko.', 401);
+        if (!in_array($user->role_id, $allowedRoles)) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.' . $user, 401);
         }
 
+        // Delete relation
+        UserStore::where('store_id', $store->id)->delete();
+
+        // Delete store
         $store->delete();
+
+        // Update user role
+        $users = UserStore::where('store_id', $store->id)->get();
+        $ownerId = User::where('role_id', 4)->first()->id;
+
+        User::find($ownerId)->update([
+            'role_id' => 6,
+        ]);
 
         return ResponseFormatter::success(
             $store->id,
             'Toko berhasil dihapus.',
             200
         );
+    }
+
+    /**
+     * Activate store.
+     */
+    public function activate(string $id)
+    {
+        $store = Store::find($id);
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2];
+
+        if (!in_array($user->role_id, $allowedRoles)) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.' . $user, 401);
+        }
+
+        if ($store->activated_at) {
+            return ResponseFormatter::error('Toko sudah diaktifkan.', 400);
+        }
+
+        try {
+            $store->update([
+                'activated_at' => now(),
+            ]);
+
+            $ownerId = UserStore::where('store_id', $store->id)->first()->user_id;
+            User::find($ownerId)->update([
+                'role_id' => 4,
+            ]);
+
+            $store = Store::with('users')->find($store->id);
+
+            return ResponseFormatter::success([
+                'store' => $store,
+            ], 'Toko berhasil diaktifkan.', 200);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal diaktifkan.' . $error, 500);
+        }
+    }
+
+    /**
+     * Disable store.
+     */
+    public function disable(string $id)
+    {
+        $store = Store::find($id);
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2];
+
+        if (!in_array($user->role_id, $allowedRoles)) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        try {
+            $store->update([
+                'disabled_at' => now(),
+            ]);
+
+            $store = Store::with('users')->find($store->id);
+
+            return ResponseFormatter::success([
+                'store' => $store,
+            ], 'Toko berhasil diaktifkan.', 200);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal diaktifkan.' . $error, 500);
+        }
+    }
+
+    /**
+     * Disable store.
+     */
+    public function enable(string $id)
+    {
+        $store = Store::find($id);
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2];
+
+        if (!in_array($user->role_id, $allowedRoles)) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        try {
+            $store->update([
+                'disabled_at' => null,
+            ]);
+
+            $store = Store::with('users')->find($store->id);
+
+            return ResponseFormatter::success([
+                'store' => $store,
+            ], 'Toko berhasil diaktifkan.', 200);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal diaktifkan.' . $error, 500);
+        }
     }
 }
