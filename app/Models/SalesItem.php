@@ -25,6 +25,6 @@ class SalesItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class)->with(['store', 'product_images', 'tags']);
+        return $this->belongsTo(Product::class)->with(['store', 'product_images']);
     }
 }

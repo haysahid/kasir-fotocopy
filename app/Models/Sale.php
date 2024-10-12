@@ -16,7 +16,7 @@ class Sale extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'sales_code',
+        'code',
         'note',
         'payment',
         'address',

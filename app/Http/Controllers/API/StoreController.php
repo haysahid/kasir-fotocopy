@@ -41,7 +41,7 @@ class StoreController extends Controller
                 ->orWhere('stores.description', 'like', '%' . $search . '%');
         }
 
-        $stores->with('users')->select('stores.*')->latest();
+        $stores->with(['users', 'owners'])->select('stores.*')->latest();
 
         return ResponseFormatter::success(
             $stores->paginate($limit),

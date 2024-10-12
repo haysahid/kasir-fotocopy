@@ -33,4 +33,9 @@ class Store extends Model
     {
         return $this->belongsToMany(User::class, 'user_stores');
     }
+
+    public function owners()
+    {
+        return $this->belongsToMany(User::class, 'user_stores')->where('role_id', 4);
+    }
 }

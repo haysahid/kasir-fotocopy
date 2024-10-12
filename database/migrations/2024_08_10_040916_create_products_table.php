@@ -22,10 +22,10 @@ return new class extends Migration
             $table->integer('initial_stock');
             $table->string('unit');
             $table->string('category')->nullable();
-            $table->timestamp('expired_at');
+            $table->timestamp('expired_at')->nullable();
             $table->bigInteger('supplier_id')->nullable();
             $table->bigInteger('store_id')->unsigned();
-            $table->timestamp('disabled_at');
+            $table->timestamp('disabled_at')->nullable();
 
             $table->foreign('store_id')->references('id')->on('stores')->onUpdate('cascade')->onDelete('no action');
 

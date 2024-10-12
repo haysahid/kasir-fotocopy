@@ -6,6 +6,7 @@ use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SalesItem;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,24 +43,26 @@ class SalesController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user()->with['store'];
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
 
         $request->validate([
             'address' => 'required|string|max:255',
-            'notes' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:255',
         ]);
 
         try {
             // Create order
             $address = $request->input('address');
-            $notes = $request->input('notes');
-            $payment_status = 'Pending';
+            $note = $request->input('note');
+            $payment = $request->input('payment');
 
             $sales = Sale::create([
                 'user_id' => $user->id,
                 'address' => $address,
-                'notes' => $notes,
-                'payment_status' => $payment_status,
-                'store_id' => $user->store->id,
+                'note' => $note,
+                'payment' => $payment,
+                'store_id' => $store->id,
             ]);
 
             $sales_items = $request->input('cart_items');
@@ -70,7 +73,7 @@ class SalesController extends Controller
                     'product_id' => $sales_item->product_id,
                     'quantity' => $sales_item->quantity,
                     'item_price' => $sales_item->product->selling_price,
-                    'store_id' => $user->store->id,
+                    'store_id' => $store->id,
                 ]);
             }
 
