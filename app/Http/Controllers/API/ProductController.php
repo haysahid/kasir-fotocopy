@@ -80,7 +80,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $store = User::with('store')->find($user->id)->store->first();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
 
         // Store availability check
         if (!$store) {
@@ -91,67 +92,68 @@ class ProductController extends Controller
         $allowedRoles = [1, 2];
         $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
 
-        if (in_array($user->role_id, $allowedRoles) || ($isOwner && $user->role_id == 4)) {
-            $request->validate([
-                'code' => 'nullable|string|max:255',
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string|max:255',
-                'purchase_price' => 'required|integer',
-                'selling_price' => 'required|integer',
-                'initial_stock' => 'required|integer',
-                'unit' => 'required|string|max:30',
-                'category' => 'nullable|string|max:255',
-                'expired_at' => 'nullable|string|max:255',
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
 
-                // product_images
-                'product_images' => 'nullable|array',
-                'product_images.*' => 'nullable|file',
+
+        $request->validate([
+            'code' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'purchase_price' => 'required|integer',
+            'selling_price' => 'required|integer',
+            'initial_stock' => 'required|integer',
+            'unit' => 'required|string|max:30',
+            'category' => 'nullable|string|max:255',
+            'expired_at' => 'nullable|string|max:255',
+
+            // product_images
+            'product_images' => 'nullable|array',
+            'product_images.*' => 'nullable|file',
+        ]);
+
+        // Check code uniqueness
+        $code = $request->input('code');
+        $products = Product::where('code', $code)->where('store_id', $store->id)->get();
+
+        if ($products->count() > 0) {
+            return ResponseFormatter::error('Kode produk sudah digunakan.', 409);
+        }
+
+        try {
+            $product = Product::create([
+                'code' => $request->input('code'),
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'purchase_price' => $request->input('purchase_price'),
+                'selling_price' => $request->input('selling_price'),
+                'initial_stock' => $request->input('initial_stock'),
+                'unit' => strtolower($request->input('unit')),
+                'category' => $request->input('category'),
+                'expired_at' => $request->input('expired_at') ? date('Y-m-d H:i:s', strtotime($request->input('expired_at'))) : null,
+                'store_id' => $store->id,
             ]);
 
-            // Check code uniqueness
-            $code = $request->input('code');
-            $products = Product::where('code', $code)->get();
-
-            if ($products->count() > 0) {
-                return ResponseFormatter::error('Kode produk sudah digunakan.', 409);
+            if ($request->input('expired_at')) {
+                $product->expired_at = date('Y-m-d H:i:s', strtotime($request->input('expired_at')));
+                $product->save();
             }
 
-            try {
-                $product = Product::create([
-                    'code' => $request->input('code'),
-                    'name' => $request->input('name'),
-                    'description' => $request->input('description'),
-                    'purchase_price' => $request->input('purchase_price'),
-                    'selling_price' => $request->input('selling_price'),
-                    'initial_stock' => $request->input('initial_stock'),
-                    'unit' => strtolower($request->input('unit')),
-                    'category' => $request->input('category'),
-                    'expired_at' => $request->input('expired_at') ? date('Y-m-d H:i:s', strtotime($request->input('expired_at'))) : null,
-                    'store_id' => $store->id,
-                ]);
+            // Product images
+            if ($request->hasFile('product_images')) {
+                $files = $request->file('product_images');
 
-                if ($request->input('expired_at')) {
-                    $product->expired_at = date('Y-m-d H:i:s', strtotime($request->input('expired_at')));
-                    $product->save();
-                }
-
-                // Product images
-                if ($request->hasFile('product_images')) {
-                    $files = $request->file('product_images');
-
-                    ProductImageController::addProductImages($product->id, $files);
-                }
-
-                $product = Product::with(['store', 'product_images'])->find($product->id);
-
-                return ResponseFormatter::success([
-                    'product' => $product,
-                ], 'Produk berhasil ditambahkan.', 201);
-            } catch (Exception $error) {
-                return ResponseFormatter::error('Terjadi kesalahan. Produk gagal ditambahkan.' . $error, 500);
+                ProductImageController::addProductImages($product->id, $files);
             }
-        } else {
-            return ResponseFormatter::error('Anda tidak memiliki hak akses.' . $store, 401);
+
+            $product = Product::with(['store', 'product_images'])->find($product->id);
+
+            return ResponseFormatter::success([
+                'product' => $product,
+            ], 'Produk berhasil ditambahkan.', 201);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Terjadi kesalahan. Produk gagal ditambahkan.' . $error, 500);
         }
     }
 
@@ -160,7 +162,30 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = Product::with(['store', 'product_images'])->find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
+
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        $product = Product::with(['store', 'product_images'])->where('store_id', $store->id)->find($id);
+        // Check product availability
+        if (!$product) {
+            return ResponseFormatter::error('Produk tidak ditemukan.', 404);
+        }
+
+        $store = Store::find($product->store_id);
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
 
         if (!$product) {
             return ResponseFormatter::error('Produk tidak ditemukan.', 404);
@@ -176,23 +201,41 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $product = Product::find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
 
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        $product = Product::where('store_id', $store->id)->find($id);
+        // Check product availability
         if (!$product) {
             return ResponseFormatter::error('Produk tidak ditemukan.', 404);
         }
 
+        $store = Store::find($product->store_id);
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
         // Check code uniqueness
         $code = $request->input('code');
-        $products = Product::where('code', $code)->where('id', '!=', $id)->get();
+        $products = Product::where('code', $code)->where('store_id', $store->id)->where('id', '!=', $id)->get();
 
         if ($products->count() > 0) {
             return ResponseFormatter::error('Kode produk sudah digunakan.', 409);
         }
 
-        $store = Store::find($product->store_id);
-
         $request->validate([
+            'code' => 'nullable|string|max:255',
             'name' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
             'purchase_price' => 'nullable|integer',
@@ -222,7 +265,30 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        $product = Product::find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
+
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        $product = Product::with(['store', 'product_images'])->where('store_id', $store->id)->find($id);
+        // Check product availability
+        if (!$product) {
+            return ResponseFormatter::error('Produk tidak ditemukan.', 404);
+        }
+
+        $store = Store::find($product->store_id);
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
 
         if (!$product) {
             return ResponseFormatter::error('Produk tidak ditemukan.', 404);
@@ -242,7 +308,30 @@ class ProductController extends Controller
      */
     public function disable(string $id)
     {
-        $product = Product::find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
+
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        $product = Product::with(['store', 'product_images'])->where('store_id', $store->id)->find($id);
+        // Check product availability
+        if (!$product) {
+            return ResponseFormatter::error('Produk tidak ditemukan.', 404);
+        }
+
+        $store = Store::find($product->store_id);
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
 
         if (!$product) {
             return ResponseFormatter::error('Produk tidak ditemukan.', 404);
@@ -264,7 +353,30 @@ class ProductController extends Controller
      */
     public function enable(string $id)
     {
-        $product = Product::find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
+
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        $product = Product::with(['store', 'product_images'])->where('store_id', $store->id)->find($id);
+        // Check product availability
+        if (!$product) {
+            return ResponseFormatter::error('Produk tidak ditemukan.', 404);
+        }
+
+        $store = Store::find($product->store_id);
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
 
         if (!$product) {
             return ResponseFormatter::error('Produk tidak ditemukan.', 404);
