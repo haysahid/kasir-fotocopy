@@ -74,7 +74,7 @@ class StoreController extends Controller
             }
 
             // Prevent multiple store
-            if ($user->store) {
+            if ($user->store && $user->store->count() > 0) {
                 return ResponseFormatter::error('Anda sudah memiliki toko.', 400);
             }
 
