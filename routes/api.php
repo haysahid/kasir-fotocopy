@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\SalesController;
 use App\Http\Controllers\API\StoreConfigController;
 use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\UserController;
@@ -35,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('product/{id}/enable', [ProductController::class, 'enable']);
 
     Route::apiResource('purchase', PurchaseController::class);
+    Route::apiResource('sales', SalesController::class);
 
     Route::apiResource('product/{product_id}/image', 'ProductImageController');
-    Route::apiResource('sales', 'SalesController');
 });

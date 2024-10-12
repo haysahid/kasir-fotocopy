@@ -6,7 +6,9 @@ use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SalesItem;
+use App\Models\StoreConfig;
 use App\Models\User;
+use App\Models\UserStore;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,46 +20,90 @@ class SalesController extends Controller
      */
     public function index(Request $request)
     {
-        $payment_status = $request->input('payment_status');
-        $limit = $request->input('limit', 10);
-
         $user = Auth::user();
-        $orders = SalesItem::query();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
 
-        if ($payment_status) {
-            $orders->where('orders.payment_status', $payment_status);
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
         }
 
-        $orders->where('user_id', $user->id)->with('order_items')->latest();
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
+        $limit = $request->input('limit', 10);
+
+        $sales = Sale::query();
+
+        $sales->where('store_id', $store->id)->with(['sales_items'])->latest();
 
         return ResponseFormatter::success(
-            $orders->paginate($limit),
+            $sales->paginate($limit),
             'Daftar penjualan berhasil ditemukan.',
             200
         );
     }
 
     /**
-     * Sales a newly created resource in storage.
+     * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $user = Auth::user()->with['store'];
+        $user = Auth::user();
         $user = User::with('store')->find($user->id);
         $store = $user->store[0];
+
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
 
         $request->validate([
             'address' => 'required|string|max:255',
             'note' => 'nullable|string|max:255',
+            'payment' => 'required|integer',
         ]);
 
         try {
-            // Create order
+
             $address = $request->input('address');
             $note = $request->input('note');
             $payment = $request->input('payment');
+            $sales_items = $request->input('sales_items');
 
-            $sales = Sale::create([
+            // Count total
+            $total = 0;
+
+            foreach ($sales_items as $sales_item) {
+                $item = new SalesItem($sales_item);
+                $total += $item->quantity * $item->item_price;
+            }
+
+            // Check payment
+            if ($payment < $total) {
+                return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
+            }
+
+            // Create order
+            $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
+            $code = $storeAcronym->value . '-J-' . date('YmdHis');
+
+            $sale = Sale::create([
+                'code' => $code,
                 'user_id' => $user->id,
                 'address' => $address,
                 'note' => $note,
@@ -65,26 +111,23 @@ class SalesController extends Controller
                 'store_id' => $store->id,
             ]);
 
-            $sales_items = $request->input('cart_items');
-
+            // Create order items
             foreach ($sales_items as $sales_item) {
+                $item = new SalesItem($sales_item);
                 SalesItem::create([
-                    'sales_id' => $sales->id,
-                    'product_id' => $sales_item->product_id,
-                    'quantity' => $sales_item->quantity,
-                    'item_price' => $sales_item->product->selling_price,
+                    'sales_id' => $sale->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'item_price' => $item->item_price,
                     'store_id' => $store->id,
                 ]);
             }
 
-            $sales = Sale::with(['sales_items'])->find($sales->id);
+            $sale = Sale::with(['sales_items'])->find($sale->id);
 
-            return ResponseFormatter::success([
-                'sales' => $sales,
-                'return' => 0,
-            ], 'Pesanan berhasil ditambahkan.', 201);
+            return ResponseFormatter::success($sale, 'Penjualan berhasil ditambahkan.', 201);
         } catch (Exception $error) {
-            return ResponseFormatter::error('Terjadi kesalahan. Pesanan gagal ditambahkan.' . $error, 500);
+            return ResponseFormatter::error('Terjadi kesalahan. Penjualan gagal ditambahkan.' . $error, 500);
         }
     }
 
@@ -93,15 +136,31 @@ class SalesController extends Controller
      */
     public function show(string $id)
     {
-        $sales = Sale::with('sales_items')->find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
 
-        if (!$sales) {
-            return ResponseFormatter::error('Pesanan tidak ditemukan.', 404);
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
         }
 
-        return ResponseFormatter::success([
-            'sales' => $sales,
-        ], 'Pesanan berhasil ditemukan.', 200);
+        // Check sale availability
+        $sale = Sale::with('sales_items')->find($id);
+
+        if (!$sale) {
+            return ResponseFormatter::error('Penjualan tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
+        return ResponseFormatter::success($sale, 'Penjualan berhasil ditemukan.', 200);
     }
 
     /**
@@ -109,24 +168,97 @@ class SalesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $sales = Sale::find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
 
-        if (!$sales) {
-            return ResponseFormatter::error('Pesanan tidak ditemukan.', 404);
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
         }
 
-        $request->validate([]);
+        // Check sale availability
+        $sale = Sale::with('sales_items')->find($id);
+
+        if (!$sale) {
+            return ResponseFormatter::error('Penjualan tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
+        $request->validate([
+            'address' => 'required|string|max:255',
+            'note' => 'nullable|string|max:255',
+            'payment' => 'required|integer',
+        ]);
 
         try {
-            $sales->update([]);
 
-            $sales = Sale::with('sales_items')->find($id);
+            $address = $request->input('address');
+            $note = $request->input('note');
+            $payment = $request->input('payment');
+            $sales_items = $request->input('sales_items');
 
-            return ResponseFormatter::success([
-                'sales' => $sales,
-            ], 'Pesanan berhasil diubah.', 200);
+            // Count total
+            $total = 0;
+
+            foreach ($sales_items as $sales_item) {
+                $item = new SalesItem($sales_item);
+                $total += $item->quantity * $item->item_price;
+            }
+
+            // Check payment
+            if ($payment < $total) {
+                return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
+            }
+
+            // Update order
+            $sale->update([
+                'user_id' => $user->id,
+                'address' => $address,
+                'note' => $note,
+                'payment' => $payment,
+            ]);
+
+            // Update order items
+            foreach ($sales_items as $sales_item) {
+                $item = new SalesItem($sales_item);
+                $item->updateOrCreate([
+                    'sales_id' => $sale->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'item_price' => $item->item_price,
+                    'store_id' => $store->id,
+                ]);
+            }
+
+            // Delete order items
+            foreach ($sale->sales_items as $sales_item) {
+                $found = false;
+
+                foreach ($sales_items as $item) {
+                    if ($sales_item->product_id == $item['product_id']) {
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $sales_item->delete();
+                }
+            }
+
+            $sale = Sale::with(['sales_items'])->find($sale->id);
+
+            return ResponseFormatter::success($sale, 'Penjualan berhasil diubah.', 200);
         } catch (Exception $error) {
-            return ResponseFormatter::error('Terjadi kesalahan. Pesanan gagal diubah.' . $error, 500);
+            return ResponseFormatter::error('Terjadi kesalahan. Penjualan gagal diubah.' . $error, 500);
         }
     }
 
@@ -135,18 +267,41 @@ class SalesController extends Controller
      */
     public function destroy(string $id)
     {
-        // $order = Sales::find($id);
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
 
-        // if (!$order) {
-        //     return ResponseFormatter::error('Pesanan tidak ditemukan.', 404);
-        // }
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
 
-        // $order->delete();
+        // Check sale availability
+        $sale = Sale::with('sales_items')->find($id);
 
-        // return ResponseFormatter::success(
-        //     $order->id,
-        //     'Pesanan berhasil dihapus.',
-        //     200
-        // );
+        if (!$sale) {
+            return ResponseFormatter::error('Penjualan tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
+        // Delete order items
+        foreach ($sale->sales_items as $sales_item) {
+            $sales_item->delete();
+        }
+
+        $sale->delete();
+
+        return ResponseFormatter::success(
+            $sale->id,
+            'Penjualan berhasil dihapus.',
+            200
+        );
     }
 }

@@ -110,6 +110,7 @@ class PurchaseController extends Controller
                 'store_id' => $store->id,
             ]);
 
+            // Create order items
             foreach ($purchase_items as $purchase_item) {
                 $item = new PurchaseItem($purchase_item);
                 PurchaseItem::create([

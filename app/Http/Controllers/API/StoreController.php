@@ -138,7 +138,7 @@ class StoreController extends Controller
         $allowedRoles = [1, 2];
         $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
 
-        if (!in_array($user->role_id, $allowedRoles) || !$isOwner) {
+        if (!in_array($user->role_id, $allowedRoles) && !$isOwner) {
             return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
         }
 
@@ -171,7 +171,7 @@ class StoreController extends Controller
         $allowedRoles = [1, 2];
         $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
 
-        if (!in_array($user->role_id, $allowedRoles) || (!$isOwner && $user->role_id != 4)) {
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && $user->role_id != 4)) {
             return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
         }
 
