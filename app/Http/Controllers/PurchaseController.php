@@ -78,7 +78,6 @@ class PurchaseController extends Controller
         ]);
 
         try {
-
             $address = $request->input('address');
             $note = $request->input('note');
             $payment = $request->input('payment');

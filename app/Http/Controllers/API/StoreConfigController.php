@@ -61,7 +61,7 @@ class StoreConfigController extends Controller
 
         try {
             // Check if key is already exists
-            $config = StoreConfig::where('key', $key)->first();
+            $config = StoreConfig::where('key', $key)->where('store_id', $store->id)->first();
 
             if ($config) {
                 return ResponseFormatter::error('Konfigurasi sudah ada.', 409);
