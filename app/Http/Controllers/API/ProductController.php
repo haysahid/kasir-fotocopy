@@ -57,8 +57,7 @@ class ProductController extends Controller
 
         if ($search) {
             $products
-                ->where('products.name', 'like', '%' . $search . '%')
-                ->orWhere('products.description', 'like', '%' . $search . '%');
+                ->where('products.name', 'like', '%' . $search . '%');
         }
 
         if (!$show_disabled) {
