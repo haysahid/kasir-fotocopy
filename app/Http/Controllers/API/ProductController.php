@@ -228,8 +228,9 @@ class ProductController extends Controller
         // Check code uniqueness
         $code = $request->input('code');
         $products = Product::where('code', $code)->where('store_id', $store->id)->where('id', '!=', $id)->get();
+        $existingProduct = Product::where('id', $id)->first();
 
-        if ($products->count() > 0) {
+        if ($products->count() > 0 && $existingProduct->code != $code) {
             return ResponseFormatter::error('Kode produk sudah digunakan.', 409);
         }
 
