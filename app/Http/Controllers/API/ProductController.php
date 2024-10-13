@@ -116,7 +116,7 @@ class ProductController extends Controller
         $code = $request->input('code');
         $products = Product::where('code', $code)->where('store_id', $store->id)->get();
 
-        if ($products->count() > 0) {
+        if ($products->count() > 0 && $code) {
             return ResponseFormatter::error('Kode produk sudah digunakan.', 409);
         }
 
@@ -230,7 +230,7 @@ class ProductController extends Controller
         $products = Product::where('code', $code)->where('store_id', $store->id)->where('id', '!=', $id)->get();
         $existingProduct = Product::where('id', $id)->first();
 
-        if ($products->count() > 0 && $existingProduct->code != $code) {
+        if ($products->count() > 0 && $existingProduct->code != $code && $code) {
             return ResponseFormatter::error('Kode produk sudah digunakan.', 409);
         }
 
