@@ -26,6 +26,7 @@ class ProductController extends Controller
         $store_id = $request->input('store_id');
         $category = $request->input('category');
         $search = $request->input('search');
+        $code = $request->input('code');
         $limit = $request->input('limit', 10);
 
         $show_disabled = $request->input('show_disabled', 0);
@@ -56,8 +57,15 @@ class ProductController extends Controller
         }
 
         if ($search) {
-            $products
-                ->where('products.name', 'like', '%' . $search . '%');
+            $products->where(function ($query) use ($search) {
+                $query->where('products.code', $search)
+                    ->orWhere('products.name', 'like', '%' . $search . '%')
+                    ->orWhere('products.description', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($code) {
+            $products->where('products.code', $code);
         }
 
         if (!$show_disabled) {
