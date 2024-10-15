@@ -20,7 +20,18 @@ class StoreConfigController extends Controller
      */
     public function index()
     {
-        $data = StoreConfig::query()->get();
+        // Authorization check
+        $user = Auth::user();
+        $user = User::find($user->id);
+        $store = $user->store[0];
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && $user->role_id != 4)) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
+        $data = StoreConfig::where('store_id', $store->id)->get();
 
         $configs = null;
 
