@@ -209,10 +209,7 @@ class StoreConfigController extends Controller
         $config->forceDelete();
 
         return ResponseFormatter::success(
-            [
-                'key' => $config->key,
-                'configs' => StoreConfig::query()->where('store_id', $store->id)->get(),
-            ],
+            null,
             'Konfigurasi berhasil dihapus.',
             200
         );
