@@ -200,13 +200,13 @@ class StoreConfigController extends Controller
             return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
         }
 
-        $config = StoreConfig::where('key', $request->input('key'))->first();
+        $config = StoreConfig::where('store_id', $store->id)->where('key', $request->input('key'));
 
         if (!$config) {
             return ResponseFormatter::error('Konfigurasi tidak ditemukan.', 404);
         }
 
-        $config->delete();
+        $config->forceDelete();
 
         return ResponseFormatter::success(
             [
