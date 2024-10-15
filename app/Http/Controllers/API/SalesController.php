@@ -73,7 +73,7 @@ class SalesController extends Controller
         }
 
         $request->validate([
-            'address' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
             'payment' => 'required|integer',
         ]);
@@ -193,7 +193,7 @@ class SalesController extends Controller
         }
 
         $request->validate([
-            'address' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
             'payment' => 'required|integer',
         ]);
