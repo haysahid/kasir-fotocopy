@@ -211,6 +211,7 @@ class StoreConfigController extends Controller
         return ResponseFormatter::success(
             [
                 'key' => $config->key,
+                'configs' => StoreConfig::query()->where('store_id', $store->id)->get(),
             ],
             'Konfigurasi berhasil dihapus.',
             200
