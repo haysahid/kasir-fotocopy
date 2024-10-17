@@ -5,7 +5,9 @@ use App\Http\Controllers\API\SalesController;
 use App\Http\Controllers\API\StoreConfigController;
 use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Middleware\CheckUserRoleAndStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +32,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('store/{id}/enable', [StoreController::class, 'enable']);
 
     Route::apiResource('store-config', StoreConfigController::class);
+
+    Route::middleware(CheckUserRoleAndStore::class . ':1,2,4')->group(function () {
+        Route::apiResource('employee', EmployeeController::class);
+        Route::put('employee/{id}/disable', [EmployeeController::class, 'disable']);
+        Route::put('employee/{id}/enable', [EmployeeController::class, 'enable']);
+    });
 
     Route::apiResource('product', ProductController::class);
     Route::put('product/{id}/disable', [ProductController::class, 'disable']);
