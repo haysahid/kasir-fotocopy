@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->bigInteger('supplier_id')->nullable();
+            $table->boolean('from_community')->default(false);
             $table->bigInteger('store_id')->unsigned();
             $table->timestamp('disabled_at')->nullable();
 
