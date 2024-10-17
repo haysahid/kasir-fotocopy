@@ -24,6 +24,7 @@ class Store extends Model
         'phone',
         'logo',
         'banner',
+        'is_community',
         'community_id',
         'activated_at',
         'disabled_at',
