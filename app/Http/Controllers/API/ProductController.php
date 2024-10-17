@@ -95,6 +95,11 @@ class ProductController extends Controller
             return ResponseFormatter::error('Anda belum memiliki toko.', 404);
         }
 
+        // Check store activation
+        if (!$store->activated_at) {
+            return ResponseFormatter::error('Toko belum diaktifkan.', 403);
+        }
+
         // Authorization check
         $allowedRoles = [1, 2];
         $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
