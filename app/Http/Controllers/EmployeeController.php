@@ -56,6 +56,7 @@ class EmployeeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'address' => 'nullable|string|max:255',
             'phone' => 'required|string',
             'password' => ['required', 'string', new Password(8)],
         ]);
@@ -64,6 +65,7 @@ class EmployeeController extends Controller
             User::create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
+                'address' => $request->input('address'),
                 'phone' => $request->input('phone'),
                 'password' => Hash::make($request->password),
                 'role_id' => 5,
