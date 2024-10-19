@@ -7,6 +7,7 @@ use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\RoleController;
 use App\Http\Middleware\CheckAdminRole;
 use App\Http\Middleware\CheckUserRoleAndStore;
 use Illuminate\Http\Request;
@@ -51,6 +52,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('store/{id}/summary', [StoreController::class, 'summary']);
     Route::get('store/{id}/graph', [StoreController::class, 'graph']);
+
+    Route::apiResource('role', RoleController::class);
 
     // Admin
     Route::middleware(CheckAdminRole::class)->group(function () {
