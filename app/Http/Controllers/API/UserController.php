@@ -182,6 +182,11 @@ class UserController extends Controller
     // Create new user
     public function store(Request $request)
     {
+        // Check email unique
+        if (User::where('email', $request->input('email'))->first()) {
+            return ResponseFormatter::error('Email sudah terdaftar.', 400);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
