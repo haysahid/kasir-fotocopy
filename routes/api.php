@@ -7,13 +7,14 @@ use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Middleware\CheckAdminRole;
 use App\Http\Middleware\CheckUserRoleAndStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
 
 Route::post('auth/register', [UserController::class, 'register']);
 Route::post('auth/login', [UserController::class, 'login']);
@@ -43,8 +44,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('product/{id}/disable', [ProductController::class, 'disable']);
     Route::put('product/{id}/enable', [ProductController::class, 'enable']);
 
+    Route::apiResource('product/{product_id}/image', 'ProductImageController');
+
     Route::apiResource('purchase', PurchaseController::class);
     Route::apiResource('sales', SalesController::class);
 
-    Route::apiResource('product/{product_id}/image', 'ProductImageController');
+    // Admin
+
+    Route::middleware(CheckAdminRole::class)->group(function () {
+        Route::apiResource('user', UserController::class);
+        Route::put('user/{id}/disable', [UserController::class, 'disable']);
+        Route::put('user/{id}/enable', [UserController::class, 'enable']);
+    });
 });

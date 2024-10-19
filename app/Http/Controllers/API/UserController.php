@@ -153,4 +153,193 @@ class UserController extends Controller
             'token' => $token,
         ], 'Berhasil keluar.', 200);
     }
+
+    // Get all users
+    public function index(Request $request)
+    {
+        $showDisabled = $request->input('show_disabled', true);
+        $search = $request->input('search');
+        $limit = $request->input('limit', 10);
+
+        $users = User::query();
+
+        if (!$showDisabled) {
+            $users->whereNull('disabled_at');
+        }
+
+        if ($search) {
+            $users->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users->with(['store', 'role'])->get();
+
+        return ResponseFormatter::success($users->paginate($limit), 'Data pengguna ditemukan.', 200);
+    }
+
+    // Create new user
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'required|string',
+            'avatar' => 'nullable|file',
+            'role_id' => 'required|integer',
+            'password' => ['required', 'string', new Password(8)],
+        ]);
+
+        try {
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'address' => $request->input('address'),
+                'phone' => $request->input('phone'),
+                'role_id' => $request->input('role_id'),
+                'password' => Hash::make($request->password),
+            ]);
+
+            if ($request->hasFile('avatar')) {
+                $avatar_path = '';
+
+                // Store avatar
+                $avatar_path = $request->file('avatar')->store('user');
+
+                // Add to database
+                $user->update([
+                    'avatar' => $avatar_path,
+                ]);
+            }
+
+            $user = User::with(['store', 'role'])->find($user->id);
+
+            return ResponseFormatter::success($user, 'Data pengguna berhasil ditambahkan.', 201);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Ada yang salah. Autentikasi gagal.', 500);
+        }
+    }
+
+    // Get user by id
+    public function show($id)
+    {
+        $user = User::with(['store', 'role'])->find($id);
+
+        return ResponseFormatter::success($user, 'Data pengguna ditemukan.', 200);
+    }
+
+    // Update user by id
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:255',
+            'avatar' => 'nullable|file',
+            'role_id' => 'nullable|integer',
+            'disabled_at' => 'nullable|date',
+        ]);
+
+        $user = User::query()->find($id);
+
+        if ($user->email != $request->input('email')) {
+            $request->validate([
+                'email' => 'nullable|string|email|max:255|unique:users',
+            ]);
+        }
+
+        try {
+            $user->update($request->all());
+
+            if ($request->hasFile('avatar')) {
+                $avatar_path = '';
+
+                // Delete old avatar
+                if ($user->avatar) {
+                    Storage::delete($user->avatar);
+                }
+
+                // Store avatar
+                $avatar_path = $request->file('avatar')->store('user');
+
+                // Add to database
+                $user->update([
+                    'avatar' => $avatar_path,
+                ]);
+            }
+
+            $user = User::with(['store', 'role'])->find($user->id);
+
+            return ResponseFormatter::success($user, 'Data pengguna berhasil diubah.', 200);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Ada yang salah. Autentikasi gagal.', 500);
+        }
+    }
+
+    // Delete user by id
+    public function destroy($id)
+    {
+        $user = User::find($id);
+
+        // Check user availability
+        if (!$user) {
+            return ResponseFormatter::error('Data pengguna tidak ditemukan.', 404);
+        }
+
+        // Prevent superadmin, admin, and community to delete their own account
+        if ($user->role_id == 1 || $user->role_id == 2 || $user->role_id == 3) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        // Delete user avatar
+        if ($user->avatar) {
+            Storage::delete($user->avatar);
+        }
+
+        $user->delete();
+
+        return ResponseFormatter::success(null, 'Data pengguna berhasil dihapus.', 200);
+    }
+
+    // Disable user by id
+    public function disable($id)
+    {
+        $user = User::find($id);
+
+        // Check user availability
+        if (!$user) {
+            return ResponseFormatter::error('Data pengguna tidak ditemukan.', 404);
+        }
+
+        // Prevent superadmin, admin, and community to disable their own account
+        if ($user->role_id == 1 || $user->role_id == 2 || $user->role_id == 3) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        $user->update([
+            'disabled_at' => now(),
+        ]);
+
+        return ResponseFormatter::success(null, 'Data pengguna berhasil dinonaktifkan.', 200);
+    }
+
+    // Enable user by id
+    public function enable($id)
+    {
+        $user = User::find($id);
+
+        // Check user availability
+        if (!$user) {
+            return ResponseFormatter::error('Data pengguna tidak ditemukan.', 404);
+        }
+
+        $user->update([
+            'disabled_at' => null,
+        ]);
+
+        return ResponseFormatter::success(null, 'Data pengguna berhasil diaktifkan.', 200);
+    }
 }
