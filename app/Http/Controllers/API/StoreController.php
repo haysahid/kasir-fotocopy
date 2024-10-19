@@ -10,6 +10,7 @@ use App\Models\UserStore;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -400,6 +401,93 @@ class StoreController extends Controller
             ], 'Toko berhasil diaktifkan.', 200);
         } catch (Exception $error) {
             return ResponseFormatter::error('Terjadi kesalahan. Toko gagal diaktifkan.' . $error, 500);
+        }
+    }
+
+    // Store Summary
+    public function summary(Request $request, string $id)
+    {
+        $store = Store::find($id);
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2, 3];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && !$isOwner) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+
+        // Validate date
+        try {
+            new DateTime($startDate);
+            new DateTime($endDate);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Format tanggal tidak valid.', 400);
+        }
+
+        $summary = $store->summary($startDate, $endDate);
+
+        return ResponseFormatter::success(
+            $summary,
+            'Ringkasan toko berhasil ditemukan.',
+            200
+        );
+    }
+
+    // Store Graph
+    public function graph(Request $request, string $id)
+    {
+        $store = Store::find($id);
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2, 3];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && !$isOwner) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        // Type: daily, weekly, monthly
+        $type = $request->input('type');
+        $year = $request->input('year', Carbon::now()->year);
+        $month = $request->input('month', Carbon::now()->month);
+        $week = $request->input('week', Carbon::now()->month);
+
+        if (!in_array($type, ['daily', 'weekly', 'monthly'])) {
+            return ResponseFormatter::error('Tipe grafik tidak valid.', 400);
+        }
+
+        if ($type == 'daily') {
+            return ResponseFormatter::success(
+                $store->dailySalesRevenueGraph($year, $month, $week),
+                'Grafik harian berhasil ditemukan.',
+                200
+            );
+        } elseif ($type == 'weekly') {
+            return ResponseFormatter::success(
+                $store->weeklyMonthlySalesRevenueGraph($year, $month),
+                'Grafik mingguan berhasil ditemukan.',
+                200
+            );
+        } elseif ($type == 'monthly') {
+            return ResponseFormatter::success(
+                $store->monthlySalesRevenueGraph($year),
+                'Grafik bulanan berhasil ditemukan.',
+                200
+            );
         }
     }
 }

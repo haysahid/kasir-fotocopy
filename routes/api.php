@@ -49,8 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('purchase', PurchaseController::class);
     Route::apiResource('sales', SalesController::class);
 
-    // Admin
+    Route::get('store/{id}/summary', [StoreController::class, 'summary']);
+    Route::get('store/{id}/graph', [StoreController::class, 'graph']);
 
+    // Admin
     Route::middleware(CheckAdminRole::class)->group(function () {
         Route::apiResource('user', UserController::class);
         Route::put('user/{id}/disable', [UserController::class, 'disable']);
