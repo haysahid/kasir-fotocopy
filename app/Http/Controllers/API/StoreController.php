@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Store;
+use App\Models\StoreConfig;
 use App\Models\User;
 use App\Models\UserStore;
 use Carbon\Carbon;
@@ -325,6 +326,7 @@ class StoreController extends Controller
 
         try {
             UserStore::where('store_id', $store->id)->delete();
+            StoreConfig::where('store_id', $store->id)->delete();
 
             $store->forceDelete();
 
