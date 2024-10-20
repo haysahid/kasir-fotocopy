@@ -12,6 +12,8 @@ class Store extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public $appends = ['check_stock'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -100,6 +102,33 @@ class Store extends Model
             'mean_sales' => $totalSalesCount == 0 ? 0 : $totalSales / $totalSalesCount,
             'sold_products' => $soldProducts,
         ];
+    }
+
+    public function checkStock()
+    {
+        $products = Product::where('store_id', $this->id)->where('disabled_at', null)->get();
+
+        $stockRunningLow = 0;
+        $outOfStock = 0;
+
+        foreach ($products as $product) {
+
+            if ($product->stock == 0) {
+                $outOfStock++;
+            } elseif ($product->stock <= 10) {
+                $stockRunningLow++;
+            }
+        }
+
+        return [
+            'stock_running_low' => $stockRunningLow,
+            'out_of_stock' => $outOfStock,
+        ];
+    }
+
+    public function getCheckStockAttribute()
+    {
+        return $this->checkStock();
     }
 
     public function monthlySalesRevenueGraph($year)

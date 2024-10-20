@@ -22,6 +22,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+
 
         $store_id = $request->input('store_id');
         $category = $request->input('category');
@@ -34,6 +36,8 @@ class ProductController extends Controller
 
         $from_community = $request->input('from_community', 0);
 
+        $orderBy = $request->input('order_by', 'created_at');
+        $orderDirection = $request->input('order_direction', 'desc');
 
         if ($show_detail) {
             $products = ProductDetail::query();
@@ -46,11 +50,23 @@ class ProductController extends Controller
         }
 
         if ($user->role_id > 3) {
-            $store = User::with('store')->find($user->id)->store->first();
+            $store = $user->store[0];
 
             if (!$store) {
                 return ResponseFormatter::error('Anda belum memiliki toko.', 404);
             }
+
+            $store_id = $store->id;
+
+            $products->where('products.store_id', $store->id);
+        } elseif ($user->role_id == 3) {
+            $store = Store::where('is_community', 1)->first();
+
+            if (!$store) {
+                return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+            }
+
+            $store_id = $store->id;
 
             $products->where('products.store_id', $store->id);
         }
@@ -79,7 +95,7 @@ class ProductController extends Controller
             $products->whereNull('products.disabled_at');
         }
 
-        $products->with(['store', 'product_images'])->select('products.*')->latest();
+        $products->with(['store', 'product_images'])->select('products.*')->orderBy($orderBy, $orderDirection);
 
         return ResponseFormatter::success(
             $products->paginate($limit),
@@ -95,7 +111,13 @@ class ProductController extends Controller
     {
         $user = Auth::user();
         $user = User::with('store')->find($user->id);
-        $store = $user->store[0];
+
+        // Check if user is community
+        if ($user->role_id == 3) {
+            $store = Store::where('is_community', 1)->first();
+        } else {
+            $store = $user->store[0];
+        }
 
         // Store availability check
         if (!$store) {
@@ -108,7 +130,7 @@ class ProductController extends Controller
         }
 
         // Authorization check
-        $allowedRoles = [1, 2];
+        $allowedRoles = [1, 2, 3];
         $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
 
         if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
@@ -153,11 +175,6 @@ class ProductController extends Controller
                 'expired_at' => $request->input('expired_at') ? date('Y-m-d H:i:s', strtotime($request->input('expired_at'))) : null,
                 'store_id' => $store->id,
             ]);
-
-            if ($request->input('expired_at')) {
-                $product->expired_at = date('Y-m-d H:i:s', strtotime($request->input('expired_at')));
-                $product->save();
-            }
 
             // Product images
             if ($request->hasFile('product_images')) {

@@ -71,4 +71,9 @@ class Product extends Model
     {
         return $this->initial_stock + $this->purchased - $this->sold;
     }
+
+    public function stock()
+    {
+        return $this->initial_stock + $this->purchased - $this->sold;
+    }
 }
