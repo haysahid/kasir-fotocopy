@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('product', ProductController::class);
     Route::put('product/{id}/disable', [ProductController::class, 'disable']);
     Route::put('product/{id}/enable', [ProductController::class, 'enable']);
+    Route::get('product-community', [ProductController::class, 'getCommunityProducts']);
 
     Route::apiResource('product/{product_id}/image', 'ProductImageController');
 

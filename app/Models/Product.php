@@ -26,6 +26,7 @@ class Product extends Model
         'initial_stock',
         'unit',
         'category',
+        'from_community',
         'store_id',
         'disabled_at',
     ];

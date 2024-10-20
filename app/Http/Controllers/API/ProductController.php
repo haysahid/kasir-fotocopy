@@ -32,10 +32,17 @@ class ProductController extends Controller
         $show_disabled = $request->input('show_disabled', 0);
         $show_detail = $request->input('show_detail', 0);
 
+        $from_community = $request->input('from_community', 0);
+
+
         if ($show_detail) {
             $products = ProductDetail::query();
         } else {
             $products = Product::query();
+        }
+
+        if ($from_community) {
+            $products->where('products.from_community', 1);
         }
 
         if ($user->role_id > 3) {
@@ -402,6 +409,67 @@ class ProductController extends Controller
         return ResponseFormatter::success(
             $product,
             'Produk berhasil diaktifkan.',
+            200
+        );
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function getCommunityProducts(Request $request)
+    {
+        $user = Auth::user();
+        $user = User::find($user->id);
+
+        $store_id = Store::where('is_community', 1)->first()->id;
+        $category = $request->input('category');
+        $search = $request->input('search');
+        $code = $request->input('code');
+        $limit = $request->input('limit', 10);
+
+        $show_disabled = $request->input('show_disabled', 0);
+
+        $products = Product::query();
+
+        if ($user->role_id > 3) {
+            $store = User::with('store')->find($user->id)->store->first();
+
+            if (!$store) {
+                return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+            }
+
+            $products->where('products.store_id', $store->id);
+        }
+
+        if ($store_id) {
+            $products->where('products.store_id', $store_id);
+        }
+
+        if ($category) {
+            $products->where('products.category', $category);
+        }
+
+        if ($search) {
+            $products->where(function ($query) use ($search) {
+                $query->where('products.code', $search)
+                    ->orWhere('products.name', 'like', '%' . $search . '%')
+                    ->orWhere('products.description', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($code) {
+            $products->where('products.code', $code);
+        }
+
+        if (!$show_disabled) {
+            $products->whereNull('products.disabled_at');
+        }
+
+        $products->with(['store', 'product_images'])->select('products.*')->latest();
+
+        return ResponseFormatter::success(
+            $products->paginate($limit),
+            'Daftar produk berhasil ditemukan.',
             200
         );
     }
