@@ -448,16 +448,6 @@ class ProductController extends Controller
 
         $products = Product::query();
 
-        if ($user->role_id > 3) {
-            $store = User::with('store')->find($user->id)->store->first();
-
-            if (!$store) {
-                return ResponseFormatter::error('Anda belum memiliki toko.', 404);
-            }
-
-            $products->where('products.store_id', $store->id);
-        }
-
         if ($store_id) {
             $products->where('products.store_id', $store_id);
         }
