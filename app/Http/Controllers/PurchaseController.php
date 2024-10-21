@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseFormatter;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Models\StoreConfig;
@@ -118,6 +119,12 @@ class PurchaseController extends Controller
                     'quantity' => $item->quantity,
                     'item_price' => $item->item_price,
                     'store_id' => $store->id,
+                ]);
+
+                // Update product purchase price
+                $product = Product::find($item->product_id);
+                $product->update([
+                    'purchase_price' => $item->item_price,
                 ]);
             }
 
