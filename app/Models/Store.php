@@ -66,6 +66,7 @@ class Store extends Model
     public function summary($startDate, $endDate)
     {
         $user = Auth::user();
+        $user = User::find($user->id);
 
         $purchases = $this->purchases()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
         $sales = $this->sales()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);

@@ -435,6 +435,11 @@ class StoreController extends Controller
             return ResponseFormatter::error('Format tanggal tidak valid.', 400);
         }
 
+        // Prevent similar date
+        if ($startDate >= $endDate) {
+            return ResponseFormatter::error('Tanggal tidak valid.', 400);
+        }
+
         $summary = $store->summary($startDate, $endDate);
 
         return ResponseFormatter::success(
