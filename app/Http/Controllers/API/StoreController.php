@@ -440,7 +440,7 @@ class StoreController extends Controller
             return ResponseFormatter::error('Tanggal tidak valid.', 400);
         }
 
-        $summary = $store->summary($startDate, $endDate);
+        $summary = $store->summary($startDate, $endDate . ' 23:59:59');
 
         return ResponseFormatter::success(
             $summary,
