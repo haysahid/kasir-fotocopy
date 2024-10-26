@@ -21,15 +21,12 @@ class AdminController extends Controller
     // Get summary
     public function summary()
     {
-        $users = User::query();
-        $countUsers = $users->count();
+        $countUsers = User::count();
 
-        $stores = Store::query();
-
-        $countStores = $stores->count();
-        $countActiveStores = $stores->where('activated_at', '!=', null)->where('disabled_at', null)->count();
-        $countDisabledStores = $stores->where('disabled_at', '!=', null)->count();
-        $countStoreRequests = $stores->where('activated_at', null)->count();
+        $countStores = Store::count();
+        $countActiveStores = Store::where('activated_at', '!=', null)->where('disabled_at', null)->count();
+        $countDisabledStores = Store::where('disabled_at', '!=', null)->count();
+        $countStoreRequests = Store::where('activated_at', null)->count();
 
         return ResponseFormatter::success([
             'users' => $countUsers,
