@@ -10,7 +10,7 @@ class Sale extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $appends = array('total', 'return');
+    protected $appends = array('total', 'return', 'profit');
 
     /**
      * The attributes that are mass assignable.
@@ -41,5 +41,10 @@ class Sale extends Model
     public function getReturnAttribute()
     {
         return $this->payment - $this->total;
+    }
+
+    public function getProfitAttribute()
+    {
+        return $this->sales_items->sum('profit');
     }
 }

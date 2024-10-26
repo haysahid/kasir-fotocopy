@@ -8,6 +8,7 @@ use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\PurchaseController;
+use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Middleware\CheckAdminRole;
 use App\Http\Middleware\CheckUserRoleAndStore;
@@ -40,6 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('employee', EmployeeController::class);
         Route::put('employee/{id}/disable', [EmployeeController::class, 'disable']);
         Route::put('employee/{id}/enable', [EmployeeController::class, 'enable']);
+
+        Route::get('report/purchase', [ReportController::class, 'purchase']);
+        Route::get('report/sales', [ReportController::class, 'sales']);
     });
 
     Route::apiResource('product', ProductController::class);

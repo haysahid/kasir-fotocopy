@@ -10,6 +10,8 @@ class SalesItem extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $appends = ['profit'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -25,6 +27,11 @@ class SalesItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class)->with(['store', 'product_images']);
+        return $this->belongsTo(Product::class);
+    }
+
+    public function getProfitAttribute()
+    {
+        return ($this->item_price - $this->product->purchase_price) * $this->quantity;
     }
 }
