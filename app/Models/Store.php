@@ -68,9 +68,15 @@ class Store extends Model
         $user = Auth::user();
         $user = User::find($user->id);
 
-        $purchases = $this->purchases()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
-        $sales = $this->sales()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
-        $salesItems = $this->sales_items()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
+        if ($user->role_id <= 4) {
+            $purchases = $this->purchases()->whereBetween('created_at', [$startDate, $endDate]);
+            $sales = $this->sales()->whereBetween('created_at', [$startDate, $endDate]);
+            $salesItems = $this->sales_items()->whereBetween('created_at', [$startDate, $endDate]);
+        } else {
+            $purchases = $this->purchases()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
+            $sales = $this->sales()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
+            $salesItems = $this->sales_items()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
+        }
 
         $totalPurchases = 0;
 
@@ -136,7 +142,11 @@ class Store extends Model
     {
         $user = Auth::user();
 
-        $sales = $this->sales()->whereYear('created_at', $year)->where('user_id', $user->id)->get();
+        if ($user->role_id <= 4) {
+            $sales = $this->sales()->whereYear('created_at', $year)->get();
+        } else {
+            $sales = $this->sales()->whereYear('created_at', $year)->where('user_id', $user->id)->get();
+        }
 
         $salesRevenue = $sales->groupBy(function ($item) {
             return $item->created_at->format('m');
@@ -162,7 +172,11 @@ class Store extends Model
     {
         $user = Auth::user();
 
-        $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->where('user_id', $user->id)->get();
+        if ($user->role_id <= 4) {
+            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->get();
+        } else {
+            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->where('user_id', $user->id)->get();
+        }
 
         $salesRevenue = $sales->groupBy(function ($item) {
             return $item->created_at->format('W');
@@ -188,7 +202,11 @@ class Store extends Model
     {
         $user = Auth::user();
 
-        $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->whereRaw('WEEK(created_at) = ' . date($week))->where('user_id', $user->id)->get();
+        if ($user->role_id <= 4) {
+            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->whereRaw('WEEK(created_at) = ' . date($week))->get();
+        } else {
+            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->whereRaw('WEEK(created_at) = ' . date($week))->where('user_id', $user->id)->get();
+        }
 
         $salesRevenue = $sales->groupBy(function ($item) {
             return $item->created_at->format('d');

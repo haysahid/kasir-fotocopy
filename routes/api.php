@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\SalesController;
 use App\Http\Controllers\API\StoreConfigController;
@@ -61,5 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('user', UserController::class);
         Route::put('user/{id}/disable', [UserController::class, 'disable']);
         Route::put('user/{id}/enable', [UserController::class, 'enable']);
+
+        Route::get('admin/summary', [AdminController::class, 'summary']);
     });
 });
