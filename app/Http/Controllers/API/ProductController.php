@@ -173,7 +173,7 @@ class ProductController extends Controller
                 'unit' => strtolower($request->input('unit')),
                 'category' => $request->input('category'),
                 'expired_at' => $request->input('expired_at') ? date('Y-m-d H:i:s', strtotime($request->input('expired_at'))) : null,
-                'from_community' => $request->input('from_community'),
+                'from_community' => $request->input('from_community', 0),
                 'store_id' => $store->id,
             ]);
 

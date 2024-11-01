@@ -138,6 +138,20 @@ class Store extends Model
         return $this->checkStock();
     }
 
+    public function lowStockProduct()
+    {
+        $products = Product::where('store_id', $this->id)->where('disabled_at', null)->get();
+        $products = $products->where('stock', '<=', 10)->sortBy('stock');
+
+        $data = [];
+
+        foreach ($products as $product) {
+            $data[] = $product;
+        }
+
+        return $data;
+    }
+
     public function monthlySalesRevenueGraph($year)
     {
         $user = Auth::user();

@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('store/{id}/summary', [StoreController::class, 'summary']);
     Route::get('store/{id}/graph', [StoreController::class, 'graph']);
+    Route::get('store/{id}/low-stock-product', [StoreController::class, 'lowStockProduct']);
 
     Route::apiResource('role', RoleController::class);
 

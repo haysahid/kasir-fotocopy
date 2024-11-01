@@ -497,4 +497,29 @@ class StoreController extends Controller
             );
         }
     }
+
+    // Store Check Products
+    public function lowStockProduct(string $id)
+    {
+        $store = Store::find($id);
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
+        // Authorization check
+        $user = Auth::user();
+        $allowedRoles = [1, 2, 3];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && !$isOwner) {
+            return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
+        }
+
+        return ResponseFormatter::success(
+            $store->lowStockProduct(),
+            'Daftar produk berhasil ditemukan.',
+            200
+        );
+    }
 }
