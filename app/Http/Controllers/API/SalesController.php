@@ -41,7 +41,7 @@ class SalesController extends Controller
 
         $sales = Sale::query();
 
-        $sales->where('store_id', $store->id)->with(['sales_items'])->latest();
+        $sales->where('store_id', $store->id)->where('type', 'sales')->with(['sales_items'])->latest();
 
         return ResponseFormatter::success(
             $sales->paginate($limit),
@@ -303,5 +303,63 @@ class SalesController extends Controller
             'Penjualan berhasil dihapus.',
             200
         );
+    }
+
+    // Add expired product
+    public function addExpiredProduct(Request $request)
+    {
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
+
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
+        try {
+            $note = "Produk kadaluarsa";
+            $payment = 0;
+            $sales_items = $request->input('sales_items');
+
+            // Create order
+            $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
+            $code = $storeAcronym->value . '-E-' . date('YmdHis');
+
+            $sale = Sale::create([
+                'code' => $code,
+                'user_id' => $user->id,
+                'note' => $note,
+                'payment' => $payment,
+                'type' => 'expired',
+                'store_id' => $store->id,
+            ]);
+
+            // Create order items
+            foreach ($sales_items as $sales_item) {
+                $item = new SalesItem($sales_item);
+                SalesItem::create([
+                    'sales_id' => $sale->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'item_price' => 0,
+                    'store_id' => $store->id,
+                ]);
+            }
+
+            $sale = Sale::with(['sales_items'])->find($sale->id);
+
+            return ResponseFormatter::success($sale, 'Produk kadaluarsa berhasil ditambahkan.', 201);
+        } catch (Exception $error) {
+            return ResponseFormatter::error('Terjadi kesalahan. Produk kadaluarsa gagal ditambahkan.' . $error, 500);
+        }
     }
 }

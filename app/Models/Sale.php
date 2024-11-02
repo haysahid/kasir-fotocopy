@@ -22,6 +22,7 @@ class Sale extends Model
         'note',
         'payment',
         'address',
+        'type',
         'user_id',
         'store_id',
     ];

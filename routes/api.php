@@ -56,6 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('purchase', PurchaseController::class);
     Route::apiResource('sales', SalesController::class);
 
+    Route::post('add-expired-product', [SalesController::class, 'addExpiredProduct']);
+
     Route::get('store/{id}/summary', [StoreController::class, 'summary']);
     Route::get('store/{id}/graph', [StoreController::class, 'graph']);
     Route::get('store/{id}/low-stock-product', [StoreController::class, 'lowStockProduct']);
