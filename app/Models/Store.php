@@ -145,7 +145,7 @@ class Store extends Model
     public function lowStockProduct()
     {
         $products = Product::where('store_id', $this->id)->where('disabled_at', null)->get();
-        $products = $products->where('stock', '<=', 10)->sortBy('stock');
+        $products = $products->where('stock', '<=', 5)->sortBy('stock');
 
         $data = [];
 
