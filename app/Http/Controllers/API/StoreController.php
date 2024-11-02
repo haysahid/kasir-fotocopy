@@ -436,7 +436,7 @@ class StoreController extends Controller
         }
 
         // Prevent similar date
-        if ($startDate >= $endDate) {
+        if ($startDate > $endDate) {
             return ResponseFormatter::error('Tanggal tidak valid.', 400);
         }
 

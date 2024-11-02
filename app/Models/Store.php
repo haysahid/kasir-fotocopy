@@ -75,7 +75,11 @@ class Store extends Model
         } else {
             $purchases = $this->purchases()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
             $sales = $this->sales()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
-            $salesItems = $this->sales_items()->whereBetween('created_at', [$startDate, $endDate])->where('user_id', $user->id);
+            $salesItems = SalesItem::join('sales', 'sales.id', '=', 'sales_items.sales_id')
+                ->where('sales_items.store_id', $this->id)
+                ->whereBetween('sales_items.created_at', [$startDate, $endDate])
+                ->where('sales.user_id', $user->id)
+                ->select('sales_items.*');
         }
 
         $totalPurchases = 0;
@@ -122,7 +126,7 @@ class Store extends Model
 
             if ($product->stock == 0) {
                 $outOfStock++;
-            } elseif ($product->stock <= 10) {
+            } elseif ($product->stock <= 5) {
                 $stockRunningLow++;
             }
         }
