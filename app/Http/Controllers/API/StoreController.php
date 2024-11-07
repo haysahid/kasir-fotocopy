@@ -35,12 +35,28 @@ class StoreController extends Controller
         $search = $request->input('search');
         $limit = $request->input('limit', 10);
 
+        $showUnactivated = $request->input('show_unactivated', 1);
+        $showActivated = $request->input('show_activated', 1);
+        $showDisabled = $request->input('show_disabled', 1);
+
         $stores = Store::query();
 
         if ($search) {
             $stores
                 ->where('stores.name', 'like', '%' . $search . '%')
                 ->orWhere('stores.description', 'like', '%' . $search . '%');
+        }
+
+        if (!$showUnactivated) {
+            $stores->whereNotNull('activated_at');
+        }
+
+        if (!$showActivated) {
+            $stores->whereNull('activated_at');
+        }
+
+        if (!$showDisabled) {
+            $stores->whereNull('disabled_at');
         }
 
         $stores->with(['users', 'owners'])->select('stores.*')->latest();
