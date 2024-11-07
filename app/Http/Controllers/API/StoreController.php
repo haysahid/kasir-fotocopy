@@ -48,11 +48,11 @@ class StoreController extends Controller
         }
 
         if (!$showUnactivated) {
-            $stores->whereNotNull('activated_at');
+            $stores->whereNull('activated_at');
         }
 
         if (!$showActivated) {
-            $stores->whereNull('activated_at');
+            $stores->whereNotNull('activated_at');
         }
 
         if (!$showDisabled) {
