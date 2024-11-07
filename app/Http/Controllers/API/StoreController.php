@@ -34,10 +34,7 @@ class StoreController extends Controller
 
         $search = $request->input('search');
         $limit = $request->input('limit', 10);
-
-        $showUnactivated = $request->input('show_unactivated', 1);
-        $showActivated = $request->input('show_activated', 1);
-        $showDisabled = $request->input('show_disabled', 1);
+        $showOnly = $request->input('show_only');
 
         $stores = Store::query();
 
@@ -48,19 +45,15 @@ class StoreController extends Controller
             });
         }
 
-        $stores->where(function ($query) use ($showUnactivated, $showActivated, $showDisabled) {
-            if ($showUnactivated == $showActivated) {
-                return;
-            } elseif ($showUnactivated && !$showActivated) {
-                $query->whereNull('activated_at');
-            } elseif (!$showUnactivated && $showActivated) {
-                $query->whereNotNull('activated_at');
+        if ($showOnly) {
+            if ($showOnly == 'unactivated') {
+                $stores->whereNull('activated_at');
+            } elseif ($showOnly == 'activated') {
+                $stores->whereNotNull('activated_at');
+            } elseif ($showOnly == 'disabled') {
+                $stores->whereNotNull('disabled_at');
             }
-
-            if (!$showDisabled) {
-                $query->whereNull('disabled_at');
-            }
-        });
+        }
 
         $stores->with(['users', 'owners'])->select('stores.*')->latest();
 
