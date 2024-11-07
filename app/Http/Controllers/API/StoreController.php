@@ -42,22 +42,25 @@ class StoreController extends Controller
         $stores = Store::query();
 
         if ($search) {
-            $stores
-                ->where('stores.name', 'like', '%' . $search . '%')
-                ->orWhere('stores.description', 'like', '%' . $search . '%');
+            $stores->where(function ($query) use ($search) {
+                $query->where('stores.name', 'like', '%' . $search . '%')
+                    ->orWhere('stores.description', 'like', '%' . $search . '%');
+            });
         }
 
-        if (!$showUnactivated) {
-            $stores->whereNull('activated_at');
-        }
-
-        if (!$showActivated) {
-            $stores->whereNotNull('activated_at');
+        $stores->where(function ($query) use ($showUnactivated, $showActivated, $showDisabled) {
+            if ($showUnactivated == $showActivated) {
+                return;
+            } elseif ($showUnactivated && !$showActivated) {
+                $query->whereNull('activated_at');
+            } elseif (!$showUnactivated && $showActivated) {
+                $query->whereNotNull('activated_at');
+            }
 
             if (!$showDisabled) {
-                $stores->whereNull('disabled_at');
+                $query->whereNull('disabled_at');
             }
-        }
+        });
 
         $stores->with(['users', 'owners'])->select('stores.*')->latest();
 
