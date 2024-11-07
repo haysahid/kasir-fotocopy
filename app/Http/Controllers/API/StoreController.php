@@ -51,7 +51,7 @@ class StoreController extends Controller
             } elseif ($showOnly == 'activated') {
                 $stores->whereNotNull('activated_at');
             } elseif ($showOnly == 'disabled') {
-                $stores->whereNotNull('disabled_at');
+                $stores->whereNotNull('activated_at')->whereNotNull('disabled_at');
             }
         }
 
