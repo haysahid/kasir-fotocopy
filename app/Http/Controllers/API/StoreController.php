@@ -53,10 +53,10 @@ class StoreController extends Controller
 
         if (!$showActivated) {
             $stores->whereNotNull('activated_at');
-        }
 
-        if (!$showDisabled) {
-            $stores->whereNull('disabled_at');
+            if (!$showDisabled) {
+                $stores->whereNull('disabled_at');
+            }
         }
 
         $stores->with(['users', 'owners'])->select('stores.*')->latest();
