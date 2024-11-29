@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model
+class ProductDetail extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'products';
     protected $appends = ['purchased', 'sold', 'stock'];
 
     /**
@@ -26,16 +27,12 @@ class Product extends Model
         'initial_stock',
         'unit',
         'category',
-        'from_community',
         'store_id',
         'disabled_at',
     ];
 
     // Hide attributes
-    protected $hidden = [
-        'purchase_items',
-        'sales_items',
-    ];
+    protected $hidden = [];
 
     public function store()
     {
@@ -44,17 +41,17 @@ class Product extends Model
 
     public function product_images()
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class, 'product_id', 'id');
     }
 
     public function purchase_items()
     {
-        return $this->hasMany(PurchaseItem::class);
+        return $this->hasMany(PurchaseItem::class, 'product_id', 'id');
     }
 
     public function sales_items()
     {
-        return $this->hasMany(SalesItem::class);
+        return $this->hasMany(SalesItem::class, 'product_id', 'id');
     }
 
     public function getPurchasedAttribute()
@@ -68,11 +65,6 @@ class Product extends Model
     }
 
     public function getStockAttribute()
-    {
-        return $this->initial_stock + $this->purchased - $this->sold;
-    }
-
-    public function stock()
     {
         return $this->initial_stock + $this->purchased - $this->sold;
     }

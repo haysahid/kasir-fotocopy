@@ -28,9 +28,9 @@ class UserSeeder extends Seeder
                 'role_id' => 2,
             ],
             [
-                'name' => 'Paguyuban',
-                'email' => 'paguyuban@gmail.com',
-                'password' => Hash::make('paguyuban2024'),
+                'name' => 'Komunitas',
+                'email' => 'komunitas@gmail.com',
+                'password' => Hash::make('komunitas2024'),
                 'role_id' => 3,
             ],
         ];

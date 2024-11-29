@@ -10,29 +10,42 @@ class Sale extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $appends = array('total', 'return', 'profit');
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'sales_code',
+        'code',
         'note',
         'payment',
         'address',
+        'type',
         'user_id',
         'store_id',
     ];
 
     public function sales_items()
     {
-        return $this->hasMany(SalesItem::class)->with('product');
+        return $this->hasMany(SalesItem::class, 'sales_id')->with('product');
     }
 
-    public function total()
+    public function getTotalAttribute()
     {
         return $this->sales_items->sum(function ($item) {
             return $item->quantity * $item->item_price;
         });
+    }
+
+    public function getReturnAttribute()
+    {
+        return $this->payment - $this->total;
+    }
+
+    public function getProfitAttribute()
+    {
+        return $this->sales_items->sum('profit');
     }
 }

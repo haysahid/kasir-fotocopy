@@ -4,7 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use App\Models\Store;
 use App\Models\StoreConfig;
+use App\Models\User;
+use App\Models\UserStore;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,19 +20,28 @@ class StoreConfigController extends Controller
      */
     public function index()
     {
-        $data = StoreConfig::query()->get();
+        // Authorization check
+        $user = Auth::user();
+        $user = User::find($user->id);
+        $store = $user->store[0];
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
 
-        $settings = [];
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && $user->role_id != 4)) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
 
-        foreach ($data as $setting) {
-            $settings[$setting['key']] = $setting['value'];
+        $data = StoreConfig::where('store_id', $store->id)->get();
+
+        $configs = null;
+
+        foreach ($data as $config) {
+            $configs[$config['key']] = $config['value'];
         }
 
         return ResponseFormatter::success(
-            [
-                'settings' => $settings,
-            ],
-            'Pengaturan ditemukan.',
+            $configs,
+            'Konfigurasi ditemukan.',
             200,
         );
     }
@@ -39,9 +51,15 @@ class StoreConfigController extends Controller
      */
     public function store(Request $request)
     {
-        // Checking user role
-        if (Auth::user()->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan admin.', 401);
+        // Authorization check
+        $user = Auth::user();
+        $user = User::find($user->id);
+        $store = User::with('store')->find($user->id)->store->first();
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && $user->role_id != 4)) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
         }
 
         $request->validate([
@@ -53,6 +71,13 @@ class StoreConfigController extends Controller
         $value = $request->input('value');
 
         try {
+            // Check if key is already exists
+            $config = StoreConfig::where('key', $key)->where('store_id', $store->id)->first();
+
+            if ($config) {
+                return ResponseFormatter::error('Konfigurasi sudah ada.', 409);
+            }
+
             $image_path = '';
 
             if ($request->hasFile('value')) {
@@ -60,29 +85,28 @@ class StoreConfigController extends Controller
                 $value = $image_path;
             }
 
-            $setting = StoreConfig::create([
+            $config = StoreConfig::create([
                 'key' => $key,
                 'value' => $value,
+                'store_id' => $store->id,
             ]);
 
-            // Get all settings
-            $data = StoreConfig::query()->get();
+            // Get all configs
+            $data = StoreConfig::query()->where('store_id', $store->id)->get();
 
-            $settings = [];
+            $configs = [];
 
-            foreach ($data as $setting) {
-                $settings[$setting['key']] = $setting['value'];
+            foreach ($data as $config) {
+                $configs[$config['key']] = $config['value'];
             }
 
             return ResponseFormatter::success(
-                [
-                    'settings' => $settings,
-                ],
-                'Pengaturan berhasil ditambahkan.',
+                $configs,
+                'Konfigurasi berhasil ditambahkan.',
                 201
             );
         } catch (Exception $error) {
-            return ResponseFormatter::error('Terjadi kesalahan. Pengaturan gagal ditambahkan.', 500);
+            return ResponseFormatter::error("Terjadi kesalahan. Konfigurasi gagal ditambahkan. $error", 500);
         }
     }
 
@@ -110,63 +134,53 @@ class StoreConfigController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Checking user role
-        if (Auth::user()->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan admin.', 401);
+        // Authorization check
+        $user = Auth::user();
+        $user = User::find($user->id);
+        $store = User::with('store')->find($user->id)->store->first();
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && $user->role_id != 4)) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
         }
 
         $request->validate([
-            'key' => 'required',
+            'key' => 'required|string|unique:settings,key',
             'value' => 'required',
         ]);
 
         $key = $request->input('key');
         $value = $request->input('value');
 
-        $setting = StoreConfig::where('key', $key)->first();
-
-        if (!$setting) {
-            return ResponseFormatter::error('Pengaturan tidak ditemukan.', 404);
-        }
-
         try {
-            if ($request->hasFile('value') && $key == 'app_logo') {
-                $image_path = '';
+            $image_path = '';
 
-                // Delete old image
-                if ($setting->value) {
-                    Storage::delete($setting->value);
-                }
-
-                // Store image
-                $file_name = $request->file('value')->getClientOriginalName();
-                $image_path = $request->file('value')->storeAs('public', $file_name);
+            if ($request->hasFile('value')) {
+                $image_path = $request->file('value')->store('public');
                 $value = $image_path;
             }
 
-            // Update setting
-            StoreConfig::where('key', $key)->update([
+            $config = StoreConfig::where('key', $key)->where('store_id', $store->id)->update([
                 'value' => $value,
             ]);
 
-            // Get all settings
-            $data = StoreConfig::query()->get();
+            // Get all configs
+            $data = StoreConfig::query()->where('store_id', $store->id)->get();
 
-            $settings = [];
+            $configs = [];
 
-            foreach ($data as $setting) {
-                $settings[$setting['key']] = $setting['value'];
+            foreach ($data as $config) {
+                $configs[$config['key']] = $config['value'];
             }
 
             return ResponseFormatter::success(
-                [
-                    'settings' => $settings,
-                ],
-                'Pengaturan berhasil diubah.',
-                200,
+                $configs,
+                'Konfigurasi berhasil diubah.',
+                201
             );
         } catch (Exception $error) {
-            return ResponseFormatter::error('Terjadi kesalahan. Pengaturan gagal diubah.', 500);
+            return ResponseFormatter::error("Terjadi kesalahan. Konfigurasi gagal diubah. $error", 500);
         }
     }
 
@@ -175,24 +189,28 @@ class StoreConfigController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        // Checking user role
-        if (Auth::user()->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan admin.', 401);
+        // Authorization check
+        $user = Auth::user();
+        $user = User::find($user->id);
+        $store = User::with('store')->find($user->id)->store->first();
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && $user->role_id != 4)) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
         }
 
-        $setting = StoreConfig::where('key', $request->input('key'))->first();
+        $config = StoreConfig::where('store_id', $store->id)->where('key', $request->input('key'));
 
-        if (!$setting) {
-            return ResponseFormatter::error('Pengaturan tidak ditemukan.', 404);
+        if (!$config) {
+            return ResponseFormatter::error('Konfigurasi tidak ditemukan.', 404);
         }
 
-        $setting->delete();
+        $config->forceDelete();
 
         return ResponseFormatter::success(
-            [
-                'key' => $setting->key,
-            ],
-            'Pengaturan berhasil dihapus.',
+            null,
+            'Konfigurasi berhasil dihapus.',
             200
         );
     }

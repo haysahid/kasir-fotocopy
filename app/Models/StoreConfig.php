@@ -17,6 +17,7 @@ class StoreConfig extends Model
     protected $fillable = [
         'key',
         'value',
+        'store_id',
     ];
 
     /**
