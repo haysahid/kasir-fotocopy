@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->string('banner')->nullable();
             $table->boolean('is_community')->default(false);
-            $table->foreignId('community_id')->constrained('communities')->onUpdate('cascade')->onDelete('no action');
+            $table->foreignId('community_id')->nullable();
 
             $table->timestamp('activated_at')->nullable();
             $table->timestamp('disabled_at')->nullable();
