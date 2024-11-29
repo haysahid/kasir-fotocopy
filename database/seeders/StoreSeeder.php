@@ -16,7 +16,7 @@ class StoreSeeder extends Seeder
     {
         Store::updateOrCreate([
             'name' => 'Ritel Bantul Sejahtera',
-            'description' => 'Paguyuban ritel area Bantul, DI Yogyakarta',
+            'description' => 'Komunitas ritel area Bantul, DI Yogyakarta',
             'address' => 'Bantul, DI Yogyakarta',
             'is_community' => true,
             'community_id' => 1,

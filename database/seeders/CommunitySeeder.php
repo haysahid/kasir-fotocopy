@@ -16,7 +16,7 @@ class CommunitySeeder extends Seeder
         Community::updateOrCreate([
             'name' => 'Ritel Bantul Sejahtera',
             'address' => 'Bantul, DI Yogyakarta',
-            // 'description' => 'Paguyuban adalah sebuah komunitas yang beranggotakan para pemilik toko yang tergabung dalam satu wadah.',
+            // 'description' => 'Komunitas adalah sebuah komunitas yang beranggotakan para pemilik toko yang tergabung dalam satu wadah.',
         ]);
     }
 }
