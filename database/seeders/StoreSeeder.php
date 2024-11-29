@@ -15,8 +15,8 @@ class StoreSeeder extends Seeder
     public function run(): void
     {
         Store::updateOrCreate([
-            'name' => 'Ritel Bantul Sejahtera',
-            'description' => 'Komunitas ritel area Bantul, DI Yogyakarta',
+            'name' => 'Komunitas',
+            'description' => 'Komunitas area Bantul, DI Yogyakarta',
             'address' => 'Bantul, DI Yogyakarta',
             'is_community' => true,
             'community_id' => 1,

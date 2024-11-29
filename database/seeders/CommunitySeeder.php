@@ -14,7 +14,7 @@ class CommunitySeeder extends Seeder
     public function run(): void
     {
         Community::updateOrCreate([
-            'name' => 'Ritel Bantul Sejahtera',
+            'name' => 'Komunitas',
             'address' => 'Bantul, DI Yogyakarta',
             // 'description' => 'Komunitas adalah sebuah komunitas yang beranggotakan para pemilik toko yang tergabung dalam satu wadah.',
         ]);
