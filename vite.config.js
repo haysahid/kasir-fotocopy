@@ -28,11 +28,11 @@ export default defineConfig(({ mode }) => {
                 },
             }),
         ],
-        resolve: {
-            alias: {
-                '@': require('path').resolve('resources/js'),
-            },
-        },
+        // resolve: {
+        //     alias: {
+        //         '@': require('path').resolve('resources/js'),
+        //     },
+        // },
         server: {
             proxy: {
                 '/': env.APP_URL,
