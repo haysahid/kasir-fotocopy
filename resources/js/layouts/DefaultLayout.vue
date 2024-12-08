@@ -7,7 +7,7 @@ import SidebarArea from "@/components/Sidebar/SidebarArea.vue";
     <div class="flex h-screen overflow-hidden">
         <SidebarArea />
         <div
-            class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto"
+            class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-800"
         >
             <HeaderArea />
             <main>
