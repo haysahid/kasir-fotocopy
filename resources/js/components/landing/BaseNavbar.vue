@@ -107,45 +107,26 @@ onMounted(() => {
                 class="space-x-3"
             />
 
-            <!-- <div
-                v-else
+            <div
+                v-else-if="route().current() == 'home'"
                 :class="[open ? 'flex' : 'hidden lg:flex']"
                 class="space-x-3"
             >
-                <Link
-                    v-if="route().current() !== 'login'"
-                    :href="route('login')"
-                >
+                <Link :href="route('login')">
                     <BaseButton
-                        v-if="route().current() !== 'login'"
-                        @click="route('login')"
-                        class="px-8 xl:px-10 py-3 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
-                    >
-                        Masuk
-                    </BaseButton></Link
-                >
-                <Link
-                    v-else
-                    v-if="route().current() !== 'login'"
-                    :href="route('login')"
-                >
-                    <BaseButton
-                        class="px-8 xl:px-10 py-3 mt-2 bg-inherit !font-medium text-gradient border border-[#0c66ee]"
+                        class="px-6 xl:px-8 py-2 mt-2 bg-inherit !font-medium text-gradient border border-[#0c66ee]"
                     >
                         Masuk
                     </BaseButton>
                 </Link>
-                <Link
-                    v-if="route().current() !== 'signup'"
-                    :href="route('register')"
-                >
+                <Link :href="route('register')">
                     <BaseButton
-                        class="px-8 xl:px-10 py-3 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
+                        class="px-6 xl:px-8 py-2 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
                     >
                         Daftar
                     </BaseButton>
                 </Link>
-            </div> -->
+            </div>
         </div>
     </nav>
 </template>

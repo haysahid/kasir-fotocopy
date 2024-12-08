@@ -62,16 +62,16 @@ function scrollToTop() {
                             >
                                 <Link :href="route('login')">
                                     <BaseButton
-                                        class="max-w-full font-medium px-8 py-4 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
+                                        class="max-w-full font-medium px-12 py-4 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
                                     >
                                         Mulai
                                     </BaseButton>
                                 </Link>
-                                <BaseButton
+                                <!-- <BaseButton
                                     class="max-w-full px-6 py-4 bg-inherit text-gradient border border-[#0c66ee] flex items-center justify-center"
                                 >
                                     Download App
-                                </BaseButton>
+                                </BaseButton> -->
                             </div>
                         </div>
                         <div class="hidden w-1/2 col-span-6 md:block">
