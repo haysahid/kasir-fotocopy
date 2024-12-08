@@ -34,15 +34,14 @@ async function login() {
     loginStatus.value = "loading";
 
     try {
-        const response = await axios.post("/api/auth/login", form.value, {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        });
+        const response = await axios.post("/api/auth/login", form.value);
         localStorage.setItem("access_token", response.data.result.access_token);
 
         window.location = route("home");
     } catch (error) {
         console.log(error);
-        errorMessage.value = error.response?.data?.message ?? "";
+        errorMessage.value =
+            error.response?.data?.meta?.message ?? "Terjadi kesalahan";
         loginStatus.value = "error";
     }
 }

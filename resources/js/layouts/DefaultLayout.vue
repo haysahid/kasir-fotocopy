@@ -4,17 +4,17 @@ import SidebarArea from "@/components/Sidebar/SidebarArea.vue";
 </script>
 
 <template>
-  <div class="flex h-screen overflow-hidden">
-    <SidebarArea />
-    <div
-      class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto"
-    >
-      <HeaderArea />
-      <main>
-        <div class="p-4 mx-auto max-w-screen-2xl md:p-6 2xl:p-10">
-          <slot></slot>
+    <div class="flex h-screen overflow-hidden">
+        <SidebarArea />
+        <div
+            class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto"
+        >
+            <HeaderArea />
+            <main>
+                <div class="p-4 mx-auto max-w-screen-2xl md:p-6 2xl:p-10">
+                    <slot></slot>
+                </div>
+            </main>
         </div>
-      </main>
     </div>
-  </div>
 </template>

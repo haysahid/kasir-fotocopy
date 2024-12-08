@@ -13,7 +13,9 @@ export const useUserStore = defineStore('user', () => {
                     Authorization: `Bearer ${localStorage.getItem("access_token")}`
                 }
             })
-            user.value = data.data
+            user.value = data.result.user
+
+            console.log(user.value)
 
             return true
         } catch (error) {

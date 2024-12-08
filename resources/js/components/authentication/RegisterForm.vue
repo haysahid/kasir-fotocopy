@@ -1,10 +1,10 @@
 <script setup>
 import { ref, inject, computed, watch, onMounted } from "vue";
 import InputGroup from "@/components/Forms/InputGroup.vue";
-import AlertWarning from "../Alerts/AlertWarning.vue";
-import DefaultAuthCard from "./DefaultAuthCard.vue";
-import CustomButton from "../Forms/CustomButton.vue";
-import SelectGroup from "../Forms/SelectGroup.vue";
+import AlertWarning from "@/components/Alerts/AlertWarning.vue";
+import DefaultAuthCard from "@/components/authentication/DefaultAuthCard.vue";
+import CustomButton from "@/components/Forms/CustomButton.vue";
+import SelectGroup from "@/components/Forms/SelectGroup.vue";
 
 import { Link } from "@inertiajs/inertia-vue3";
 
@@ -265,7 +265,10 @@ watch(
             <div class="mt-6 text-center">
                 <p class="text-sm">
                     Sudah punya akun?
-                    <Link :href="route('login')" class="text-primary hover:font-bold">
+                    <Link
+                        :href="route('login')"
+                        class="text-primary hover:font-bold"
+                    >
                         Masuk
                     </Link>
                 </p>
