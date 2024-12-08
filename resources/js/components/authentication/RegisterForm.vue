@@ -71,6 +71,9 @@ function validate() {
     if (form.value.password.length < 1) {
         formValidation.value.password = "Password tidak boleh kosong";
         result = false;
+    } else if (form.value.password.length < 8) {
+        formValidation.value.password = "Password minimal 8 karakter";
+        result = false;
     }
 
     if (form.value.passwordConfirmation.length < 1) {
@@ -125,7 +128,15 @@ watch(
 watch(
     () => form.value.password,
     (newValue, oldValue) => {
-        if (newValue && newValue.length > 0 && formValidation.value.password) {
+        if (form.value.password.length > 0 && form.value.password.length < 8) {
+            formValidation.value.password = "Password minimal 8 karakter";
+        } else if (
+            newValue &&
+            newValue.length > 0 &&
+            formValidation.value.password
+        ) {
+            formValidation.value.password = "";
+        } else {
             formValidation.value.password = "";
         }
 
@@ -139,10 +150,6 @@ watch(
                 "Konfirmasi password tidak sama";
         } else {
             formValidation.value.passwordConfirmation = "";
-        }
-
-        if (!newValue) {
-            form.value.passwordConfirmation = "";
         }
     }
 );
