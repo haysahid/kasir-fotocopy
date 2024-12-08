@@ -17,6 +17,6 @@ use Inertia\Inertia;
 //     })->name('dashboard');
 // });
 
-Route::get('/', function () {
-    return Inertia::render('Home');
-});
+Route::get('/', fn() => Inertia::render('HomeView'))->name('home');
+Route::get('/login', fn()  => Inertia::render('LoginView'))->name('login');
+Route::get('/register', fn()  => Inertia::render('RegisterView'))->name('register');

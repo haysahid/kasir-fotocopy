@@ -4,6 +4,7 @@ import BaseButton from "@/components/landing/BaseButton.vue";
 import NavLink from "./NavLink.vue";
 import DropdownUser from "@/components/Header/DropdownUser.vue";
 import { onMounted, ref } from "vue";
+import { useConfigStore } from "@/stores/config";
 
 import { Link } from "@inertiajs/inertia-vue3";
 
@@ -14,8 +15,8 @@ const props = defineProps({
     },
 });
 
+const configStore = useConfigStore();
 const userStore = useUserStore();
-const appTitle = ref(import.meta.env.VITE_APP_TITLE);
 
 onMounted(() => {
     userStore.fetchUser();
@@ -33,16 +34,28 @@ onMounted(() => {
                 <div
                     class="flex flex-row items-center justify-between w-full py-6"
                 >
-                    <Link to="/">
-                        <div class="flex flex-row items-center gap-4">
-                            <img
-                                src="@/assets/images/logo/logo.png"
-                                alt="Logo"
-                            />
-                            <span
-                                class="text-3xl font-semibold tracking-wide text-black dark:text-white"
-                                >{{ appTitle }}</span
+                    <Link :href="route('home')">
+                        <div class="flex flex-row items-center gap-2.5">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                                class="text-primary size-8"
                             >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z"
+                                />
+                            </svg>
+
+                            <span
+                                class="text-xl font-bold tracking-wide text-black dark:text-white"
+                            >
+                                {{ configStore.title }}
+                            </span>
                         </div>
                     </Link>
 
@@ -94,34 +107,45 @@ onMounted(() => {
                 class="space-x-3"
             />
 
-            <div
+            <!-- <div
                 v-else
                 :class="[open ? 'flex' : 'hidden lg:flex']"
                 class="space-x-3"
             >
-                <BaseButton
-                    v-if="$route.name !== 'login'"
-                    @click="$router('login')"
-                    class="px-8 xl:px-10 py-3 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
+                <Link
+                    v-if="route().current() !== 'login'"
+                    :href="route('login')"
                 >
-                    Masuk
-                </BaseButton>
-                <BaseButton
+                    <BaseButton
+                        v-if="route().current() !== 'login'"
+                        @click="route('login')"
+                        class="px-8 xl:px-10 py-3 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
+                    >
+                        Masuk
+                    </BaseButton></Link
+                >
+                <Link
                     v-else
-                    v-if="$route.name !== 'login'"
-                    @click="$router('login')"
-                    class="px-8 xl:px-10 py-3 mt-2 bg-inherit !font-medium text-gradient border border-[#0c66ee]"
+                    v-if="route().current() !== 'login'"
+                    :href="route('login')"
                 >
-                    Masuk
-                </BaseButton>
-                <BaseButton
-                    v-if="$route.name !== 'signup'"
-                    @click="$router('signup')"
-                    class="px-8 xl:px-10 py-3 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
+                    <BaseButton
+                        class="px-8 xl:px-10 py-3 mt-2 bg-inherit !font-medium text-gradient border border-[#0c66ee]"
+                    >
+                        Masuk
+                    </BaseButton>
+                </Link>
+                <Link
+                    v-if="route().current() !== 'signup'"
+                    :href="route('register')"
                 >
-                    Daftar
-                </BaseButton>
-            </div>
+                    <BaseButton
+                        class="px-8 xl:px-10 py-3 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
+                    >
+                        Daftar
+                    </BaseButton>
+                </Link>
+            </div> -->
         </div>
     </nav>
 </template>

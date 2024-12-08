@@ -8,7 +8,7 @@ export const useUserStore = defineStore('user', () => {
 
     async function fetchUser() {
         try {
-            const { data } = await axios.get("/V1/api/v1/profile", {
+            const { data } = await axios.get("/api/profile", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("access_token")}`
                 }

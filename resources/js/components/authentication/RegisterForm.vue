@@ -1,0 +1,275 @@
+<script setup>
+import { ref, inject, computed, watch, onMounted } from "vue";
+import InputGroup from "@/components/Forms/InputGroup.vue";
+import AlertWarning from "../Alerts/AlertWarning.vue";
+import DefaultAuthCard from "./DefaultAuthCard.vue";
+import CustomButton from "../Forms/CustomButton.vue";
+import SelectGroup from "../Forms/SelectGroup.vue";
+
+import { Link } from "@inertiajs/inertia-vue3";
+
+const axios = inject("axios");
+
+const form = ref({
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+    phone: "",
+    address: "",
+});
+
+const formValidation = ref({
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+    phone: "",
+    address: "",
+});
+
+const errorMessage = ref("");
+const registerStatus = ref("");
+
+function clearErrorMessage() {
+    errorMessage.value = "";
+}
+
+async function register() {
+    if (!validate()) return;
+
+    registerStatus.value = "loading";
+
+    try {
+        const response = await axios.post("/api/auth/register", form.value);
+
+        router.replace("/register/success");
+    } catch (error) {
+        errorMessage.value = error.response.data.message;
+        registerStatus.value = "error";
+    }
+}
+
+function validate() {
+    let result = true;
+
+    if (form.value.name.length < 1) {
+        formValidation.value.name = "Nama lengkap tidak boleh kosong";
+        result = false;
+    }
+
+    if (form.value.email.length < 1) {
+        formValidation.value.email = "Email tidak boleh kosong";
+        result = false;
+    } else if (
+        !form.value.email.match(/\S+@\S+\.\S+/) ||
+        form.value.email.includes(" ")
+    ) {
+        formValidation.value.email = "Email tidak valid";
+    }
+
+    if (form.value.password.length < 1) {
+        formValidation.value.password = "Password tidak boleh kosong";
+        result = false;
+    }
+
+    if (form.value.passwordConfirmation.length < 1) {
+        formValidation.value.passwordConfirmation =
+            "Konfirmasi password tidak boleh kosong";
+        result = false;
+    }
+
+    if (form.value.phone.length < 1) {
+        formValidation.value.phone = "Nomor HP tidak boleh kosong";
+        result = false;
+    } else if (!form.value.phone.match(/^\d+$/)) {
+        formValidation.value.phone = "Nomor HP tidak valid";
+        result = false;
+    }
+
+    return result;
+}
+
+const disablePasswordConfirmation = computed(
+    () => form.value.password.length < 1
+);
+
+watch(
+    () => form.value.name,
+    (newValue, oldValue) => {
+        if (newValue && newValue.length > 0 && formValidation.value.name) {
+            formValidation.value.name = "";
+        }
+    }
+);
+
+watch(
+    () => form.value.email,
+    (newValue, oldValue) => {
+        if (newValue && newValue.length > 0 && formValidation.value.email) {
+            formValidation.value.email = "";
+        }
+
+        if (
+            newValue &&
+            newValue.length > 0 &&
+            (!newValue.match(/\S+@\S+\.\S+/) || newValue.includes(" "))
+        ) {
+            formValidation.value.email = "Email tidak valid";
+        } else {
+            formValidation.value.email = "";
+        }
+    }
+);
+
+watch(
+    () => form.value.password,
+    (newValue, oldValue) => {
+        if (newValue && newValue.length > 0 && formValidation.value.password) {
+            formValidation.value.password = "";
+        }
+
+        if (
+            newValue &&
+            newValue.length > 0 &&
+            form.value.passwordConfirmation.length > 0 &&
+            newValue !== form.value.passwordConfirmation
+        ) {
+            formValidation.value.passwordConfirmation =
+                "Konfirmasi password tidak sama";
+        } else {
+            formValidation.value.passwordConfirmation = "";
+        }
+
+        if (!newValue) {
+            form.value.passwordConfirmation = "";
+        }
+    }
+);
+
+watch(
+    () => form.value.passwordConfirmation,
+    (newValue, oldValue) => {
+        if (
+            newValue &&
+            newValue.length > 0 &&
+            form.value.password.length > 0 &&
+            newValue !== form.value.password
+        ) {
+            formValidation.value.passwordConfirmation =
+                "Konfirmasi password tidak sama";
+        } else {
+            formValidation.value.passwordConfirmation = "";
+        }
+    }
+);
+
+watch(
+    () => form.value.phone,
+    (newValue, oldValue) => {
+        if (newValue && newValue.length > 0 && formValidation.value.phone) {
+            formValidation.value.phone = "";
+        }
+
+        if (
+            newValue &&
+            newValue.length > 0 &&
+            (!newValue.match(/^\d+$/) || newValue.includes(" "))
+        ) {
+            formValidation.value.phone = "Nomor HP tidak valid";
+        } else {
+            formValidation.value.phone = "";
+        }
+    }
+);
+</script>
+
+<template>
+    <DefaultAuthCard title="Pendaftaran" :centerTitle="true">
+        <form action="#">
+            <AlertWarning
+                v-if="errorMessage"
+                @close="clearErrorMessage"
+                :description="errorMessage"
+                class="mb-6"
+            />
+
+            <InputGroup
+                v-model="form.name"
+                id="name"
+                label="Nama Lengkap"
+                type="text"
+                placeholder="Masukkan Nama Lengkap"
+                :warning="formValidation.name"
+            />
+
+            <InputGroup
+                @enter="register"
+                v-model="form.email"
+                id="email"
+                label="Alamat Email"
+                type="email"
+                placeholder="Masukan Alamat Email"
+                :warning="formValidation.email"
+            />
+
+            <InputGroup
+                v-model="form.password"
+                id="password"
+                label="Password"
+                type="password"
+                placeholder="Masukkan Password"
+                :warning="formValidation.password"
+            />
+
+            <InputGroup
+                v-model="form.passwordConfirmation"
+                id="passwordConfirmation"
+                label="Konfirmasi Password"
+                type="password"
+                placeholder="Masukkan Ulang Password"
+                :warning="formValidation.passwordConfirmation"
+                :disabled="disablePasswordConfirmation"
+            />
+
+            <InputGroup
+                @enter="register"
+                v-model="form.phone"
+                id="phone"
+                label="Nomor HP"
+                type="text"
+                placeholder="Nomor HP"
+                :warning="formValidation.phone"
+            />
+
+            <InputGroup
+                @enter="register"
+                v-model="form.address"
+                id="address"
+                label="Alamat"
+                type="text"
+                placeholder="Alamat"
+                :warning="formValidation.address"
+            />
+
+            <CustomButton
+                @click="register"
+                :loading="registerStatus === 'loading'"
+                :enable="true"
+                color="bg-primary"
+                class="mt-6"
+            >
+                Daftar
+            </CustomButton>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm">
+                    Sudah punya akun?
+                    <Link :href="route('login')" class="text-primary hover:font-bold">
+                        Masuk
+                    </Link>
+                </p>
+            </div>
+        </form>
+    </DefaultAuthCard>
+</template>

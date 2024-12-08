@@ -9,10 +9,14 @@ import Toast from './plugins/toast'
 import debounce from './plugins/debounce'
 import filesize from './plugins/filesize'
 
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+AOS.init();
+
 createInertiaApp({
     resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(createPinia())
             .use(axios, {
@@ -21,7 +25,10 @@ createInertiaApp({
             .use(formatDate)
             .use(Toast)
             .use(debounce)
-            .use(filesize)
-            .mount(el)
+            .use(filesize);
+
+        app.mixin({ methods: { route } })
+
+        app.mount(el)
     },
 });

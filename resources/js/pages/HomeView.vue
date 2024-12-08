@@ -3,8 +3,10 @@ import BaseSection from "@/components/landing/BaseSection.vue";
 import BaseButton from "@/components/landing/BaseButton.vue";
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import { ref } from "vue";
+import { useConfigStore } from "@/stores/config";
+import { Link } from "@inertiajs/inertia-vue3";
 
-const appTitle = ref(import.meta.env.VITE_APP_TITLE);
+const configStore = useConfigStore();
 
 function scrollToTop() {
     document
@@ -23,63 +25,62 @@ function scrollToTop() {
                         class="flex items-center justify-center w-full col-span-12 px-6 mt-12 space-y-4 gap-x-16"
                     >
                         <div
-                            class="w-full col-span-12 text-center xl:mt-10 sm:text-left sm:space-y-6 lg:col-span-6"
+                            class="w-1/2 col-span-12 text-center xl:mt-10 sm:text-left sm:space-y-6 lg:col-span-6"
                         >
-                            <br />
                             <h1
                                 data-aos="fade-right"
                                 data-aos-once="true"
                                 class="text-[2.5rem] sm:text-5xl xl:text-5xl font-bold leading-tight sm:pr-8 xl:pr-10"
                             >
-                                {{ appTitle }} <br />
-                                <span class="text-header-gradient"
-                                    >Elektronik</span
-                                >
+                                <span class="text-header-gradient">
+                                    {{ configStore.title }}
+                                </span>
                                 <br />
-                                Anggaran Pendapatan dan Belanja Daerah
+                                <span class="text-2xl text-slate-800"
+                                    >Sistem Pengelolaan Usaha Fotocopy</span
+                                >
                             </h1>
+
                             <p
                                 data-aos="fade-down"
                                 data-aos-once="true"
                                 data-aos-delay="300"
-                                class="hidden paragraph sm:block"
+                                class="hidden paragraph sm:block max-w-[30rem]"
                             >
-                                Sistem yang membantu Pemerintah Daerah khususnya
-                                Bidang Anggaran dalam menyimpan, melaporkan Data
-                                APBD...
+                                Aplikasi kasir fotocopy yang memudahkan
+                                pengelolaan usaha fotocopy Anda. Dengan fitur
+                                yang lengkap dan mudah digunakan.
                             </p>
 
-                            <br class="sm:hidden" />
+                            <br />
 
                             <div
                                 data-aos="fade-up"
                                 data-aos-once="true"
                                 data-aos-delay="700"
-                                class="flex flex-col mt-2 space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4"
+                                class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4"
                             >
+                                <Link :href="route('login')">
+                                    <BaseButton
+                                        class="max-w-full font-medium px-8 py-4 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
+                                    >
+                                        Mulai
+                                    </BaseButton>
+                                </Link>
                                 <BaseButton
-                                    @click="$route('login')"
-                                    class="max-w-full font-medium px-8 py-4 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
+                                    class="max-w-full px-6 py-4 bg-inherit text-gradient border border-[#0c66ee] flex items-center justify-center"
                                 >
-                                    Mulai
+                                    Download App
                                 </BaseButton>
-                                <!-- <BaseButton
-                    class="max-w-full px-6 py-4 bg-inherit text-gradient border border-[#0c66ee] flex items-center justify-center"
-                  >
-                    <span>Download App</span>
-                    <ChevronDownIcon :size="20" class="mt-1 text-[#0c66ee]" />
-                  </BaseButton> -->
                             </div>
                         </div>
-                        <div class="hidden col-span-6 md:block">
-                            Logo
-                            <!-- <img
+                        <div class="hidden w-1/2 col-span-6 md:block">
+                            <img
                                 data-aos="fade-up"
                                 data-aos-delay="400"
-                                src="@/assets/images/logo_papua_tengah.png"
-                                class="w-3/4"
+                                src="@/assets/images/illustration/illustration-02.svg"
                                 alt="Logo Pemda"
-                            /> -->
+                            />
                         </div>
                     </div>
 
