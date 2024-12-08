@@ -37,7 +37,7 @@ async function login() {
         const response = await axios.post("/api/auth/login", form.value);
         localStorage.setItem("access_token", response.data.result.access_token);
 
-        window.location = route("home");
+        window.location = route("dashboard");
     } catch (error) {
         console.log(error);
         errorMessage.value =
