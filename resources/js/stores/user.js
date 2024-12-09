@@ -2,9 +2,9 @@ import { defineStore } from "pinia"
 import { ref, computed, inject } from "vue"
 
 export const useUserStore = defineStore('user', () => {
-    const axios = inject('axios')
-
     const user = ref(false)
+
+    const axios = inject("axios");
 
     async function fetchUser() {
         try {

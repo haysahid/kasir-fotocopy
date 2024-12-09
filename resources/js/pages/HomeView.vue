@@ -25,7 +25,7 @@ function scrollToTop() {
                         class="flex items-center justify-center w-full col-span-12 px-6 mt-12 space-y-4 gap-x-16"
                     >
                         <div
-                            class="w-1/2 col-span-12 text-center xl:mt-10 sm:text-left sm:space-y-6 lg:col-span-6"
+                            class="w-full col-span-12 text-center xl:mt-10 sm:text-left sm:space-y-6 lg:col-span-6"
                         >
                             <h1
                                 data-aos="fade-right"
@@ -35,17 +35,19 @@ function scrollToTop() {
                                 <span class="text-header-gradient">
                                     {{ configStore.title }}
                                 </span>
-                                <br />
-                                <span class="text-2xl text-slate-800"
-                                    >Sistem Pengelolaan Usaha Fotocopy</span
-                                >
                             </h1>
+
+                            <p
+                                class="text-2xl text-slate-800 dark:text-gray-400 max-sm:mt-2"
+                            >
+                                Sistem Pengelolaan Usaha Fotocopy
+                            </p>
 
                             <p
                                 data-aos="fade-down"
                                 data-aos-once="true"
                                 data-aos-delay="300"
-                                class="hidden paragraph sm:block max-w-[30rem]"
+                                class="paragraph max-sm:mt-4 sm:max-w-[30rem] dark:text-gray-500"
                             >
                                 Aplikasi kasir fotocopy yang memudahkan
                                 pengelolaan usaha fotocopy Anda. Dengan fitur
@@ -79,7 +81,7 @@ function scrollToTop() {
                                 data-aos="fade-up"
                                 data-aos-delay="400"
                                 src="@/assets/images/illustration/illustration-02.svg"
-                                alt="Logo Pemda"
+                                alt="Illustration"
                             />
                         </div>
                     </div>

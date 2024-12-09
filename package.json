@@ -21,9 +21,13 @@
         "@vitejs/plugin-vue": "^5.2.1",
         "@vueuse/core": "^12.0.0",
         "aos": "^2.3.4",
+        "chalk": "^4.1.2",
+        "flatpickr": "^4.6.13",
         "pinia": "^2.3.0",
         "sweetalert2": "^11.14.5",
         "vue": "^3.5.13",
-        "vue-router": "^4.5.0"
+        "vue-awesome-paginate": "^1.2.0",
+        "vue-router": "^4.5.0",
+        "vuesax": "^4.0.1-alpha.25"
     }
 }

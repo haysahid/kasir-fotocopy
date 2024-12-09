@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useSidebarStore } from "@/stores/sidebar";
+import { useDarkModeStore } from "@/stores/darkMode";
 import SidebarDropdown from "./SidebarDropdown.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { Link } from "@inertiajs/inertia-vue3";
 
 const sidebarStore = useSidebarStore();
+const darkModeStore = useDarkModeStore();
 
 const props = defineProps(["item", "index"]);
 const currentPage = route().current();
@@ -26,8 +28,12 @@ const handleItemClick = () => {
     }
 };
 
+const isActive = computed(() => {
+    return window.location.pathname.includes(props.item.route);
+});
+
 onMounted(() => {
-    expanded.value = sidebarStore.page === props.item.route;
+    expanded.value = window.location.pathname === props.item.route;
 });
 </script>
 
@@ -35,14 +41,20 @@ onMounted(() => {
     <li>
         <Link
             :href="item.children ? '#' : item.route"
-            class="group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-gray-500 dark:text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+            class="group relative flex items-center gap-2.5 rounded-md py-2.5 px-4 text-gray-500 dark:text-bodydark1 duration-100 ease-in-out hover:bg-purple-50 dark:hover:bg-meta-4"
             @click.prevent="handleItemClick"
             :class="{
-                'bg-graydark dark:bg-meta-4':
-                    sidebarStore.page === props.item.route,
+                'bg-purple-100 dark:bg-meta-4 text-primary dark:!text-secondary':
+                    isActive,
             }"
         >
-            <span v-html="props.item.icon"></span>
+            <span
+                v-html="props.item.icon"
+                :class="{
+                    '[&>svg]:text-primary [&>svg]:fill-primary [&>svg]:dark:text-secondary [&>svg]:dark:fill-secondary':
+                        isActive,
+                }"
+            ></span>
 
             {{ props.item.label }}
 

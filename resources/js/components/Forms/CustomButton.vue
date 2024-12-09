@@ -21,6 +21,10 @@ const props = defineProps({
         type: String,
         default: "bg-primary",
     },
+    textColor: {
+        type: String,
+        default: "text-gray-100",
+    },
     isFull: {
         type: Boolean,
         default: true,
@@ -31,7 +35,7 @@ const props = defineProps({
     },
     margin: {
         type: String,
-        default: "mt-4",
+        default: "m-0",
     },
     customClass: {
         type: String,
@@ -51,9 +55,10 @@ function click() {
     <button
         @click="click"
         :type="props.type"
-        class="flex items-center justify-center font-medium text-gray-100 rounded-full hover:bg-opacity-90"
+        class="flex items-center justify-center font-medium rounded-full hover:bg-opacity-90"
         :class="[
             props.color,
+            props.textColor,
             props.padding,
             props.margin,
             props.customClass,

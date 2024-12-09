@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useSidebarStore } from "@/stores/sidebar";
 import { useUserStore } from "@/stores/user";
 import { useConfigStore } from "@/stores/config";
@@ -11,13 +11,17 @@ const { isSidebarOpen, toggleSidebar } = useSidebarStore();
 const userStore = useUserStore();
 const configStore = useConfigStore();
 
-const user = computed(() => userStore.user);
-
 const appTitle = ref(import.meta.env.APP_NAME);
+
+onMounted(() => {
+    userStore.fetchUser();
+});
 </script>
 
 <template>
-    <header class="sticky top-0 flex w-full bg-white z-999 dark:bg-boxdark">
+    <header
+        class="sticky top-0 flex w-full duration-300 ease-linear bg-white z-999 dark:bg-boxdark"
+    >
         <div
             class="flex items-center justify-between flex-grow px-4 py-4 lg:justify-end md:px-6 2xl:px-11"
         >
@@ -73,7 +77,7 @@ const appTitle = ref(import.meta.env.APP_NAME);
                             viewBox="0 0 24 24"
                             stroke-width="1.8"
                             stroke="currentColor"
-                            class="text-primary dark:text-white size-8"
+                            class="text-primary dark:!text-secondary size-8"
                         >
                             <path
                                 stroke-linecap="round"
@@ -91,14 +95,14 @@ const appTitle = ref(import.meta.env.APP_NAME);
                 </Link>
             </div>
 
-            <div class="flex items-center gap-3 2xsm:gap-7">
+            <div class="flex items-center gap-8 2xsm:gap-7">
                 <ul class="flex items-center gap-2 2xsm:gap-4">
                     <li>
                         <DarkModeSwitcher />
                     </li>
                 </ul>
 
-                <DropdownUser v-if="user" :user="user" />
+                <DropdownUser v-if="userStore.user" :user="userStore.user" />
             </div>
         </div>
     </header>

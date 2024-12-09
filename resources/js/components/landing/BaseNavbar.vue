@@ -42,7 +42,7 @@ onMounted(() => {
                                 viewBox="0 0 24 24"
                                 stroke-width="1.8"
                                 stroke="currentColor"
-                                class="text-primary size-8"
+                                class="text-primary size-8 dark:text-secondary"
                             >
                                 <path
                                     stroke-linecap="round"
@@ -108,7 +108,10 @@ onMounted(() => {
             />
 
             <div
-                v-else-if="route().current() == 'home'"
+                v-else-if="
+                    route().current() == 'home' ||
+                    route().current() == 'create-store'
+                "
                 :class="[open ? 'flex' : 'hidden lg:flex']"
                 class="space-x-3"
             >

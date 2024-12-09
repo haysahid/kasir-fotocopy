@@ -18,7 +18,7 @@ function close() {
 
 <template>
   <div
-    class="bg-white border rounded-sm border-stroke dark:border-strokedark dark:bg-boxdark"
+    class="bg-white border rounded-lg border-stroke dark:border-strokedark dark:bg-boxdark"
     :class="{
       'shadow-default': props.showShaddow,
     }"

@@ -24,8 +24,6 @@ const formatISODate = (datetime, split = true) => {
 };
 
 export default {
-    install: (app) => {
-        app.provide('formatDate', formatDate);
-        app.provide('formatISODate', formatISODate);
-    }
+    formatDate,
+    formatISODate,
 }

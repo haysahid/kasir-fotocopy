@@ -43,9 +43,14 @@ async function register() {
     try {
         const response = await axios.post("/api/auth/register", form.value);
 
-        router.replace("/register/success");
+        localStorage.setItem("access_token", response.data.result.access_token);
+
+        registerStatus.value = "success";
+
+        window.location = route("create-store");
     } catch (error) {
-        errorMessage.value = error.response.data.message;
+        errorMessage.value =
+            error.response.data?.message ?? "Terjadi kesalahan";
         registerStatus.value = "error";
     }
 }
