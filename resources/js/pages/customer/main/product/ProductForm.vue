@@ -1,7 +1,7 @@
 <script setup>
-import { ref, inject, onUpdated, computed, watch } from "vue";
-import { useUserStore } from "@/stores/user";
+import { ref, inject, onUpdated, computed, watch, onMounted } from "vue";
 import InputGroup from "@/components/Forms/InputGroup.vue";
+import CustomDatePicker from "@/components/Forms/CustomDatePicker.vue";
 import SelectGroup from "@/components/Forms/SelectGroup.vue";
 import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import AlertWarning from "@/components/Alerts/AlertWarning.vue";
@@ -12,7 +12,7 @@ const props = defineProps({
     showCloseButton: {
         type: Boolean,
     },
-    user: {
+    item: {
         type: Object,
     },
     autoClearData: {
@@ -22,31 +22,31 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
+const axios = inject("axios");
 const Toast = inject("Toast");
 
-const userStore = useUserStore();
-
 const form = ref({
-    username: "",
-    password: "",
-    passwordConfirmation: "",
-    realname: "",
-    email: "",
-    nohp: "",
-    roleid: null,
-    clientid: 1,
-    isenabled: false,
+    code: "",
+    name: "",
+    description: "",
+    purchase_price: "",
+    selling_price: "",
+    initial_stock: "",
+    unit: "",
+    category: "",
+    expired_at: "",
 });
 
 const formValidation = ref({
-    username: "",
-    password: "",
-    passwordConfirmation: "",
-    realname: "",
-    email: "",
-    nohp: "",
-    roleid: "",
-    clientid: "",
+    code: "",
+    name: "",
+    description: "",
+    purchase_price: "",
+    selling_price: "",
+    initial_stock: "",
+    unit: "",
+    category: "",
+    expired_at: "",
 });
 
 const errorMessage = ref("");
@@ -56,22 +56,22 @@ function clearErrorMessage() {
     errorMessage.value = "";
 }
 
-async function saveUser() {
-    if (props.user) {
-        updateUser();
+async function saveItem() {
+    if (props.item) {
+        updateItem();
     } else {
-        addUser();
+        addItem();
     }
 }
 
-async function addUser() {
-    if (!validateAddUser()) return;
+async function addItem() {
+    if (!validateAddItem()) return;
 
     saveStatus.value = "loading";
 
     try {
         const token = `Bearer ${localStorage.getItem("access_token")}`;
-        const response = await $axios.post("/V1/signup", form.value, {
+        const response = await axios.post("/api/product", form.value, {
             headers: {
                 Authorization: token,
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -80,7 +80,7 @@ async function addUser() {
 
         Toast.fire({
             icon: "success",
-            title: response.data.message,
+            title: response.data.meta.message,
         });
 
         close(true);
@@ -103,18 +103,18 @@ async function addUser() {
 
         Toast.fire({
             icon: "warning",
-            title: error.response?.data?.message || "Terjadi kesalahan",
+            title: error.response?.data?.message || "Terjadi kesalahan" + error,
         });
 
         console.error(error);
-        // close(false);
+
         saveStatus.value = "error";
         errorMessage.value = "Terjadi kesalahan";
     }
 }
 
-async function updateUser() {
-    if (!validateUpdateUser()) return;
+async function updateItem() {
+    if (!validateUpdateItem()) return;
 
     saveStatus.value = "loading";
 
@@ -134,8 +134,8 @@ async function updateUser() {
             }
         }
 
-        const response = await $axios.put(
-            `/V1/api/v1/user/${props.user.ID}`,
+        const response = await axios.put(
+            `/api/product/${props.item.id}`,
             form.value,
             {
                 headers: { Authorization: token },
@@ -144,7 +144,7 @@ async function updateUser() {
 
         Toast.fire({
             icon: "success",
-            title: response.data.message,
+            title: response.data.meta.message,
         });
 
         close(true);
@@ -177,230 +177,188 @@ async function updateUser() {
     }
 }
 
-function validateAddUser() {
+function validateAddItem() {
     let result = true;
 
-    if (form.value.username.length < 1) {
-        formValidation.value.username = "Username tidak boleh kosong!";
-        result = false;
-    } else if (form.value.username.includes(" ")) {
-        formValidation.value.username = "Username cannot use space characters!";
+    if (form.value.name.length < 1) {
+        formValidation.value.name = "Nama produk tidak boleh kosong";
         result = false;
     }
 
-    if (form.value.password.length < 1) {
-        formValidation.value.password = "Password tidak boleh kosong!";
+    if (form.value.description.length < 1) {
+        formValidation.value.description =
+            "Deskripsi produk tidak boleh kosong";
         result = false;
     }
 
-    if (form.value.passwordConfirmation.length < 1) {
-        formValidation.value.passwordConfirmation =
-            "Password confirmation tidak boleh kosong!";
+    if (form.value.purchase_price.length < 1) {
+        formValidation.value.purchase_price = "Harga beli tidak boleh kosong";
+        result = false;
+    } else if (!form.value.purchase_price.match(/^\d+$/)) {
+        formValidation.value.purchase_price = "Harga beli harus berupa angka";
         result = false;
     }
 
-    if (form.value.realname.length < 1) {
-        formValidation.value.realname = "Realname tidak boleh kosong!";
+    if (form.value.selling_price.length < 1) {
+        formValidation.value.selling_price = "Harga jual tidak boleh kosong";
+        result = false;
+    } else if (!form.value.purchase_price.match(/^\d+$/)) {
+        formValidation.value.purchase_price = "Harga jual harus berupa angka";
         result = false;
     }
 
-    if (form.value.email.length < 1) {
-        formValidation.value.email = "Email tidak boleh kosong!";
+    if (form.value.initial_stock.length < 1) {
+        formValidation.value.initial_stock = "Stok awal tidak boleh kosong";
         result = false;
-    } else if (
-        !form.value.email.match(/\S+@\S+\.\S+/) ||
-        form.value.email.includes(" ")
-    ) {
-        formValidation.value.email = "Please enter a valid email address!";
     }
 
-    if (form.value.nohp.length < 10 || form.value.nohp.length > 12) {
-        formValidation.value.nohp = "Nomor HP harus 10 sampai 12 digit!";
+    if (form.value.unit.length < 1) {
+        formValidation.value.unit = "Satuan tidak boleh kosong";
         result = false;
-    } else if (!form.value.nohp.match(/^\d+$/)) {
-        formValidation.value.nohp = "Nomor HP harus semua angka!";
+    }
+
+    if (form.value.category.length < 1) {
+        formValidation.value.category = "Kategori tidak boleh kosong";
         result = false;
     }
 
     return result;
 }
 
-function validateUpdateUser() {
-    let result = true;
-
-    if (form.value.username.length < 1) {
-        formValidation.value.username = "Username tidak boleh kosong!";
-        result = false;
-    } else if (form.value.username.includes(" ")) {
-        formValidation.value.username = "Username cannot use space characters!";
-        result = false;
-    }
-
-    // if (form.value.password.length < 1) {
-    //   formValidation.value.password = "Password tidak boleh kosong!";
-    //   result = false;
-    // }
-
-    // if (form.value.passwordConfirmation.length < 1) {
-    //   formValidation.value.passwordConfirmation =
-    //     "Password confirmation tidak boleh kosong!";
-    //   result = false;
-    // }
-
-    if (form.value.realname.length < 1) {
-        formValidation.value.realname = "Realname tidak boleh kosong!";
-        result = false;
-    }
-
-    if (form.value.email.length < 1) {
-        formValidation.value.email = "Email tidak boleh kosong!";
-        result = false;
-    } else if (
-        !form.value.email.match(/\S+@\S+\.\S+/) ||
-        form.value.email.includes(" ")
-    ) {
-        formValidation.value.email = "Please enter a valid email address!";
-    }
-
-    return result;
+function validateUpdateItem() {
+    return validateAddItem();
 }
 
-const disablePasswordConfirmation = computed(() =>
-    form.value.password ? form.value.password.length < 1 : true
-);
-
 watch(
-    () => form.value.username,
+    () => form.value.name,
     (newValue, oldValue) => {
-        if (newValue && newValue.length > 0 && formValidation.value.username) {
-            formValidation.value.username = "";
-        }
-
-        if (newValue && newValue.length > 0 && newValue.includes(" ")) {
-            formValidation.value.username =
-                "Username cannot use space characters!";
-        } else {
-            formValidation.value.username = "";
+        if (newValue && newValue.length > 0 && formValidation.value.name) {
+            formValidation.value.name = "";
         }
     }
 );
 
 watch(
-    () => form.value.password,
-    (newValue, oldValue) => {
-        if (newValue && newValue.length > 0 && formValidation.value.password) {
-            formValidation.value.password = "";
-        }
-
-        if (
-            newValue &&
-            newValue.length > 0 &&
-            form.value.passwordConfirmation.length > 0 &&
-            newValue !== form.value.passwordConfirmation
-        ) {
-            formValidation.value.passwordConfirmation =
-                "Password confirmation does not match!";
-        } else {
-            formValidation.value.passwordConfirmation = "";
-        }
-
-        if (!newValue) {
-            form.value.passwordConfirmation = "";
-        }
-    }
-);
-
-watch(
-    () => form.value.passwordConfirmation,
+    () => form.value.description,
     (newValue, oldValue) => {
         if (
             newValue &&
             newValue.length > 0 &&
-            form.value.password.length > 0 &&
-            newValue !== form.value.password
+            formValidation.value.description
         ) {
-            formValidation.value.passwordConfirmation =
-                "Password confirmation does not match!";
-        } else {
-            formValidation.value.passwordConfirmation = "";
+            formValidation.value.description = "";
         }
     }
 );
 
 watch(
-    () => form.value.realname,
+    () => form.value.purchase_price,
     (newValue, oldValue) => {
-        if (newValue && newValue.length > 0 && formValidation.value.realname) {
-            formValidation.value.realname = "";
-        }
-    }
-);
-
-watch(
-    () => form.value.email,
-    (newValue, oldValue) => {
-        if (newValue && newValue.length > 0 && formValidation.value.email) {
-            formValidation.value.email = "";
-        }
-
         if (
             newValue &&
             newValue.length > 0 &&
-            (!newValue.match(/\S+@\S+\.\S+/) || newValue.includes(" "))
+            formValidation.value.purchase_price
         ) {
-            formValidation.value.email = "Please enter a valid email address!";
-        } else {
-            formValidation.value.email = "";
+            if (!form.value.purchase_price.match(/^\d+$/)) {
+                formValidation.value.purchase_price =
+                    "Harga jual harus berupa angka";
+                result = false;
+            } else {
+                formValidation.value.purchase_price = "";
+            }
         }
     }
 );
 
 watch(
-    () => form.value.nohp,
+    () => form.value.selling_price,
     (newValue, oldValue) => {
-        if (newValue && newValue.length > 0 && formValidation.value.nohp) {
-            formValidation.value.nohp = "";
+        if (
+            newValue &&
+            newValue.length > 0 &&
+            formValidation.value.selling_price
+        ) {
+            if (!form.value.selling_price.match(/^\d+$/)) {
+                formValidation.value.selling_price =
+                    "Harga jual harus berupa angka";
+                result = false;
+            } else {
+                formValidation.value.selling_price = "";
+            }
+        }
+    }
+);
+
+watch(
+    () => form.value.initial_stock,
+    (newValue, oldValue) => {
+        if (
+            newValue &&
+            newValue.length > 0 &&
+            formValidation.value.initial_stock
+        ) {
+            formValidation.value.initial_stock = "";
+        }
+    }
+);
+
+watch(
+    () => form.value.unit,
+    (newValue, oldValue) => {
+        if (newValue && newValue.length > 0 && formValidation.value.unit) {
+            formValidation.value.unit = "";
         }
     }
 );
 
 onUpdated(() => {
-    if (props.user) {
-        form.value.username = props.user.username;
-        form.value.password = props.user.password;
-        form.value.passwordConfirmation = props.user.passwordConfirmation;
-        form.value.realname = props.user.realname;
-        form.value.email = props.user.email;
-        form.value.nohp = props.user.nohp;
-        form.value.roleid = props.user.roleid;
-        form.value.clientid = props.user.clientid;
-        form.value.isenabled = props.user.isenabled;
+    if (props.item) {
+        form.value.name = props.item.name;
+        form.value.description = props.item.description;
+        form.value.purchase_price = String(props.item.purchase_price);
+        form.value.selling_price = String(props.item.selling_price);
+        form.value.initial_stock = props.item.initial_stock;
+        form.value.unit = props.item.unit;
+        form.value.category = props.item.category;
+        form.value.expired_at = props.item.expired_at;
+    }
+});
+
+onMounted(() => {
+    if (props.item) {
+        form.value.name = props.item.name;
+        form.value.description = props.item.description;
+        form.value.purchase_price = String(props.item.purchase_price);
+        form.value.selling_price = String(props.item.selling_price);
+        form.value.initial_stock = props.item.initial_stock;
+        form.value.unit = props.item.unit;
+        form.value.category = props.item.category;
+        form.value.expired_at = props.item.expired_at;
     }
 });
 
 function close(value) {
     if (props.autoClearData) {
         form.value = {
-            username: "",
-            password: "",
-            passwordConfirmation: "",
-            realname: "",
-            email: "",
-            nohp: "",
-            roleid: null,
-            clientid: 1,
-            isenabled: false,
+            code: "",
+            name: "",
+            description: "",
+            purchase_price: 0,
+            selling_price: 0,
+            initial_stock: 0,
+            unit: "",
+            category: "",
+            expired_at: "",
         };
     } else {
-        form.value.username = props.user.username;
-        form.value.password = props.user.password;
-        form.value.passwordConfirmation = props.user.passwordConfirmation;
-        form.value.realname = props.user.realname;
-        form.value.email = props.user.email;
-        form.value.nohp = props.user.nohp;
-        form.value.roleid = props.user.roleid;
-        form.value.clientid = props.user.clientid;
-        form.value.isenabled = props.user.isenabled;
+        form.value.name = props.item.name;
+        form.value.description = props.item.description;
+        form.value.purchase_price = String(props.item.purchase_price);
+        form.value.selling_price = String(props.item.selling_price);
+        form.value.initial_stock = props.item.initial_stock;
+        form.value.unit = props.item.unit;
+        form.value.category = props.item.category;
+        form.value.expired_at = props.item.expired_at;
     }
 
     emit("close", value);
@@ -411,7 +369,7 @@ function close(value) {
 
 <template>
     <DefaultCard
-        :card-title="props.user ? 'Update User' : 'Add User'"
+        :card-title="props.item ? 'Ubah Produk / Jasa' : 'Tambah Produk / Jasa'"
         :show-close-button="props.showCloseButton"
         @close="close(false)"
     >
@@ -424,88 +382,74 @@ function close(value) {
             />
 
             <InputGroup
-                v-model="form.username"
-                id="username"
-                label="Username"
+                v-model="form.name"
+                id="name"
+                label="Nama"
                 type="text"
-                placeholder="Enter username"
-                customClasses="mb-4.5"
-                :warning="formValidation.username"
-                :disabled="props.user"
+                placeholder="Masukkan nama produk"
+                :warning="formValidation.name"
             />
 
             <InputGroup
-                v-model="form.password"
-                id="password"
-                label="Password"
-                type="password"
-                placeholder="Enter password"
-                :warning="formValidation.password"
-            />
-
-            <InputGroup
-                v-show="!disablePasswordConfirmation"
-                v-model="form.passwordConfirmation"
-                id="passwordConfirmation"
-                label="Re-type Password"
-                type="password"
-                placeholder="Re-enter password"
-                :warning="formValidation.passwordConfirmation"
-                :disabled="disablePasswordConfirmation"
-            />
-
-            <InputGroup
-                v-model="form.realname"
-                id="realname"
-                label="Real Name"
+                v-model="form.description"
+                id="description"
+                label="Deskripsi"
                 type="text"
-                placeholder="Enter real name"
-                customClasses="mb-4.5"
-                :warning="formValidation.realname"
+                placeholder="Masukkan deskripsi produk"
+                :warning="formValidation.description"
             />
 
             <InputGroup
-                @enter="saveUser"
-                v-model="form.email"
-                id="email"
-                label="Email Address"
-                type="email"
-                placeholder="Enter email address"
-                customClasses="mb-4.5"
-                :warning="formValidation.email"
-            />
-
-            <InputGroup
-                @enter="saveUser"
-                v-model="form.nohp"
-                id="nohp"
-                label="Phone Number"
+                v-model="form.purchase_price"
+                id="purchase_price"
+                label="Harga Beli"
                 type="text"
-                placeholder="Enter phone number"
-                customClasses="mb-4.5"
-                :warning="formValidation.nohp"
+                placeholder="Masukkan harga beli"
+                :warning="formValidation.purchase_price"
             />
 
-            <SelectGroup
-                v-if="userStore.user.ID != props.user?.ID"
-                v-model.number="form.roleid"
-                id="roleid"
-                label="Role"
-                placeholder="Select role"
-                :options="[
-                    { value: 1, text: 'Super Admin' },
-                    { value: 2, text: 'Admin' },
-                    { value: 3, text: 'Supervisor' },
-                    { value: 4, text: 'User' },
-                    { value: 5, text: 'Guest' },
-                ]"
+            <InputGroup
+                v-model="form.selling_price"
+                id="selling_price"
+                label="Harga Jual"
+                type="text"
+                placeholder="Masukkan harga jual"
+                :warning="formValidation.selling_price"
             />
 
-            <CustomSwitch
-                v-if="props.user && userStore.user.ID != props.user.ID"
-                v-model="form.isenabled"
-                id="isenabled"
-                label="Enable"
+            <InputGroup
+                v-model="form.initial_stock"
+                id="initial_stock"
+                label="Stok Awal"
+                type="text"
+                placeholder="Masukkan stok awal"
+                :warning="formValidation.initial_stock"
+            />
+
+            <InputGroup
+                v-model="form.unit"
+                id="unit"
+                label="Satuan"
+                type="text"
+                placeholder="Masukkan satuan"
+                :warning="formValidation.unit"
+            />
+
+            <InputGroup
+                v-model="form.category"
+                id="category"
+                label="Kategori"
+                type="text"
+                placeholder="Masukkan kategori"
+                :warning="formValidation.category"
+            />
+
+            <CustomDatePicker
+                v-model="form.expired_at"
+                id="expired_at"
+                label="Kadaluarsa"
+                placeholder="Pilih tanggal kadaluarsa"
+                :warning="formValidation.expired_at"
             />
 
             <div class="flex flex-col-reverse gap-x-4 sm:flex-row">
@@ -517,18 +461,18 @@ function close(value) {
                     padding="p-3"
                     margin="mt-4"
                 >
-                    Cancel
+                    Batal
                 </CustomButton>
 
                 <CustomButton
-                    @click="saveUser"
+                    @click="saveItem"
                     :loading="saveStatus === 'loading'"
                     color="bg-primary"
                     :is-full="true"
                     padding="p-3"
                     margin="mt-4"
                 >
-                    Save
+                    Simpan
                 </CustomButton>
             </div>
         </div>

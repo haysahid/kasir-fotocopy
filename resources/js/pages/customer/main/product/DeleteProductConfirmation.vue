@@ -149,7 +149,7 @@ function close(value) {
                     :is-full="true"
                     padding="py-2.5 px-6"
                 >
-                    Cancel
+                    Batal
                 </CustomButton>
                 <CustomButton
                     @click="deleteItems"
@@ -159,7 +159,7 @@ function close(value) {
                     :is-full="true"
                     padding="py-2.5 px-6"
                 >
-                    Delete
+                    Hapus
                 </CustomButton>
             </div>
         </div>

@@ -27,10 +27,13 @@ function enter() {
 <template>
     <div class="w-full mb-4">
         <label
+            v-if="props.label"
             :for="props.id"
             class="block mb-1.5 text-sm font-normal text-black dark:text-white"
-            >{{ props.label }}</label
         >
+            {{ props.label }}
+        </label>
+
         <div class="relative">
             <input
                 @input="updateValue($event)"

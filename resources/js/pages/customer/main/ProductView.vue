@@ -2,18 +2,44 @@
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
 import ProductTable from "./product/ProductTable.vue";
+import CustomButton from "@/components/Forms/CustomButton.vue";
+import { ref } from "vue";
+
+const tableData = ref(null);
+
+const query = ref({
+    limit: null,
+    page: 1,
+    search: "",
+});
 </script>
 
 <template>
     <DefaultLayout>
         <div data-aos="fade-up" data-aos-once="true">
             <PageSection
-                :page-title="'Produk'"
+                :page-title="'Produk / Jasa'"
                 id="pagetop"
                 class="col-span-12 mb-4 text-sm xl:col-span-8"
             >
+                <div class="flex gap-2">
+                    <CustomButton
+                        v-if="tableData && tableData.checkedItems.length > 0"
+                        :isFull="false"
+                        color="bg-danger"
+                        @click="tableData.showDeleteItemDialog()"
+                    >
+                        Hapus ({{ tableData.checkedItems.length }})
+                    </CustomButton>
+                    <CustomButton
+                        :isFull="false"
+                        @click="tableData.showItemFormDialog(null)"
+                    >
+                        Tambah
+                    </CustomButton>
+                </div>
             </PageSection>
-            <ProductTable />
+            <ProductTable ref="tableData" />
         </div>
     </DefaultLayout>
 </template>

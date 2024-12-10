@@ -31,8 +31,11 @@ const itemFormDialog = ref(null);
 const deleteItemDialog = ref(null);
 
 function showItemFormDialog(item) {
+    if (item) {
+        checkedItems.value = [item];
+    }
+
     itemFormDialog.value.showModal();
-    checkedItems.value = [item];
 }
 
 function showDeleteItemDialog(item) {
@@ -46,9 +49,9 @@ function onItemFormDialogClosed(value) {
     if (value) {
         query.value.page = data.value.current_page;
         getData();
-    } else {
-        checkedItems.value = [];
     }
+
+    checkedItems.value = [];
 }
 
 function onDeleteItemDialogClosed(value) {
@@ -147,7 +150,7 @@ defineExpose({
 
 <template>
     <div
-        class="rounded-lg bg-white px-5 pt-6 pb-2.5 dark:bg-boxdark sm:px-7.5 xl:pb-1"
+        class="rounded-lg bg-white px-4 pt-6 pb-2.5 dark:bg-boxdark sm:px-6.5 xl:pb-1"
     >
         <h4
             v-if="props.title"
@@ -187,7 +190,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Category
+                                Kategori
                             </h5>
                         </th>
 
@@ -320,9 +323,9 @@ defineExpose({
         >
             <ProductForm
                 :show-close-button="true"
-                :user="checkedItems[0]"
+                :item="checkedItems[0]"
                 @close="onItemFormDialogClosed"
-                class="w-full xsm:w-[500px]"
+                class="sm:min-w-[400px] max-w-[400px]"
             />
         </CustomDialog>
 

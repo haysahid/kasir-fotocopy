@@ -37,7 +37,7 @@ const menuGroups = ref([
                 </svg>`,
             },
             {
-                label: "Produk",
+                label: "Produk / Jasa",
                 route: "/product",
                 // roles: [1, 2, 3, 4, 5],
                 // children: [{ label: "eCommerce", route: "/" }],

@@ -27,7 +27,7 @@ function logout() {
     userStore.clearUser();
     darkModeStore.setDarkMode(false);
     localStorage.clear();
-    route("login");
+    window.location = route("home");
 }
 </script>
 
@@ -37,7 +37,7 @@ function logout() {
             class="flex items-center gap-4 cursor-pointer max-md:ml-2 max-lg:ml-5 max-lg:mt-2"
             @click.prevent="dropdownOpen = !dropdownOpen"
         >
-            <div class="flex items-center gap-4 max-lg:flex-row-reverse">
+            <div class="flex items-center gap-4">
                 <span class="w-10 h-10 rounded-full">
                     <img src="@/assets/images/user/user-icon.png" alt="User" />
                 </span>

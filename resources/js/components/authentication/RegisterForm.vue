@@ -221,7 +221,7 @@ watch(
                 id="email"
                 label="Alamat Email"
                 type="email"
-                placeholder="Masukan Alamat Email"
+                placeholder="Masukkan Alamat Email"
                 :warning="formValidation.email"
             />
 
@@ -250,7 +250,7 @@ watch(
                 id="phone"
                 label="Nomor HP"
                 type="text"
-                placeholder="Nomor HP"
+                placeholder="Masukkan Nomor HP"
                 :warning="formValidation.phone"
             />
 
@@ -260,7 +260,7 @@ watch(
                 id="address"
                 label="Alamat"
                 type="text"
-                placeholder="Alamat"
+                placeholder="Masukkan Alamat"
                 :warning="formValidation.address"
             />
 
