@@ -128,6 +128,11 @@ class StoreController extends Controller
                 'store_id' => $store->id,
             ]);
 
+            // Update user role
+            $user->update([
+                'role_id' => 4,
+            ]);
+
             return ResponseFormatter::success([
                 'store' => $store,
             ], 'Toko berhasil ditambahkan.', 201);
