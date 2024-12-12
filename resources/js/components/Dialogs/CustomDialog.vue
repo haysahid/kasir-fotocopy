@@ -59,10 +59,12 @@ defineExpose({
     <dialog
         ref="dialog"
         :id="props.id"
-        class="bg-transparent"
+        class="w-full bg-transparent"
         @close="cancel"
         @keydown.esc="cancel"
     >
-        <slot></slot>
+        <div class="flex items-center justify-center">
+            <slot></slot>
+        </div>
     </dialog>
 </template>

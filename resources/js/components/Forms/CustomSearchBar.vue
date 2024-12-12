@@ -1,81 +1,85 @@
 <script setup>
-const props = defineProps(["id", "placeholder", "modelValue"]);
+import { ref } from "vue";
+
+const props = defineProps([
+    "id",
+    "label",
+    "type",
+    "placeholder",
+    "modelValue",
+    "warning",
+    "disabled",
+    "useDebounce",
+]);
 const emit = defineEmits(["update:modelValue", "enter"]);
 
 function updateValue(event) {
-  emit("update:modelValue", event.target.value);
+    if (props.useDebounce) {
+        let timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            emit("update:modelValue", event.target.value);
+        }, 500);
+    } else {
+        emit("update:modelValue", event.target.value);
+    }
 }
 
 function enter() {
-  emit("enter");
+    emit("enter");
 }
 </script>
 
 <template>
-  <div
-    class="flex items-center justify-center w-full h-full p-4 bg-white border rounded-md max-sm:p-3 border-stroke dark:border-strokedark dark:bg-boxdark"
-  >
-    <div class="flex items-center w-full sm:relative">
-      <button
-        class="pointer-events-none sm:absolute sm:left-0 sm:-translate-y-1/2 sm:top-1/2"
-      >
-        <svg
-          class="fill-body dark:fill-bodydark"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+    <div class="w-full min-w-[160]">
+        <label
+            v-if="props.label"
+            :for="props.id"
+            class="block mb-1.5 text-sm font-normal text-black dark:text-white"
         >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
-            fill=""
-          />
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-            fill=""
-          />
-        </svg>
-      </button>
+            {{ props.label }}
+        </label>
 
-      <input
-        @input="updateValue($event)"
-        @keyup.enter="enter"
-        :id="props.id"
-        type="text"
-        :placeholder="props.placeholder || 'Type to search...'"
-        class="w-full pr-4 bg-transparent xl:w-125 pl-9 focus:outline-none max-sm:pl-4 max-sm:pr-2"
-      />
+        <div class="relative">
+            <input
+                @input="updateValue($event)"
+                @keyup.enter="enter"
+                :value="props.modelValue"
+                type="text"
+                :placeholder="props.placeholder"
+                :id="props.id"
+                class="w-full py-2 pl-3 pr-10 text-black bg-transparent border rounded-lg outline-none text-ellipsis border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"
+                :class="{
+                    '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
+                        props.warning,
+                    'bg-whiten dark:bg-slate-700': props.disabled,
+                }"
+                :disabled="props.disabled ?? false"
+            />
+
+            <span class="absolute top-[7px] right-2.5">
+                <div class="p-1">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="flex-shrink-0 text-gray-400 size-5 dark:text-neutral-500"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        />
+                    </svg>
+                </div>
+                <slot></slot>
+            </span>
+        </div>
+
+        <p v-if="props.warning" class="mt-1 text-xs text-danger">
+            {{ props.warning }}
+        </p>
     </div>
-  </div>
-
-  <!-- <button
-    class="flex items-center justify-center p-3 border rounded-md sm:hidden hover:bg-slate-600 dark:hover:bg-slate-600 border-stroke dark:border-strokedark dark:bg-boxdark"
-  >
-    <svg
-      class="fill-body dark:fill-bodydark"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
-        fill=""
-      />
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-        fill=""
-      />
-    </svg>
-  </button> -->
 </template>

@@ -5,8 +5,8 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="flex flex-row items-center justify-between gap-3">
-        <h2 class="font-medium text-black text-title-sm2 dark:text-white">
+    <div class="flex flex-col items-start gap-3 md:items-center md:flex-row">
+        <h2 class="w-full font-medium text-black text-title-sm2 dark:text-white">
             {{ props.pageTitle }}
         </h2>
 

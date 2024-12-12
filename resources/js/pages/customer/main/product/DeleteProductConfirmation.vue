@@ -2,6 +2,7 @@
 import { inject, ref, computed } from "vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
+import { useProductStore } from "@/stores/product";
 
 const props = defineProps({
     showCloseButton: Boolean,
@@ -12,65 +13,10 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const axios = inject("axios");
-const Toast = inject("Toast");
-
-const deleteStatus = ref("");
-const deleteProgress = ref(0);
+const productStore = useProductStore();
 
 async function deleteItems() {
-    deleteStatus.value = "loading";
-    try {
-        const token = `Bearer ${localStorage.getItem("access_token")}`;
-
-        for (let i = 0; i < props.items.length; i++) {
-            const response = await axios.put(
-                `/api/product/${props.items[i].id}/disable`,
-                {},
-                {
-                    headers: {
-                        Accept: "application/json",
-                        Authorization: token,
-                    },
-                }
-            );
-
-            deleteProgress.value++;
-        }
-
-        Toast.fire({
-            icon: "success",
-            title: "Item berhasil dihapus",
-        });
-
-        close(true);
-        deleteStatus.value = "success";
-        deleteProgress.value = 0;
-    } catch (error) {
-        if (
-            error.response?.status === 400 &&
-            error.response?.data === "Token is expired\n"
-        ) {
-            close(false);
-
-            return Toast.fire({
-                icon: "warning",
-                title: "Sesi login telah berakhir, silahkan login kembali",
-                didDestroy: () => {
-                    window.location = route("login");
-                },
-            });
-        }
-
-        Toast.fire({
-            icon: "warning",
-            title: error.response?.data?.message || "Terjadi kesalahan",
-        });
-
-        console.error(error);
-        close(false);
-        deleteStatus.value = "success";
-    }
+    await useProductStore.deleteItems(props.items);
 }
 
 const filteredItems = computed(() => {
@@ -128,12 +74,12 @@ function close(value) {
             </h2>
 
             <div
-                v-if="props.items && filteredItems > 1"
-                class="flex flex-wrap justify-center gap-2.5 mb-2"
+                v-if="props.items && filteredItems.length > 1"
+                class="flex flex-wrap justify-center gap-2 mb-2"
             >
                 <div
                     v-for="item in filteredItems"
-                    class="px-4 py-2 text-gray-500 rounded-full bg-slate-100 dark:text-bodydark1 dark:bg-gray-700"
+                    class="px-4 py-2 text-sm text-gray-500 rounded-full bg-slate-100 dark:text-bodydark1 dark:bg-gray-700"
                 >
                     {{ item.name }}
                 </div>
@@ -144,7 +90,7 @@ function close(value) {
             >
                 <CustomButton
                     @click="close(false)"
-                    :enable="deleteStatus !== 'loading'"
+                    :enable="productStore.deleteStatus !== 'loading'"
                     color="bg-slate-400"
                     :is-full="true"
                     padding="py-2.5 px-6"
@@ -153,8 +99,8 @@ function close(value) {
                 </CustomButton>
                 <CustomButton
                     @click="deleteItems"
-                    :loading="deleteStatus === 'loading'"
-                    :loading-text="`${deleteProgress}/${props.items.length}`"
+                    :loading="productStore.deleteStatus === 'loading'"
+                    :loading-text="`${productStore.deleteProgress}/${props.items.length}`"
                     color="bg-danger"
                     :is-full="true"
                     padding="py-2.5 px-6"

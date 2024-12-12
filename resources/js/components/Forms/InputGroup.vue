@@ -13,7 +13,6 @@ const props = defineProps([
 const emit = defineEmits(["update:modelValue", "enter"]);
 
 const obscure = ref(props.type === "password");
-const input = ref(null);
 
 function updateValue(event) {
     emit("update:modelValue", event.target.value);

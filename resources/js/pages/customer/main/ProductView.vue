@@ -3,15 +3,26 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
 import ProductTable from "./product/ProductTable.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
-import { ref } from "vue";
+import { ref, watch, inject } from "vue";
+import InputGroup from "@/components/Forms/InputGroup.vue";
+import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";
 
 const tableData = ref(null);
+
+const debounce = inject("debounce");
 
 const query = ref({
     limit: null,
     page: 1,
-    search: "",
+    search: null,
 });
+
+watch(
+    () => query.value.search,
+    () => {
+        tableData.value?.getData(query.value);
+    }
+);
 </script>
 
 <template>
@@ -22,21 +33,32 @@ const query = ref({
                 id="pagetop"
                 class="col-span-12 mb-4 text-sm xl:col-span-8"
             >
-                <div class="flex gap-2">
-                    <CustomButton
-                        v-if="tableData && tableData.checkedItems.length > 0"
-                        :isFull="false"
-                        color="bg-danger"
-                        @click="tableData.showDeleteItemDialog()"
-                    >
-                        Hapus ({{ tableData.checkedItems.length }})
-                    </CustomButton>
-                    <CustomButton
-                        :isFull="false"
-                        @click="tableData.showItemFormDialog(null)"
-                    >
-                        Tambah
-                    </CustomButton>
+                <div class="flex items-center justify-center w-full gap-4">
+                    <CustomSearchBar
+                        v-model="query.search"
+                        id="search"
+                        placeholder="Cari produk / jasa"
+                        :useDebounce="true"
+                    />
+
+                    <div class="flex items-center justify-center gap-2">
+                        <CustomButton
+                            v-if="tableData && tableData.selectionMode"
+                            :isFull="false"
+                            color="bg-danger"
+                            @click="tableData.showDeleteItemDialog()"
+                        >
+                            Hapus ({{ tableData.checkedItems.length }})
+                        </CustomButton>
+
+                        <CustomButton
+                            v-if="tableData && !tableData.selectionMode"
+                            :isFull="false"
+                            @click="tableData.showItemFormDialog(null)"
+                        >
+                            Tambah
+                        </CustomButton>
+                    </div>
                 </div>
             </PageSection>
             <ProductTable ref="tableData" />

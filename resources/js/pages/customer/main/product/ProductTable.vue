@@ -1,13 +1,12 @@
 <script setup>
-import { ref, inject, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import ItemActionButton from "@/components/ItemActionButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
 import DeleteProductConfirmation from "./DeleteProductConfirmation.vue";
-import { RouterLink } from "vue-router";
-import StatusLabel from "@/components/StatusLabel.vue";
 import ProductForm from "./ProductForm.vue";
 import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
-import DefaultCard from "../../../../components/Forms/DefaultCard.vue";
+import DefaultCard from "@/components/Forms/DefaultCard.vue";
+import { useProductStore } from "@/stores/product";
 
 const props = defineProps({
     title: {
@@ -15,18 +14,10 @@ const props = defineProps({
     },
 });
 
-const axios = inject("axios");
+const productStore = useProductStore();
 
-const data = ref({});
 const checkedItems = ref([]);
 const isAllItemsChecked = ref(false);
-const getDataState = ref("");
-
-const query = ref({
-    limit: null,
-    page: 1,
-    search: "",
-});
 
 const itemFormDialog = ref(null);
 const deleteItemDialog = ref(null);
@@ -41,14 +32,16 @@ function showItemFormDialog(item) {
 
 function showDeleteItemDialog(item) {
     deleteItemDialog.value.showModal();
-    checkedItems.value = [item];
+    if (item) {
+        checkedItems.value = [item];
+    }
 }
 
 function onItemFormDialogClosed(value) {
     itemFormDialog.value.close(value);
 
     if (value) {
-        query.value.page = data.value.current_page;
+        productStore.query.page = productStore.data.current_page;
         getData();
     }
 
@@ -64,35 +57,18 @@ function onDeleteItemDialogClosed(value) {
 
     if (value) {
         checkedItems.value = [];
-        query.value.page = data.value.page;
+        productStore.query.page = productStore.data.current_page;
         getData();
     }
 }
 
 async function getData(params) {
-    if (params) query.value = params;
-
-    try {
-        getDataState.value = "loading";
-
-        const token = `Bearer ${localStorage.getItem("access_token")}`;
-        const response = await axios.get("/api/product", {
-            headers: { Authorization: token },
-            params: query.value,
-        });
-        data.value = response.data.result;
-
-        getDataState.value = "success";
-    } catch (error) {
-        getDataState.value = "error";
-        console.error(error);
-    }
+    await productStore.getAllItems(params);
 }
 
-const items = computed(() => data.value.data);
-
 const changePage = (page) => {
-    query.value.page = page;
+    productStore.query.page = page;
+
     getData();
 
     document
@@ -103,13 +79,7 @@ const changePage = (page) => {
 watch(
     () => checkedItems.value.length,
     (newValue, oldValue) => {
-        if (newValue === items.value?.length) {
-            isAllItemsChecked.value = true;
-        }
-
-        if (newValue < items.value.length) {
-            isAllItemsChecked.value = false;
-        }
+        console.log("current page: ", productStore.data.current_page);
     }
 );
 
@@ -117,13 +87,13 @@ watch(
     () => isAllItemsChecked.value,
     (newValue, oldValue) => {
         if (!oldValue && newValue) {
-            checkedItems.value = JSON.parse(JSON.stringify(items.value));
+            checkedItems.value = JSON.parse(JSON.stringify(productStore.items));
         }
 
         if (
             oldValue &&
             !newValue &&
-            checkedItems.value.length === items.value?.length
+            checkedItems.value.length === productStore.items?.length
         ) {
             checkedItems.value = [];
         }
@@ -164,12 +134,12 @@ defineExpose({
 
         <!-- Table -->
         <div class="flex flex-col overflow-x-auto">
-            <table class="table-auto">
+            <table class="table-fixed">
                 <thead>
                     <tr
                         class="rounded-sm text-gray-500 bg-gray-100 dark:bg-gray-700 [&>th]:py-2.5 [&>th]:px-4 [&>th]:text-left duration-300 ease-linear"
                     >
-                        <th class="w-[50px]">
+                        <th class="w-0">
                             <CheckboxGroup :for="'formCheckbox'">
                                 <input
                                     type="checkbox"
@@ -221,7 +191,7 @@ defineExpose({
                             </h5>
                         </th>
 
-                        <th v-show="!selectionMode" class="max-sm:text-end">
+                        <th v-show="!selectionMode" class="w-0 max-sm:text-end">
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
@@ -233,18 +203,18 @@ defineExpose({
 
                 <tbody>
                     <tr
-                        v-for="(item, key) in items"
+                        v-for="(item, key) in productStore.items"
                         :key="key"
                         class="hover:bg-secondary hover:bg-opacity-10 dark:hover:bg-opacity-5 [&>td]:py-2.5 [&>td]:px-4 [&>td]:text-sm duration-300 ease-linear"
                         :class="{
                             'border-b border-stroke dark:border-strokedark':
-                                key !== items.length - 1,
+                                key !== productStore.items.length - 1,
                             'bg-secondary bg-opacity-20 dark:bg-opacity-10':
                                 checkedItems.map((i) => i.id).includes(item.id),
                         }"
                     >
                         <!-- Checkbox -->
-                        <td class="py-2.5 px-4 w-[50px]">
+                        <td class="py-2.5 px-4 w-0">
                             <CheckboxGroup :for="'formCheckbox_' + item.id">
                                 <input
                                     type="checkbox"
@@ -309,15 +279,23 @@ defineExpose({
             </table>
         </div>
 
-        <vue-awesome-paginate
-            v-if="data.current_page"
-            :total-items="data.total"
-            :items-per-page="data.per_page"
-            :max-pages-shown="5"
-            v-model="data.current_page"
-            :on-click="changePage"
-            class="py-6"
-        />
+        <div
+            class="flex flex-col items-start justify-between gap-2 py-6 sm:items-center sm:flex-row"
+        >
+            <vue-awesome-paginate
+                v-if="productStore?.data?.current_page"
+                :total-items="productStore.data.total"
+                :items-per-page="productStore.data.per_page"
+                :max-pages-shown="5"
+                v-model="productStore.data.current_page"
+                @click="changePage"
+            />
+            <p class="text-xs font-light text-gray-400">
+                Showing {{ productStore.data?.from }} to
+                {{ productStore.data?.to }} of
+                {{ productStore.data?.total }} entries
+            </p>
+        </div>
 
         <CustomDialog
             id="itemFormDialog"
@@ -328,7 +306,7 @@ defineExpose({
                 :show-close-button="true"
                 :item="checkedItems[0]"
                 @close="onItemFormDialogClosed"
-                class="sm:min-w-[400px] max-w-[400px]"
+                class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
             />
         </CustomDialog>
 
@@ -337,7 +315,7 @@ defineExpose({
                 :show-close-button="true"
                 :items="checkedItems"
                 @close="onDeleteItemDialogClosed"
-                class="max-w-[400px]"
+                class="max-sm:w-full sm:min-w-[300px] max-w-[300px]"
             />
         </CustomDialog>
     </DefaultCard>

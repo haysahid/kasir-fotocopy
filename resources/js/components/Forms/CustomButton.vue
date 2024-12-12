@@ -37,6 +37,10 @@ const props = defineProps({
         type: String,
         default: "m-0",
     },
+    wrapText: {
+        type: Boolean,
+        default: false,
+    },
     customClass: {
         type: String,
     },
@@ -67,6 +71,7 @@ function click() {
                 'bg-slate-300 hover:bg-slate-300 !text-slate-400 dark:bg-slate-600 pointer-events-none':
                     !props.enable,
                 'pointer-events-none': props.loading,
+                'whitespace-nowrap': !props.wrapText,
             },
         ]"
     >
