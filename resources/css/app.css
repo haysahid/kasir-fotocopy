@@ -274,7 +274,7 @@ input[type="search"]::-webkit-search-cancel-button {
     @apply flex gap-2;
 }
 .paginate-buttons {
-    @apply w-8 h-8 rounded-sm cursor-pointer bg-slate-100 border-[1px] border-solid border-slate-200 dark:bg-slate-700 dark:text-white dark:border-slate-600 text-black max-sm:text-sm;
+    @apply w-8 h-8 rounded-sm cursor-pointer bg-slate-100 border-[1px] border-solid border-slate-200 dark:bg-slate-700 dark:text-white dark:border-slate-600 text-black max-sm:text-sm duration-300 ease-linear;
 }
 .paginate-buttons:hover {
     @apply bg-slate-200 dark:bg-slate-600;

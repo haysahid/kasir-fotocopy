@@ -274,11 +274,11 @@ watch(
             </CustomButton>
 
             <div class="mt-6 text-center">
-                <p class="text-sm">
+                <p class="text-sm dark:text-gray-300">
                     Sudah punya akun?
                     <Link
                         :href="route('login')"
-                        class="text-primary hover:font-bold"
+                        class="text-primary dark:text-secondary hover:font-bold"
                     >
                         Masuk
                     </Link>

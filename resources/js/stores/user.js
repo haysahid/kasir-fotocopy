@@ -1,8 +1,10 @@
 import { defineStore } from "pinia"
 import { ref, computed, inject } from "vue"
+import { useStorage } from '@vueuse/core'
+
 
 export const useUserStore = defineStore('user', () => {
-    const user = ref(false)
+    const user = ref(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : false)
 
     const axios = inject("axios");
 
@@ -13,6 +15,9 @@ export const useUserStore = defineStore('user', () => {
                     Authorization: `Bearer ${localStorage.getItem("access_token")}`
                 }
             })
+
+            localStorage.setItem("user", JSON.stringify(data.result.user))
+
             user.value = data.result.user
 
             console.log(user.value)

@@ -133,11 +133,11 @@ watch(
             </CustomButton>
 
             <div class="mt-6 text-center">
-                <p class="text-sm">
+                <p class="text-sm dark:text-gray-300">
                     Belum punya Akun?
                     <Link
                         :href="route('register')"
-                        class="text-primary hover:font-bold"
+                        class="text-primary dark:text-secondary hover:font-bold"
                     >
                         Daftar
                     </Link>

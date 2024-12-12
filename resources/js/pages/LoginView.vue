@@ -4,7 +4,7 @@ import BaseNavbar from "@/components/landing/BaseNavbar.vue";
 </script>
 
 <template>
-    <main>
+    <main class="dark:!bg-gray-900">
         <BaseNavbar :show-nav-link="true" />
         <div class="relative overflow-hidden">
             <div class="mx-auto max-w-7xl">

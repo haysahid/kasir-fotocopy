@@ -1,10 +1,20 @@
 <script setup>
 import CreateStoreForm from "@/pages/customer/store/CreateStoreForm.vue";
 import BaseNavbar from "@/components/landing/BaseNavbar.vue";
+import { useUserStore } from "@/stores/user";
+import { onMounted } from "vue";
+
+const userStore = useUserStore();
+
+onMounted(() => {
+    if (userStore.user && userStore.user?.store.length > 0) {
+        window.location.replace(route("home"));
+    }
+});
 </script>
 
 <template>
-    <main>
+    <main class="dark:!bg-gray-900">
         <BaseNavbar :show-nav-link="true" />
         <div class="relative overflow-hidden">
             <div class="mx-auto max-w-7xl">

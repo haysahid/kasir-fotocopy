@@ -21,7 +21,7 @@ const props = defineProps({
         <div class="relative pt-0.5">
             <slot></slot>
             <div
-                class="flex items-center justify-center w-5 h-5 border rounded box border-stroke dark:border-form-strokedark dark:bg-form-input"
+                class="flex items-center justify-center w-5 h-5 duration-300 ease-linear border rounded box border-stroke dark:border-form-strokedark dark:bg-form-input"
             >
                 <span class="text-white opacity-0">
                     <svg

@@ -21,7 +21,9 @@ const props = defineProps([
         >
             <div class="hidden w-full xl:block xl:w-1/2">
                 <div class="py-17.5 px-26 text-center">
-                    <p class="font-medium 2xl:px-15">Aplikasi Fotocopy</p>
+                    <p class="font-medium 2xl:px-15 dark:text-gray-200">
+                        Aplikasi Fotocopy
+                    </p>
 
                     <span class="inline-block mt-15">
                         <img

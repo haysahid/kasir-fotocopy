@@ -5,6 +5,7 @@ import NavLink from "./NavLink.vue";
 import DropdownUser from "@/components/Header/DropdownUser.vue";
 import { onMounted, ref } from "vue";
 import { useConfigStore } from "@/stores/config";
+import DarkModeSwitcher from "@/components/Header/DarkModeSwitcher.vue";
 
 import { Link } from "@inertiajs/inertia-vue3";
 
@@ -99,36 +100,44 @@ onMounted(() => {
                 </div>
             </div>
 
-            <DropdownUser
-                v-if="userStore.user"
-                :user="userStore.user"
-                :always-show-detail="true"
-                :class="[open ? 'flex' : 'hidden lg:flex']"
-                class="space-x-3"
-            />
+            <div class="flex items-center gap-8 2xsm:gap-7">
+                <ul class="flex items-center gap-2 2xsm:gap-4">
+                    <li>
+                        <DarkModeSwitcher />
+                    </li>
+                </ul>
 
-            <div
-                v-else-if="
-                    route().current() == 'home' ||
-                    route().current() == 'create-store'
-                "
-                :class="[open ? 'flex' : 'hidden lg:flex']"
-                class="space-x-3"
-            >
-                <Link :href="route('login')">
-                    <BaseButton
-                        class="px-6 xl:px-8 py-2 mt-2 bg-inherit !font-medium text-gradient border border-[#0c66ee]"
-                    >
-                        Masuk
-                    </BaseButton>
-                </Link>
-                <Link :href="route('register')">
-                    <BaseButton
-                        class="px-6 xl:px-8 py-2 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
-                    >
-                        Daftar
-                    </BaseButton>
-                </Link>
+                <DropdownUser
+                    v-if="userStore.user"
+                    :user="userStore.user"
+                    :always-show-detail="true"
+                    :class="[open ? 'flex' : 'hidden lg:flex']"
+                    class="space-x-3"
+                />
+
+                <div
+                    v-else-if="
+                        route().current() == 'home' ||
+                        route().current() == 'create-store'
+                    "
+                    :class="[open ? 'flex' : 'hidden lg:flex']"
+                    class="space-x-3"
+                >
+                    <Link :href="route('login')">
+                        <BaseButton
+                            class="px-6 xl:px-8 py-2 mt-2 bg-inherit !font-medium text-gradient border border-[#0c66ee]"
+                        >
+                            Masuk
+                        </BaseButton>
+                    </Link>
+                    <Link :href="route('register')">
+                        <BaseButton
+                            class="px-6 xl:px-8 py-2 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
+                        >
+                            Daftar
+                        </BaseButton>
+                    </Link>
+                </div>
             </div>
         </div>
     </nav>

@@ -74,7 +74,7 @@ function downloadItem() {
 
         <button
             v-if="props.showDeleteButton"
-            class="hover:text-danger dark:hover:text-red dark:text-gray-300"
+            class="hover:text-danger dark:hover:text-danger dark:text-gray-300"
             @click="deleteItem"
         >
             <svg

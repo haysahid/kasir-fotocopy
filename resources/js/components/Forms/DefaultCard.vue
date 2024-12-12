@@ -5,7 +5,11 @@ const props = defineProps({
     cardTitle: String,
     showCloseButton: Boolean,
     cardWidth: Number,
-    showShaddow: {
+    showShadow: {
+        type: Boolean,
+        default: true,
+    },
+    showBorder: {
         type: Boolean,
         default: true,
     },
@@ -18,9 +22,10 @@ function close() {
 
 <template>
     <div
-        class="duration-300 ease-linear bg-white border rounded-lg border-stroke dark:border-strokedark dark:bg-boxdark"
+        class="duration-300 ease-linear bg-white rounded-lg dark:bg-boxdark"
         :class="{
-            'shadow-default': props.showShaddow,
+            'shadow-default': props.showShadow,
+            'border border-stroke dark:border-strokedark': props.showBorder,
         }"
     >
         <div

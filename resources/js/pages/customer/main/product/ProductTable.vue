@@ -7,6 +7,7 @@ import { RouterLink } from "vue-router";
 import StatusLabel from "@/components/StatusLabel.vue";
 import ProductForm from "./ProductForm.vue";
 import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
+import DefaultCard from "../../../../components/Forms/DefaultCard.vue";
 
 const props = defineProps({
     title: {
@@ -149,8 +150,10 @@ defineExpose({
 </script>
 
 <template>
-    <div
-        class="rounded-lg bg-white px-4 pt-6 pb-2.5 dark:bg-boxdark sm:px-6.5 xl:pb-1"
+    <DefaultCard
+        :showShadow="false"
+        :showBorder="false"
+        class="px-4 pt-6 pb-2.5 sm:px-6.5 xl:pb-1"
     >
         <h4
             v-if="props.title"
@@ -164,7 +167,7 @@ defineExpose({
             <table class="table-auto">
                 <thead>
                     <tr
-                        class="rounded-sm text-gray-500 bg-gray-100 dark:bg-gray-700 [&>th]:py-2.5 [&>th]:px-4 [&>th]:text-left"
+                        class="rounded-sm text-gray-500 bg-gray-100 dark:bg-gray-700 [&>th]:py-2.5 [&>th]:px-4 [&>th]:text-left duration-300 ease-linear"
                     >
                         <th class="w-[50px]">
                             <CheckboxGroup :for="'formCheckbox'">
@@ -232,7 +235,7 @@ defineExpose({
                     <tr
                         v-for="(item, key) in items"
                         :key="key"
-                        class="hover:bg-secondary hover:bg-opacity-10 dark:hover:bg-opacity-5 [&>td]:py-2.5 [&>td]:px-4 [&>td]:text-sm"
+                        class="hover:bg-secondary hover:bg-opacity-10 dark:hover:bg-opacity-5 [&>td]:py-2.5 [&>td]:px-4 [&>td]:text-sm duration-300 ease-linear"
                         :class="{
                             'border-b border-stroke dark:border-strokedark':
                                 key !== items.length - 1,
@@ -313,7 +316,7 @@ defineExpose({
             :max-pages-shown="5"
             v-model="data.current_page"
             :on-click="changePage"
-            class="py-4 pb-10"
+            class="py-6"
         />
 
         <CustomDialog
@@ -337,5 +340,5 @@ defineExpose({
                 class="max-w-[400px]"
             />
         </CustomDialog>
-    </div>
+    </DefaultCard>
 </template>
