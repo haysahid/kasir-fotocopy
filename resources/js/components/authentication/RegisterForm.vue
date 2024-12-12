@@ -216,7 +216,6 @@ watch(
             />
 
             <InputGroup
-                @enter="register"
                 v-model="form.email"
                 id="email"
                 label="Alamat Email"

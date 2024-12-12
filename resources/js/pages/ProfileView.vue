@@ -237,13 +237,13 @@ onMounted(() => {
             <CustomDialog
                 id="updateProfileDialog"
                 :show-cancel="true"
-                class="w-full xsm:w-[500px]"
                 @cancel="onUpdateUserDialogClosed"
             >
                 <ProfileForm
                     :show-close-button="true"
-                    :user="user"
+                    :user="userStore.user"
                     :auto-clear-data="false"
+                    class="sm:min-w-[400px] max-w-[400px]"
                     @close="onUpdateUserDialogClosed"
                 />
             </CustomDialog>
