@@ -114,7 +114,7 @@ function logout() {
                     </li>
                     <li>
                         <Link
-                            :href="route('home')"
+                            :href="route('profile')"
                             class="flex items-center gap-3.5 text-sm font-medium duration-100 ease-in-out hover:text-primary dark:hover:text-secondary dark:text-gray-200 [&>svg]:hover:text-primary [&>svg]:hover:fill-primary [&>svg]:dark:hover:text-secondary [&>svg]:dark:hover:fill-secondary"
                         >
                             <svg

@@ -28,9 +28,13 @@ export const useUserStore = defineStore('user', () => {
 
     const isLoggedIn = computed(() => user.value !== false);
 
+    const isEnabled = computed(() => {
+        return user.value.disabled_at === null
+    });
+
     function clearUser() {
         user.value = false
     }
 
-    return { user, fetchUser, isLoggedIn, clearUser }
+    return { user, fetchUser, isLoggedIn, clearUser, isEnabled }
 })
