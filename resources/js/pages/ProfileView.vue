@@ -65,7 +65,11 @@ onMounted(() => {
                     class="flex flex-col gap-9 md:flex-row"
                 >
                     <div class="flex flex-col md:w-1/2 gap-9">
-                        <DefaultCard cardTitle="Pengguna">
+                        <DefaultCard
+                            :showShadow="false"
+                            :showBorder="false"
+                            cardTitle="Pengguna"
+                        >
                             <div class="p-6.5">
                                 <div
                                     class="flex flex-col items-center justify-center gap-8 max-sm:flex-col"
@@ -183,7 +187,11 @@ onMounted(() => {
                     </div>
 
                     <div class="flex flex-col gap-9 md:w-1/2">
-                        <DefaultCard cardTitle="Toko">
+                        <DefaultCard
+                            :showShadow="false"
+                            :showBorder="false"
+                            cardTitle="Toko"
+                        >
                             <div class="p-6.5">
                                 <div
                                     v-if="
@@ -206,7 +214,7 @@ onMounted(() => {
                                         viewBox="0 0 24 24"
                                         stroke-width="1.5"
                                         stroke="currentColor"
-                                        class="text-gray-400 dark:text-gray-500 size-24"
+                                        class="text-gray-400 duration-300 ease-linear dark:text-gray-500 size-[140px]"
                                     >
                                         <path
                                             stroke-linecap="round"

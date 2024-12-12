@@ -28,7 +28,9 @@ const props = defineProps({
         >
             {{ props.label }}
         </p>
-        <div class="text-black sm:w-2/3 dark:text-white px-1.5 sm:py-2 md:p-3">
+        <div
+            class="text-black sm:w-2/3 dark:text-white px-1.5 sm:py-2 md:p-3 text-sm"
+        >
             <slot></slot>
         </div>
     </div>
