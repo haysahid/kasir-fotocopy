@@ -100,7 +100,12 @@ class PurchaseController extends Controller
 
             // Create order
             $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
-            $code = $storeAcronym->value . '-B-' . date('YmdHis');
+
+            if ($storeAcronym) {
+                $code = $storeAcronym->value . '-B-' . date('YmdHis');
+            } else {
+                $code = 'B-' . date('YmdHis');
+            }
 
             $purchase = Purchase::create([
                 'code' => $code,

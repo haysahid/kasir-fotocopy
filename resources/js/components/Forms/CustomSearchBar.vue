@@ -48,7 +48,7 @@ function enter() {
                 type="text"
                 :placeholder="props.placeholder"
                 :id="props.id"
-                class="w-full py-2 pl-3 pr-10 text-black bg-transparent border rounded-lg outline-none text-ellipsis border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"
+                class="w-full py-2 pl-3 pr-10 text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none text-ellipsis border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"
                 :class="{
                     '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
                         props.warning,

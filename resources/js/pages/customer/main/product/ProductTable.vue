@@ -16,15 +16,15 @@ const props = defineProps({
 
 const productStore = useProductStore();
 
-const checkedItems = ref([]);
-const isAllItemsChecked = ref(false);
+const selectedItems = ref([]);
+const isAllItemsSelected = ref(false);
 
 const itemFormDialog = ref(null);
 const deleteItemDialog = ref(null);
 
 function showItemFormDialog(item) {
     if (item) {
-        checkedItems.value = [item];
+        selectedItems.value = [item];
     }
 
     itemFormDialog.value.showModal();
@@ -33,7 +33,7 @@ function showItemFormDialog(item) {
 function showDeleteItemDialog(item) {
     deleteItemDialog.value.showModal();
     if (item) {
-        checkedItems.value = [item];
+        selectedItems.value = [item];
     }
 }
 
@@ -45,18 +45,18 @@ function onItemFormDialogClosed(value) {
         getData();
     }
 
-    checkedItems.value = [];
+    selectedItems.value = [];
 }
 
 function onDeleteItemDialogClosed(value) {
     deleteItemDialog.value.close(value);
 
-    if (checkedItems.value.length == 1 && value == false) {
-        checkedItems.value = [];
+    if (selectedItems.value.length == 1 && value == false) {
+        selectedItems.value = [];
     }
 
     if (value) {
-        checkedItems.value = [];
+        selectedItems.value = [];
         productStore.query.page = productStore.data.current_page;
         getData();
     }
@@ -77,32 +77,34 @@ const changePage = (page) => {
 };
 
 watch(
-    () => checkedItems.value.length,
+    () => selectedItems.value.length,
     (newValue, oldValue) => {
         console.log("current page: ", productStore.data.current_page);
     }
 );
 
 watch(
-    () => isAllItemsChecked.value,
+    () => isAllItemsSelected.value,
     (newValue, oldValue) => {
         if (!oldValue && newValue) {
-            checkedItems.value = JSON.parse(JSON.stringify(productStore.items));
+            selectedItems.value = JSON.parse(
+                JSON.stringify(productStore.items)
+            );
         }
 
         if (
             oldValue &&
             !newValue &&
-            checkedItems.value.length === productStore.items?.length
+            selectedItems.value.length === productStore.items?.length
         ) {
-            checkedItems.value = [];
+            selectedItems.value = [];
         }
 
-        checkedItems.value = checkedItems.value;
+        selectedItems.value = selectedItems.value;
     }
 );
 
-const selectionMode = computed(() => checkedItems.value?.length > 0);
+const selectionMode = computed(() => selectedItems.value?.length > 0);
 
 onMounted(() => {
     getData();
@@ -115,7 +117,7 @@ defineExpose({
     showItemFormDialog,
     showDeleteItemDialog,
     selectionMode,
-    checkedItems,
+    selectedItems,
 });
 </script>
 
@@ -145,8 +147,8 @@ defineExpose({
                                     type="checkbox"
                                     :id="'formCheckbox'"
                                     class="sr-only taskCheckbox"
-                                    :value="isAllItemsChecked"
-                                    v-model="isAllItemsChecked"
+                                    :value="isAllItemsSelected"
+                                    v-model="isAllItemsSelected"
                                 />
                             </CheckboxGroup>
                         </th>
@@ -210,7 +212,9 @@ defineExpose({
                             'border-b border-stroke dark:border-strokedark':
                                 key !== productStore.items.length - 1,
                             'bg-secondary bg-opacity-20 dark:bg-opacity-10':
-                                checkedItems.map((i) => i.id).includes(item.id),
+                                selectedItems
+                                    .map((i) => i.id)
+                                    .includes(item.id),
                         }"
                     >
                         <!-- Checkbox -->
@@ -221,7 +225,7 @@ defineExpose({
                                     :id="'formCheckbox_' + item.id"
                                     class="sr-only taskCheckbox"
                                     :value="item"
-                                    v-model="checkedItems"
+                                    v-model="selectedItems"
                                 />
                             </CheckboxGroup>
                         </td>
@@ -304,7 +308,7 @@ defineExpose({
         >
             <ProductForm
                 :show-close-button="true"
-                :item="checkedItems[0]"
+                :item="selectedItems[0]"
                 @close="onItemFormDialogClosed"
                 class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
             />
@@ -313,7 +317,7 @@ defineExpose({
         <CustomDialog id="deleteItemDialog" :show-cancel="true">
             <DeleteProductConfirmation
                 :show-close-button="true"
-                :items="checkedItems"
+                :items="selectedItems"
                 @close="onDeleteItemDialogClosed"
                 class="max-sm:w-full sm:min-w-[300px] max-w-[300px]"
             />

@@ -100,7 +100,13 @@ class SalesController extends Controller
 
             // Create order
             $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
-            $code = $storeAcronym->value . '-J-' . date('YmdHis');
+
+            if ($storeAcronym) {
+                $code = $storeAcronym->value . '-J-' . date('YmdHis');
+            } else {
+                $code = 'J-' . date('YmdHis');
+            }
+
 
             $sale = Sale::create([
                 'code' => $code,

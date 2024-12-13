@@ -1,12 +1,11 @@
 <script setup>
-import { ref, inject, onUpdated, computed, watch, onMounted } from "vue";
+import { ref, onUpdated, watch, onMounted } from "vue";
 import InputGroup from "@/components/Forms/InputGroup.vue";
 import CustomDatePicker from "@/components/Forms/CustomDatePicker.vue";
-import SelectGroup from "@/components/Forms/SelectGroup.vue";
-import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
+import { useProductStore } from "@/stores/product";
 
 const props = defineProps({
     showCloseButton: {
@@ -22,8 +21,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const axios = inject("axios");
-const Toast = inject("Toast");
+const productStore = useProductStore();
 
 const form = ref({
     code: "",
@@ -49,11 +47,8 @@ const formValidation = ref({
     expired_at: "",
 });
 
-const errorMessage = ref("");
-const saveStatus = ref("");
-
 function clearErrorMessage() {
-    errorMessage.value = "";
+    productStore.errorMessage = "";
 }
 
 async function saveItem() {
@@ -67,113 +62,20 @@ async function saveItem() {
 async function addItem() {
     if (!validateAddItem()) return;
 
-    saveStatus.value = "loading";
+    const response = await productStore.addItem(form.value);
 
-    try {
-        const token = `Bearer ${localStorage.getItem("access_token")}`;
-        const response = await axios.post("/api/product", form.value, {
-            headers: {
-                Authorization: token,
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-        });
-
-        Toast.fire({
-            icon: "success",
-            title: response.data.meta.message,
-        });
-
+    if (response.meta.code === 201) {
         close(true);
-        saveStatus.value = "success";
-    } catch (error) {
-        if (
-            error.response?.status === 400 &&
-            error.response?.data === "Token is expired\n"
-        ) {
-            close(false);
-
-            return Toast.fire({
-                icon: "warning",
-                title: "Sesi login telah berakhir, silahkan login kembali",
-                didDestroy: () => {
-                    window.location = route("login");
-                },
-            });
-        }
-
-        Toast.fire({
-            icon: "warning",
-            title: error.response?.data?.message || "Terjadi kesalahan" + error,
-        });
-
-        console.error(error);
-
-        saveStatus.value = "error";
-        errorMessage.value = "Terjadi kesalahan";
     }
 }
 
 async function updateItem() {
     if (!validateUpdateItem()) return;
 
-    saveStatus.value = "loading";
+    const response = await productStore.updateItem(props.item.id, form.value);
 
-    try {
-        const token = `Bearer ${localStorage.getItem("access_token")}`;
-        const updatedData = form.value;
-
-        for (const key in updatedData) {
-            if (key === "password" || key === "passwordConfirmation") {
-                if (
-                    updatedData[key] === null ||
-                    updatedData[key] === undefined ||
-                    updatedData[key] === ""
-                ) {
-                    delete updatedData[key];
-                }
-            }
-        }
-
-        const response = await axios.put(
-            `/api/product/${props.item.id}`,
-            form.value,
-            {
-                headers: { Authorization: token },
-            }
-        );
-
-        Toast.fire({
-            icon: "success",
-            title: response.data.meta.message,
-        });
-
+    if (response.meta.code === 200) {
         close(true);
-        saveStatus.value = "success";
-    } catch (error) {
-        if (
-            error.response?.status === 400 &&
-            error.response?.data === "Token is expired\n"
-        ) {
-            close(false);
-
-            return Toast.fire({
-                icon: "warning",
-                title: "Sesi login telah berakhir, silahkan login kembali",
-                didDestroy: () => {
-                    window.location = route("login");
-                },
-            });
-        }
-
-        Toast.fire({
-            icon: "warning",
-            title: error.response?.data?.message || "Terjadi kesalahan",
-        });
-
-        console.error(error);
-        // close(false);
-        saveStatus.value = "error";
-        errorMessage.value = "Terjadi kesalahan";
     }
 }
 
@@ -202,8 +104,8 @@ function validateAddItem() {
     if (form.value.selling_price.length < 1) {
         formValidation.value.selling_price = "Harga jual tidak boleh kosong";
         result = false;
-    } else if (!form.value.purchase_price.match(/^\d+$/)) {
-        formValidation.value.purchase_price = "Harga jual harus berupa angka";
+    } else if (!form.value.selling_price.match(/^\d+$/)) {
+        formValidation.value.selling_price = "Harga jual harus berupa angka";
         result = false;
     }
 
@@ -362,8 +264,8 @@ function close(value) {
     }
 
     emit("close", value);
-    saveStatus.value = "";
-    errorMessage.value = "";
+    productStore.errorMessage = "";
+    productStore.saveStatus = "";
 }
 </script>
 
@@ -375,9 +277,9 @@ function close(value) {
     >
         <div class="p-6.5">
             <AlertWarning
-                v-if="errorMessage"
+                v-if="productStore.errorMessage"
                 @close="clearErrorMessage"
-                :description="errorMessage"
+                :description="productStore.errorMessage"
                 class="mb-6"
             />
 
@@ -455,7 +357,7 @@ function close(value) {
             <div class="flex flex-col-reverse gap-x-4 sm:flex-row">
                 <CustomButton
                     @click="close(false)"
-                    :enable="saveStatus !== 'loading'"
+                    :enable="productStore.saveStatus !== 'loading'"
                     color="bg-danger"
                     :is-full="true"
                     padding="p-3"
@@ -466,7 +368,7 @@ function close(value) {
 
                 <CustomButton
                     @click="saveItem"
-                    :loading="saveStatus === 'loading'"
+                    :loading="productStore.saveStatus === 'loading'"
                     color="bg-primary"
                     :is-full="true"
                     padding="p-3"

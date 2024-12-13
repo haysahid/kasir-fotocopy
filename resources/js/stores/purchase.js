@@ -1,7 +1,7 @@
 import { defineStore } from "pinia"
 import { ref, computed, inject } from "vue"
 
-export const useProductStore = defineStore('product', () => {
+export const usePurchaseStore = defineStore('purchase', () => {
     const axios = inject("axios");
     const Toast = inject("Toast");
     const token = `Bearer ${localStorage.getItem("access_token")}`;
@@ -36,7 +36,7 @@ export const useProductStore = defineStore('product', () => {
         try {
             getAllItemsStatus.value = "loading";
 
-            const response = await axios.get("/api/product", {
+            const response = await axios.get("/api/purchase", {
                 headers: { Authorization: token },
                 params: query.value,
             });
@@ -59,7 +59,7 @@ export const useProductStore = defineStore('product', () => {
         try {
             getItemStatus.value = "loading";
 
-            const response = await axios.get(`/api/product/${id}`, {
+            const response = await axios.get(`/api/purchase/${id}`, {
                 headers: { Authorization: token }
             });
 
@@ -79,7 +79,7 @@ export const useProductStore = defineStore('product', () => {
         saveStatus.value = "loading";
 
         try {
-            const response = await axios.post("/api/product", item, {
+            const response = await axios.post("/api/purchase", item, {
                 headers: { Authorization: token },
             });
 
@@ -110,7 +110,7 @@ export const useProductStore = defineStore('product', () => {
         saveStatus.value = "loading";
 
         try {
-            const response = await axios.put(`/api/product/${id}`, item, {
+            const response = await axios.put(`/api/purchase/${id}`, item, {
                 headers: { Authorization: token },
             });
 
@@ -143,7 +143,7 @@ export const useProductStore = defineStore('product', () => {
 
             for (let i = 0; i < items.length; i++) {
                 const response = await axios.put(
-                    `/api/product/${items[i].id}/disable`,
+                    `/api/purchase/${items[i].id}/disable`,
                     {},
                     {
                         headers: {
@@ -177,7 +177,7 @@ export const useProductStore = defineStore('product', () => {
         }
     }
 
-    function clearProductStore() {
+    function clearPurchaseStore() {
         data.value = {}
         query.value = {
             limit: 10,
@@ -207,6 +207,6 @@ export const useProductStore = defineStore('product', () => {
         addItem,
         updateItem,
         deleteItems,
-        clearProductStore,
+        clearPurchaseStore,
     }
 })

@@ -9,8 +9,6 @@ import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";
 
 const tableData = ref(null);
 
-const debounce = inject("debounce");
-
 const query = ref({
     limit: null,
     page: 1,
@@ -48,7 +46,7 @@ watch(
                             color="bg-danger"
                             @click="tableData.showDeleteItemDialog()"
                         >
-                            Hapus ({{ tableData.checkedItems.length }})
+                            Hapus ({{ tableData.selectedItems.length }})
                         </CustomButton>
 
                         <CustomButton
