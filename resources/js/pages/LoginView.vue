@@ -1,10 +1,20 @@
 <script setup>
 import LoginForm from "@/components/authentication/LoginForm.vue";
 import BaseNavbar from "@/components/landing/BaseNavbar.vue";
+import { useUserStore } from "@/stores/user";
+import { onMounted } from "vue";
+
+const userStore = useUserStore();
+
+onMounted(() => {
+    if (userStore.user) {
+        window.location.replace(route("dashboard"));
+    }
+});
 </script>
 
 <template>
-    <main class="dark:!bg-gray-900">
+    <main class="h-full">
         <BaseNavbar :show-nav-link="true" />
         <div class="relative overflow-hidden">
             <div class="mx-auto max-w-7xl">

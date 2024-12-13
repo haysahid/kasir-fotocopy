@@ -76,7 +76,7 @@ const props = defineProps({
                 v-if="!props.isInCart"
                 class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 text-ellipsis"
                 :class="{
-                    '!text-slate-500': props.inCartQuantity > 0,
+                    '!text-slate-400': props.inCartQuantity > 0,
                 }"
             >
                 {{ props.product.description }}
@@ -106,9 +106,9 @@ const props = defineProps({
                 Rp {{ $formatCurrency(props.product.purchase_price) }}
             </p>
             <p
-                class="text-xs text-gray-500 dark:text-gray-500 text-nowrap"
+                class="text-xs text-gray-500 dark:text-gray-400 text-nowrap"
                 :class="{
-                    '!text-slate-500': props.inCartQuantity > 0,
+                    '!text-slate-400': props.inCartQuantity > 0,
                 }"
             >
                 / {{ props.product.unit }}

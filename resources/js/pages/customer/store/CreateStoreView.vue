@@ -8,7 +8,7 @@ const userStore = useUserStore();
 
 onMounted(() => {
     if (userStore.user && userStore.user?.store.length > 0) {
-        window.location.replace(route("home"));
+        window.location.replace(route("dashboard"));
     }
 });
 </script>
