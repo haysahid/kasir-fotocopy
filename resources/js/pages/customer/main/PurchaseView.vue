@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
-import PageSection from "@/components/Sections/PageSection.vue";
-import ProductList from "./purchase/ProductList.vue";
-import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";
-import { ref, watch } from "vue";
-
-
+import AddPurchase from "./purchase/AddPurchase.vue";
 </script>
 
 <template>
     <DefaultLayout>
         <div data-aos="fade-up" data-aos-once="true">
-            <ProductList ref="listData" />
+            <AddPurchase ref="listData" />
         </div>
     </DefaultLayout>
 </template>

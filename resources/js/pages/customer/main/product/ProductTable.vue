@@ -253,14 +253,14 @@ defineExpose({
                         <!-- Purchase Price -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ $formatCurrency(item.purchase_price) }}
+                                Rp {{ $formatCurrency(item.purchase_price) }}
                             </p>
                         </td>
 
                         <!-- Selling Price -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ $formatCurrency(item.selling_price) }}
+                                Rp {{ $formatCurrency(item.selling_price) }}
                             </p>
                         </td>
 

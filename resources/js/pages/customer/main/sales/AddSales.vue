@@ -1,18 +1,15 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
-import ItemActionButton from "@/components/ItemActionButton.vue";
-import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useProductStore } from "@/stores/product";
 import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";
-import PurchaseProductItem from "./PurchaseProductItem.vue";
-import InputGroup from "@/components/Forms/InputGroup.vue";
-import CartItem from "./CartItem.vue";
+import ProductItem from "../product/ProductItem.vue";
+import SalesCartItem from "./SalesCartItem.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
 import EmptyCart from "./EmptyCart.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
-import PurchaseForm from "./PurchaseForm.vue";
+import SalesForm from "./SalesForm.vue";
 
 const props = defineProps({
     title: {
@@ -42,7 +39,12 @@ function onItemFormDialogClosed(value) {
 
     if (value) {
         selectedItems.value = [];
+        getData();
     }
+}
+
+function showSuccessDialog() {
+    itemFormDialog.value.showModal();
 }
 
 async function getData(params) {
@@ -65,7 +67,7 @@ function selectItem(item) {
         product_id: item.id,
         product: item,
         quantity: 1,
-        item_price: item.purchase_price,
+        item_price: item.selling_price,
     };
 
     if (selectedItems.value.map((e) => e.id).includes(item.id)) {
@@ -156,7 +158,7 @@ defineExpose({
 
             <div class="flex flex-col gap-4">
                 <PageSection
-                    :page-title="'Pembelian'"
+                    :page-title="'Penjualan'"
                     id="pagetop"
                     class="col-span-12 text-sm xl:col-span-8"
                 >
@@ -188,8 +190,9 @@ defineExpose({
                                     .includes(product.id),
                         }"
                     >
-                        <PurchaseProductItem
+                        <ProductItem
                             :product="product"
+                            priceToShow="selling_price"
                             :isSelected="
                                 selectedItems
                                     .map((e) => e.id)
@@ -228,7 +231,7 @@ defineExpose({
         <div class="md:w-3/5 xl:w-2/5 min-h-[50%]">
             <DefaultCard
                 class="flex flex-col justify-between w-full h-full"
-                cardTitle="Keranjang Pembelian"
+                cardTitle="Keranjang Penjualan"
                 :showShadow="false"
                 :showBorder="false"
             >
@@ -236,7 +239,7 @@ defineExpose({
                     v-if="selectedItems.length > 0"
                     class="h-full duration-300 ease-linear"
                 >
-                    <CartItem
+                    <SalesCartItem
                         v-for="cartItem in selectedItems"
                         :key="cartItem.id"
                         :id="'cart-item-' + cartItem.id"
@@ -262,7 +265,7 @@ defineExpose({
                         :isFull="true"
                         :enable="selectedItems.length > 0"
                     >
-                        Buat Pembelian
+                        Buat Penjualan
                     </CustomButton>
                 </div>
             </DefaultCard>
@@ -273,12 +276,12 @@ defineExpose({
             :show-cancel="true"
             @cancel="onItemFormDialogClosed"
         >
-            <PurchaseForm
+            <SalesForm
                 :show-close-button="true"
                 :item="{
                     note: null,
                     payment: 0,
-                    purchase_items: selectedItems,
+                    sales_items: selectedItems,
                 }"
                 @close="onItemFormDialogClosed"
                 class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"

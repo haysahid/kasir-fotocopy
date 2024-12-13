@@ -16,6 +16,10 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    priceToShow: {
+        type: String,
+        default: "selling_price",
+    },
 });
 </script>
 
@@ -103,7 +107,12 @@ const props = defineProps({
             <p
                 class="text-sm font-semibold text-primary dark:text-secondary text-nowrap"
             >
-                Rp {{ $formatCurrency(props.product.purchase_price) }}
+                Rp
+                {{
+                    props.priceToShow == "purchase_price"
+                        ? $formatCurrency(props.product.purchase_price)
+                        : $formatCurrency(props.product.selling_price)
+                }}
             </p>
             <p
                 class="text-xs text-gray-500 dark:text-gray-400 text-nowrap"

@@ -1,7 +1,7 @@
 <script setup>
 import InputGroup from "@/components/Forms/InputGroup.vue";
 import ItemActionButton from "@/components/ItemActionButton.vue";
-import PurchaseProductItem from "@/pages/customer/main/purchase/PurchaseProductItem.vue";
+import ProductItem from "../product/ProductItem.vue";
 import { defineProps, defineEmits, computed } from "vue";
 
 const props = defineProps({
@@ -32,8 +32,9 @@ const canAdd = computed(
         class="flex flex-col gap-2.5 px-6 py-2.5 border-b border-stroke dark:border-strokedark duration-300 ease-linear"
     >
         <div class="flex flex-row gap-2">
-            <PurchaseProductItem
+            <ProductItem
                 :product="props.cartItem.product"
+                priceToShow="sales_price"
                 :isInCart="true"
                 :isSelected="true"
                 class="w-full"
