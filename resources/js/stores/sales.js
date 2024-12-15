@@ -164,7 +164,7 @@ export const useSalesStore = defineStore('sales', () => {
             deleteStatus.value = "success";
             deleteProgress.value = 0;
 
-            return response.data;
+            return true;
         } catch (error) {
             const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
 
@@ -174,6 +174,7 @@ export const useSalesStore = defineStore('sales', () => {
             });
 
             deleteStatus.value = "error";
+            return false;
         }
     }
 

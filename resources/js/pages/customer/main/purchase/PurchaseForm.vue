@@ -190,6 +190,7 @@ function close(value) {
 
             <InputGroup
                 v-model="form.note"
+                @enter="saveItem"
                 id="note"
                 label="Catatan"
                 type="text"

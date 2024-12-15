@@ -275,7 +275,7 @@ defineExpose({
                 :show-close-button="true"
                 :item="{
                     note: null,
-                    payment: 0,
+                    payment: total,
                     purchase_items: selectedItems,
                 }"
                 @close="onItemFormDialogClosed"

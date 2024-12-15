@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
-import { useProductStore } from "@/stores/product";
+import { usePurchaseStore } from "@/stores/purchase";
 
 const props = defineProps({
     showCloseButton: Boolean,
@@ -13,10 +13,10 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const productStore = useProductStore();
+const purchaseStore = usePurchaseStore();
 
 async function deleteItems() {
-    const result = await productStore.deleteItems(props.items);
+    const result = await purchaseStore.deleteItems(props.items);
 
     if (result) {
         emit("close", true);
@@ -67,7 +67,7 @@ function close(value) {
                 v-if="items.length == 1"
                 class="mb-4 text-sm text-center text-gray-700 dark:text-white"
             >
-                Item <span class="font-bold">{{ items[0].name }}</span> akan
+                Item <span class="font-bold">{{ items[0].code }}</span> akan
                 dihapus
             </h2>
             <h2
@@ -85,7 +85,7 @@ function close(value) {
                     v-for="item in filteredItems"
                     class="px-4 py-2 text-sm text-gray-500 rounded-full bg-slate-100 dark:text-bodydark1 dark:bg-gray-700"
                 >
-                    {{ item.name }}
+                    {{ item.code }}
                 </div>
             </div>
 
@@ -94,7 +94,7 @@ function close(value) {
             >
                 <CustomButton
                     @click="close(false)"
-                    :enable="productStore.deleteStatus !== 'loading'"
+                    :enable="purchaseStore.deleteStatus !== 'loading'"
                     color="bg-slate-400"
                     :is-full="true"
                     padding="py-2.5 px-6"
@@ -103,8 +103,8 @@ function close(value) {
                 </CustomButton>
                 <CustomButton
                     @click="deleteItems"
-                    :loading="productStore.deleteStatus === 'loading'"
-                    :loading-text="`${productStore.deleteProgress}/${props.items.length}`"
+                    :loading="purchaseStore.deleteStatus === 'loading'"
+                    :loading-text="`${purchaseStore.deleteProgress}/${props.items.length}`"
                     color="bg-danger"
                     :is-full="true"
                     padding="py-2.5 px-6"

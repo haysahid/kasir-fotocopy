@@ -142,9 +142,8 @@ export const usePurchaseStore = defineStore('purchase', () => {
             deleteStatus.value = "loading";
 
             for (let i = 0; i < items.length; i++) {
-                const response = await axios.put(
-                    `/api/purchase/${items[i].id}/disable`,
-                    {},
+                const response = await axios.delete(
+                    `/api/purchase/${items[i].id}`,
                     {
                         headers: {
                             Accept: "application/json",
@@ -164,7 +163,7 @@ export const usePurchaseStore = defineStore('purchase', () => {
             deleteStatus.value = "success";
             deleteProgress.value = 0;
 
-            return response.data;
+            return true;
         } catch (error) {
             const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
 
@@ -174,6 +173,8 @@ export const usePurchaseStore = defineStore('purchase', () => {
             });
 
             deleteStatus.value = "error";
+
+            return false;
         }
     }
 

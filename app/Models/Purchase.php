@@ -11,7 +11,7 @@ class Purchase extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $appends = array('total', 'return');
+    protected $appends = array('total', 'return', 'status');
 
     /**
      * The attributes that are mass assignable.
@@ -42,5 +42,10 @@ class Purchase extends Model
     public function getReturnAttribute()
     {
         return $this->payment - $this->total;
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->return >= 0 ? 'Lunas' : 'Belum Lunas';
     }
 }

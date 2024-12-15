@@ -3,8 +3,7 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
 import ProductTable from "./product/ProductTable.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
-import { ref, watch, inject } from "vue";
-import InputGroup from "@/components/Forms/InputGroup.vue";
+import { ref, watch } from "vue";
 import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";
 
 const tableData = ref(null);

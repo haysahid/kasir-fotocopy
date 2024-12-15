@@ -86,17 +86,17 @@ class PurchaseController extends Controller
             $purchase_items = $request->input('purchase_items');
 
             // Count total
-            $total = 0;
+            // $total = 0;
 
-            foreach ($purchase_items as $purchase_item) {
-                $item = new PurchaseItem($purchase_item);
-                $total += $item->quantity * $item->item_price;
-            }
+            // foreach ($purchase_items as $purchase_item) {
+            //     $item = new PurchaseItem($purchase_item);
+            //     $total += $item->quantity * $item->item_price;
+            // }
 
-            // Check payment
-            if ($payment < $total) {
-                return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
-            }
+            // // Check payment
+            // if ($payment < $total) {
+            //     return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
+            // }
 
             // Create order
             $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();

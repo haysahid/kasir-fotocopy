@@ -8,6 +8,7 @@ import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { usePurchaseStore } from "@/stores/purchase";
 import PurchaseForm from "../purchase/PurchaseForm.vue";
+import DeletePurchaseConfirmation from "./DeletePurchaseConfirmation.vue";
 
 const props = defineProps({
     title: {
@@ -107,18 +108,10 @@ watch(
 
 const selectionMode = computed(() => selectedItems.value?.length > 0);
 
-const getPaymentStatus = (total, payment) => {
-    if (total <= payment) {
-        return "Lunas";
-    }
-
-    return "Belum Lunas";
-};
-
 onMounted(() => {
     getData();
     itemFormDialog.value = document.querySelector("#itemFormDialog");
-    // deleteItemDialog.value = document.querySelector("#deleteItemDialog");
+    deleteItemDialog.value = document.querySelector("#deleteItemDialog");
 });
 
 defineExpose({
@@ -310,7 +303,7 @@ defineExpose({
                         <!-- Payment Status -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ getPaymentStatus(item.total, item.payment) }}
+                                {{ item.status }}
                             </p>
                         </td>
 
@@ -357,13 +350,13 @@ defineExpose({
             />
         </CustomDialog>
 
-        <!-- <CustomDialog id="deleteItemDialog" :show-cancel="true">
-            <DeleteProductConfirmation
+        <CustomDialog id="deleteItemDialog" :show-cancel="true">
+            <DeletePurchaseConfirmation
                 :show-close-button="true"
                 :items="selectedItems"
                 @close="onDeleteItemDialogClosed"
                 class="max-sm:w-full sm:min-w-[300px] max-w-[300px]"
             />
-        </CustomDialog> -->
+        </CustomDialog>
     </DefaultCard>
 </template>
