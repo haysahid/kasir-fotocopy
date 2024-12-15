@@ -10,7 +10,7 @@ class Sale extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $appends = array('total', 'return', 'profit');
+    protected $appends = array('total', 'return', 'profit', 'status');
 
     /**
      * The attributes that are mass assignable.
@@ -47,5 +47,10 @@ class Sale extends Model
     public function getProfitAttribute()
     {
         return $this->sales_items->sum('profit');
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->return >= 0 ? 'Lunas' : 'Belum Lunas';
     }
 }

@@ -350,7 +350,7 @@ function close(value) {
                 v-model="form.expired_at"
                 id="expired_at"
                 label="Kadaluarsa"
-                placeholder="Pilih tanggal kadaluarsa"
+                placeholder="yyyy-mm-dd"
                 :warning="formValidation.expired_at"
             />
 

@@ -142,9 +142,8 @@ export const useSalesStore = defineStore('sales', () => {
             deleteStatus.value = "loading";
 
             for (let i = 0; i < items.length; i++) {
-                const response = await axios.put(
-                    `/api/sales/${items[i].id}/disable`,
-                    {},
+                const response = await axios.delete(
+                    `/api/sales/${items[i].id}`,
                     {
                         headers: {
                             Accept: "application/json",

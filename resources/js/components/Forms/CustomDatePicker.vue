@@ -44,7 +44,7 @@ onUpdated(() => {
 </script>
 
 <template>
-    <div :id="'date_' + props.id" class="mb-4">
+    <div :id="'date_' + props.id" class="w-full mb-4">
         <label
             v-if="props.label"
             :for="props.id"

@@ -86,17 +86,17 @@ class SalesController extends Controller
             $sales_items = $request->input('sales_items');
 
             // Count total
-            $total = 0;
+            // $total = 0;
 
-            foreach ($sales_items as $sales_item) {
-                $item = new SalesItem($sales_item);
-                $total += $item->quantity * $item->item_price;
-            }
+            // foreach ($sales_items as $sales_item) {
+            //     $item = new SalesItem($sales_item);
+            //     $total += $item->quantity * $item->item_price;
+            // }
 
-            // Check payment
-            if ($payment < $total) {
-                return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
-            }
+            // // Check payment
+            // if ($payment < $total) {
+            //     return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
+            // }
 
             // Create order
             $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();

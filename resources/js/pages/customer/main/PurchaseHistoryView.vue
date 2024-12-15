@@ -35,7 +35,7 @@ watch(
                     <CustomSearchBar
                         v-model="query.search"
                         id="search"
-                        placeholder="Cari produk / jasa"
+                        placeholder="Cari riwayat pembelian"
                         :useDebounce="true"
                     />
 
