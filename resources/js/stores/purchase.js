@@ -177,6 +177,12 @@ export const usePurchaseStore = defineStore('purchase', () => {
         }
     }
 
+    function clearItemForm() {
+        item.value = {};
+        saveStatus.value = "";
+        errorMessage.value = "";
+    }
+
     function clearPurchaseStore() {
         data.value = {}
         query.value = {
@@ -207,6 +213,7 @@ export const usePurchaseStore = defineStore('purchase', () => {
         addItem,
         updateItem,
         deleteItems,
+        clearItemForm,
         clearPurchaseStore,
     }
 })

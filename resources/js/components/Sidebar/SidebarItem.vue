@@ -29,7 +29,7 @@ const handleItemClick = () => {
 };
 
 const isActive = computed(() => {
-    return window.location.pathname.includes(props.item.route);
+    return window.location.pathname === props.item.route;
 });
 
 onMounted(() => {

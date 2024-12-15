@@ -27,5 +27,7 @@ Route::get('/dashboard', fn()  => Inertia::render('customer/main/DashboardView')
 Route::get('/product', fn()  => Inertia::render('customer/main/ProductView'))->name('product');
 Route::get('/purchase', fn()  => Inertia::render('customer/main/PurchaseView'))->name('purchase');
 Route::get('/sales', fn()  => Inertia::render('customer/main/SalesView'))->name('sales');
+Route::get('/purchase-history', fn()  => Inertia::render('customer/main/PurchaseHistoryView'))->name('purchase-history');
+Route::get('/sales-history', fn()  => Inertia::render('customer/main/SalesHistoryView'))->name('sales-history');
 Route::get('/report', fn()  => Inertia::render('customer/main/ReportView'))->name('report');
 Route::get('/setting', fn()  => Inertia::render('customer/main/SettingView'))->name('setting');

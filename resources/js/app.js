@@ -26,7 +26,7 @@ createInertiaApp({
             .use(plugin)
             .use(createPinia())
             .use(axios, {
-                baseUrl: import.meta.env.APP_URL,
+                baseUrl: null,
             })
             .use(Toast)
             .use(debounce)

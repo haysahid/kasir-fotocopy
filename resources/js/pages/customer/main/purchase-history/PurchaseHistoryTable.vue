@@ -2,11 +2,12 @@
 import { ref, onMounted, computed, watch } from "vue";
 import ItemActionButton from "@/components/ItemActionButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
-import DeleteProductConfirmation from "./DeleteProductConfirmation.vue";
-import ProductForm from "./ProductForm.vue";
+// import DeleteProductConfirmation from "./DeleteProductConfirmation.vue";
+// import ProductForm from "./ProductForm.vue";
 import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
-import { useProductStore } from "@/stores/product";
+import { usePurchaseStore } from "@/stores/purchase";
+import PurchaseForm from "../purchase/PurchaseForm.vue";
 
 const props = defineProps({
     title: {
@@ -14,7 +15,7 @@ const props = defineProps({
     },
 });
 
-const productStore = useProductStore();
+const purchaseStore = usePurchaseStore();
 
 const selectedItems = ref([]);
 const isAllItemsSelected = ref(false);
@@ -41,7 +42,7 @@ function onItemFormDialogClosed(value) {
     itemFormDialog.value.close(value);
 
     if (value) {
-        productStore.query.page = productStore.data.current_page;
+        purchaseStore.query.page = purchaseStore.data.current_page;
         getData();
     }
 
@@ -57,17 +58,17 @@ function onDeleteItemDialogClosed(value) {
 
     if (value) {
         selectedItems.value = [];
-        productStore.query.page = productStore.data.current_page;
+        purchaseStore.query.page = purchaseStore.data.current_page;
         getData();
     }
 }
 
 async function getData(params) {
-    await productStore.getAllItems(params);
+    await purchaseStore.getAllItems(params);
 }
 
 const changePage = (page) => {
-    productStore.query.page = page;
+    purchaseStore.query.page = page;
 
     getData();
 
@@ -79,7 +80,7 @@ const changePage = (page) => {
 watch(
     () => selectedItems.value.length,
     (newValue, oldValue) => {
-        console.log("current page: ", productStore.data.current_page);
+        console.log("current page: ", purchaseStore.data.current_page);
     }
 );
 
@@ -88,14 +89,14 @@ watch(
     (newValue, oldValue) => {
         if (!oldValue && newValue) {
             selectedItems.value = JSON.parse(
-                JSON.stringify(productStore.items)
+                JSON.stringify(purchaseStore.items)
             );
         }
 
         if (
             oldValue &&
             !newValue &&
-            selectedItems.value.length === productStore.items?.length
+            selectedItems.value.length === purchaseStore.items?.length
         ) {
             selectedItems.value = [];
         }
@@ -106,10 +107,18 @@ watch(
 
 const selectionMode = computed(() => selectedItems.value?.length > 0);
 
+const getPaymentStatus = (total, payment) => {
+    if (total <= payment) {
+        return "Lunas";
+    }
+
+    return "Belum Lunas";
+};
+
 onMounted(() => {
     getData();
     itemFormDialog.value = document.querySelector("#itemFormDialog");
-    deleteItemDialog.value = document.querySelector("#deleteItemDialog");
+    // deleteItemDialog.value = document.querySelector("#deleteItemDialog");
 });
 
 defineExpose({
@@ -157,7 +166,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Nama
+                                Tanggal
                             </h5>
                         </th>
 
@@ -165,7 +174,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Kategori
+                                Catatan
                             </h5>
                         </th>
 
@@ -173,7 +182,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Harga Beli
+                                Jumlah Item
                             </h5>
                         </th>
 
@@ -181,7 +190,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Harga Jual
+                                Total
                             </h5>
                         </th>
 
@@ -189,7 +198,23 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Stok
+                                Pembayaran
+                            </h5>
+                        </th>
+
+                        <th>
+                            <h5
+                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
+                            >
+                                Kembalian
+                            </h5>
+                        </th>
+
+                        <th>
+                            <h5
+                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
+                            >
+                                Status
                             </h5>
                         </th>
 
@@ -205,12 +230,12 @@ defineExpose({
 
                 <tbody>
                     <tr
-                        v-for="(item, key) in productStore.items"
+                        v-for="(item, key) in purchaseStore.items"
                         :key="key"
                         class="hover:bg-secondary hover:bg-opacity-10 dark:hover:bg-opacity-5 [&>td]:py-2.5 [&>td]:px-4 [&>td]:text-sm duration-300 ease-linear"
                         :class="{
                             'border-b border-stroke dark:border-strokedark':
-                                key !== productStore.items.length - 1,
+                                key !== purchaseStore.items.length - 1,
                             'bg-secondary bg-opacity-20 dark:bg-opacity-10':
                                 selectedItems
                                     .map((i) => i.id)
@@ -230,10 +255,14 @@ defineExpose({
                             </CheckboxGroup>
                         </td>
 
-                        <!-- Name -->
+                        <!-- Created At -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.name }}
+                                {{
+                                    $formatDate.formatDate(item.created_at, {
+                                        dateStyle: "medium",
+                                    })
+                                }}
                             </p>
                             <p
                                 v-if="item.code"
@@ -243,31 +272,45 @@ defineExpose({
                             </p>
                         </td>
 
-                        <!-- Category -->
+                        <!-- Note -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.category }}
+                                {{ item.note ?? "-" }}
                             </p>
                         </td>
 
-                        <!-- Purchase Price -->
+                        <!-- Count Items -->
                         <td>
                             <p class="text-black dark:text-white">
-                                Rp {{ $formatCurrency(item.purchase_price) }}
+                                {{ item.purchase_items.length }}
                             </p>
                         </td>
 
                         <!-- Selling Price -->
                         <td>
                             <p class="text-black dark:text-white">
-                                Rp {{ $formatCurrency(item.selling_price) }}
+                                Rp {{ $formatCurrency(item.total) }}
                             </p>
                         </td>
 
-                        <!-- Stock -->
+                        <!-- Payment -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.stock }}
+                                Rp {{ $formatCurrency(item.payment) }}
+                            </p>
+                        </td>
+
+                        <!-- Return -->
+                        <td>
+                            <p class="text-black dark:text-white">
+                                Rp {{ $formatCurrency(item.return) }}
+                            </p>
+                        </td>
+
+                        <!-- Payment Status -->
+                        <td>
+                            <p class="text-black dark:text-white">
+                                {{ getPaymentStatus(item.total, item.payment) }}
                             </p>
                         </td>
 
@@ -287,17 +330,17 @@ defineExpose({
             class="flex flex-col items-start justify-between gap-2 py-6 sm:items-center sm:flex-row"
         >
             <vue-awesome-paginate
-                v-if="productStore?.data?.current_page"
-                :total-items="productStore.data.total"
-                :items-per-page="productStore.data.per_page"
+                v-if="purchaseStore?.data?.current_page"
+                :total-items="purchaseStore.data.total"
+                :items-per-page="purchaseStore.data.per_page"
                 :max-pages-shown="5"
-                v-model="productStore.data.current_page"
+                v-model="purchaseStore.data.current_page"
                 @click="changePage"
             />
             <p class="text-xs font-light text-gray-400">
-                Showing {{ productStore.data?.from }} to
-                {{ productStore.data?.to }} of
-                {{ productStore.data?.total }} entries
+                Showing {{ purchaseStore.data?.from }} to
+                {{ purchaseStore.data?.to }} of
+                {{ purchaseStore.data?.total }} entries
             </p>
         </div>
 
@@ -306,7 +349,7 @@ defineExpose({
             :show-cancel="true"
             @cancel="onItemFormDialogClosed"
         >
-            <ProductForm
+            <PurchaseForm
                 :show-close-button="true"
                 :item="selectedItems[0]"
                 @close="onItemFormDialogClosed"
@@ -314,13 +357,13 @@ defineExpose({
             />
         </CustomDialog>
 
-        <CustomDialog id="deleteItemDialog" :show-cancel="true">
+        <!-- <CustomDialog id="deleteItemDialog" :show-cancel="true">
             <DeleteProductConfirmation
                 :show-close-button="true"
                 :items="selectedItems"
                 @close="onDeleteItemDialogClosed"
                 class="max-sm:w-full sm:min-w-[300px] max-w-[300px]"
             />
-        </CustomDialog>
+        </CustomDialog> -->
     </DefaultCard>
 </template>

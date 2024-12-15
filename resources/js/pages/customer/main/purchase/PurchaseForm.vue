@@ -159,7 +159,7 @@ function close(value) {
     }
 
     emit("close", value);
-    purchaseStore.clearPurchaseStore();
+    purchaseStore.clearItemForm();
 }
 </script>
 
@@ -179,6 +179,7 @@ function close(value) {
 
             <InputGroup
                 v-model="form.payment"
+                @enter="saveItem"
                 id="payment"
                 label="Pembayaran"
                 type="number"

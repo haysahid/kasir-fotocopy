@@ -1,7 +1,7 @@
 const formatDate = (
     datetime,
     options = {
-        dateStyle: "short",
+        dateStyle: "medium",
         timeStyle: "short",
     }
 ) => {
