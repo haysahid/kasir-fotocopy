@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
+import SettingForm from "./setting/SettingForm.vue";
 </script>
 
 <template>
@@ -9,9 +10,11 @@ import PageSection from "@/components/Sections/PageSection.vue";
             <PageSection
                 :page-title="'Pengaturan'"
                 id="pagetop"
-                class="col-span-12 text-sm xl:col-span-8"
+                class="col-span-12 mb-4 text-sm xl:col-span-8"
             >
             </PageSection>
+
+            <SettingForm class="max-sm:w-full sm:min-w-[400px] max-w-[400px]" />
         </div>
     </DefaultLayout>
 </template>

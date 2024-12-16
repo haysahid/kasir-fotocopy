@@ -5,7 +5,7 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useSalesStore } from "@/stores/sales";
-import SuccessDialog from "../../../../components/Dialogs/SuccessDialog.vue";
+import SuccessDialog from "@/components/Dialogs/SuccessDialog.vue";
 
 const props = defineProps({
     showCloseButton: {
