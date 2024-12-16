@@ -10,7 +10,7 @@
     @inertiaHead
 </head>
 
-<body class="dark:!bg-gray-900">
+<body class="dark:!bg-gray-900 duration-300 ease-linear">
     @inertia
 </body>
 

@@ -51,7 +51,7 @@ function enter() {
                 @input="updateValue($event)"
                 @keyup.enter="enter"
                 :value="props.modelValue"
-                :type="obscure ? 'text' : props.type"
+                :type="props.type"
                 :placeholder="props.placeholder"
                 :id="props.id"
                 class="w-full py-2 pl-3 pr-4 text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"

@@ -6,9 +6,9 @@ import BaseFooter from "@/components/landing/BaseFooter.vue";
 <template>
     <div class="relative min-h-screen font-sans antialiased">
         <div class="relative">
-            <div
-                class="absolute top-0 left-0 w-full h-[125vh] sm:h-[225vh] lg:h-[125vh] cover-gradient dark:!bg-gray-900"
-            ></div>
+            <!-- <div
+                class="absolute top-0 left-0 w-full h-[125vh] sm:h-[225vh] lg:h-[125vh] cover-gradient"
+            ></div> -->
             <BaseNavbar />
 
             <main class="text-neutral-800">

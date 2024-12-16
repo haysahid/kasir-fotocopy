@@ -6,10 +6,12 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import DefaultAuthCard from "@/components/authentication/DefaultAuthCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import { Link } from "@inertiajs/inertia-vue3";
+import { useUserStore } from "@/stores/user";
 
 const axios = inject("axios");
 
 const { initSidebar } = useSidebarStore();
+const userStore = useUserStore();
 
 const form = ref({
     email: "",
@@ -36,6 +38,8 @@ async function login() {
     try {
         const response = await axios.post("/api/auth/login", form.value);
         localStorage.setItem("access_token", response.data.result.access_token);
+
+        await userStore.fetchUser();
 
         window.location = route("dashboard");
     } catch (error) {

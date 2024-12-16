@@ -172,7 +172,7 @@ function close(value) {
 
     <DefaultCard
         v-else
-        :card-title="props.item.id ? 'Ubah Pembelian' : 'Tambah Pembelian'"
+        :card-title="props.item.id ? 'Ubah Penjualan' : 'Tambah Penjualan'"
         :show-close-button="props.showCloseButton"
         @close="close(false)"
     >
