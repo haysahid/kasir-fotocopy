@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -220,10 +221,13 @@ class Store extends Model
     {
         $user = Auth::user();
 
+
+
+        // Generate current week graph data
         if ($user->role_id <= 4) {
-            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->whereRaw('WEEK(created_at) = ' . date($week))->get();
+            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->get();
         } else {
-            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->whereRaw('WEEK(created_at) = ' . date($week))->where('user_id', $user->id)->get();
+            $sales = $this->sales()->whereYear('created_at', $year)->whereMonth('created_at', $month)->where('user_id', $user->id)->get();
         }
 
         $salesRevenue = $sales->groupBy(function ($item) {
@@ -235,12 +239,19 @@ class Store extends Model
         $days = [];
         $revenue = [];
 
-        for ($i = 1; $i <= 7; $i++) {
-            $days[] = DateTime::createFromFormat('!d', $i)->format('D');
-            $revenue[] = $salesRevenue->get($i, 0);
+        $start = Carbon::create($year, $month, 1);
+        $end = Carbon::create($year, $month, 1)->endOfMonth();
+
+        for ($i = $start; $i <= $end; $i->addDay()) {
+            $days[] = $i->format('d');
+            $revenue[] = $salesRevenue->get($i->format('d'), 0);
         }
 
         return [
+            'year' => $year,
+            'month' => $month,
+            'week' => $week,
+            'sales_revenue' => $salesRevenue,
             'labels' => $days,
             'revenue' => $revenue,
         ];

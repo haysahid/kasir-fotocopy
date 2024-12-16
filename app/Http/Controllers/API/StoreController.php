@@ -488,7 +488,7 @@ class StoreController extends Controller
         $type = $request->input('type');
         $year = $request->input('year', Carbon::now()->year);
         $month = $request->input('month', Carbon::now()->month);
-        $week = $request->input('week', Carbon::now()->month);
+        $week = $request->input('week', Carbon::now()->weekOfYear);
 
         if (!in_array($type, ['daily', 'weekly', 'monthly'])) {
             return ResponseFormatter::error('Tipe grafik tidak valid.', 400);
