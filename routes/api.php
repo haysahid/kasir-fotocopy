@@ -7,6 +7,9 @@ use App\Http\Controllers\API\StoreConfigController;
 use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\EmployeeController;
+use App\Http\Controllers\API\OptionController;
+use App\Http\Controllers\API\PaymentMethodController;
+use App\Http\Controllers\API\PlanController;
 use App\Http\Controllers\API\PurchaseController;
 use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RoleController;
@@ -72,4 +75,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('admin/summary', [AdminController::class, 'summary']);
     });
+
+    // Subcription
+    Route::apiResource('option', OptionController::class);
+    Route::get('option-dropdown', [OptionController::class, 'dropdown']);
+    Route::apiResource('plan', PlanController::class);
+    Route::get('plan-dropdown', [PlanController::class, 'dropdown']);
+    Route::apiResource('payment-method', PaymentMethodController::class);
 });

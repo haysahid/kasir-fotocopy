@@ -16,6 +16,10 @@ class Plan extends Model
         'is_active',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public function options()
     {
         return $this->belongsToMany(Option::class, 'plan_options');
