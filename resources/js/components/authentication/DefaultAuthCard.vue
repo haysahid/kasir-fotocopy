@@ -11,7 +11,7 @@ const props = defineProps([
 <template>
     <!-- ====== Forms Section Start -->
     <div
-        class="bg-white border rounded-xl max-sm:w-[90%] max-md:w-[60%] max-xl:w-1/2 border-stroke shadow-default dark:border-strokedark dark:bg-boxdark"
+        class="bg-white border rounded-xl max-sm:w-[90%] max-md:w-[60%] max-xl:w-1/2 border-stroke shadow-default dark:border-strokedark dark:bg-boxdark duration-300 ease-linear"
     >
         <div
             class="flex flex-wrap"

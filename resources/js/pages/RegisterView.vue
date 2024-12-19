@@ -1,5 +1,5 @@
 <script setup>
-import RegisterForm from "@/components/authentication/RegisterForm.vue";
+import RegisterForm from "./customer/auth/RegisterForm.vue";
 import BaseNavbar from "@/components/landing/BaseNavbar.vue";
 import { useUserStore } from "@/stores/user";
 import { onMounted } from "vue";

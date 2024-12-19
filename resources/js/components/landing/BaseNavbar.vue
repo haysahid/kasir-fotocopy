@@ -3,6 +3,7 @@ import { useUserStore } from "@/stores/user";
 import BaseButton from "@/components/landing/BaseButton.vue";
 import NavLink from "./NavLink.vue";
 import DropdownUser from "@/components/Header/DropdownUser.vue";
+import AdminDropdownUser from "@/components/Header/AdminDropdownUser.vue";
 import { onMounted, ref } from "vue";
 import { useConfigStore } from "@/stores/config";
 import DarkModeSwitcher from "@/components/Header/DarkModeSwitcher.vue";
@@ -108,7 +109,15 @@ onMounted(() => {
                 </ul>
 
                 <DropdownUser
-                    v-if="userStore.user"
+                    v-if="userStore.user && userStore.user.role_id >= 3"
+                    :user="userStore.user"
+                    :always-show-detail="true"
+                    :class="[open ? 'flex' : 'hidden lg:flex']"
+                    class="space-x-3"
+                />
+
+                <AdminDropdownUser
+                    v-else-if="userStore.user && userStore.user.role_id <= 2"
                     :user="userStore.user"
                     :always-show-detail="true"
                     :class="[open ? 'flex' : 'hidden lg:flex']"

@@ -209,8 +209,9 @@ defineExpose({
                             </h5>
                         </th>
 
-                        <th v-show="!selectionMode" class="w-0 max-sm:text-end">
+                        <th class="w-0 max-sm:text-end">
                             <h5
+                                v-if="!selectionMode"
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
                                 Aksi
@@ -306,8 +307,9 @@ defineExpose({
                         </td>
 
                         <!-- Actions -->
-                        <td v-show="!selectionMode" class="py-2.5 px-4">
+                        <td class="py-2.5 px-4">
                             <ItemActionButton
+                                v-if="!selectionMode"
                                 @update-item="showItemFormDialog(item)"
                                 @delete-item="showDeleteItemDialog(item)"
                             />

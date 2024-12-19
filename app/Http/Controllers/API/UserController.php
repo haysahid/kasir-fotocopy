@@ -174,7 +174,7 @@ class UserController extends Controller
             });
         }
 
-        $users->with(['store', 'role'])->get();
+        $users->with(['store', 'role'])->latest()->get();
 
         return ResponseFormatter::success($users->paginate($limit), 'Data pengguna ditemukan.', 200);
     }

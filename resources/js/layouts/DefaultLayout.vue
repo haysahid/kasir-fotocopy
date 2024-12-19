@@ -1,8 +1,8 @@
 <script setup>
 import HeaderArea from "@/components/Header/HeaderArea.vue";
 import SidebarArea from "@/components/Sidebar/SidebarArea.vue";
-import { useUserStore } from "../stores/user";
-import StoreNotFoundAlert from "../pages/customer/main/StoreNotFoundAlert.vue";
+import { useUserStore } from "@/stores/user";
+import StoreNotFoundAlert from "@/pages/customer/main/StoreNotFoundAlert.vue";
 import { onMounted } from "vue";
 
 const userStore = useUserStore();

@@ -2,13 +2,14 @@
 import { ref, onMounted, computed, watch } from "vue";
 import ItemActionButton from "@/components/ItemActionButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
-// import DeleteProductConfirmation from "./DeleteProductConfirmation.vue";
-// import ProductForm from "./ProductForm.vue";
+import DeleteUserConfirmation from "./DeleteUserConfirmation.vue";
 import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
-import { usePurchaseStore } from "@/stores/purchase";
-import PurchaseForm from "../purchase/PurchaseForm.vue";
-import DeletePurchaseConfirmation from "./DeletePurchaseConfirmation.vue";
+import { useUserStore } from "@/stores/user";
+import { useAdminUserStore } from "@/stores/admin/user";
+import UserForm from "./UserForm.vue";
+import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
+import StatusLabel from "@/components/StatusLabel.vue";
 
 const props = defineProps({
     title: {
@@ -16,7 +17,8 @@ const props = defineProps({
     },
 });
 
-const purchaseStore = usePurchaseStore();
+const userStore = useUserStore();
+const adminUserStore = useAdminUserStore();
 
 const selectedItems = ref([]);
 const isAllItemsSelected = ref(false);
@@ -43,7 +45,7 @@ function onItemFormDialogClosed(value) {
     itemFormDialog.value.close(value);
 
     if (value) {
-        purchaseStore.query.page = purchaseStore.data.current_page;
+        adminUserStore.query.page = adminUserStore.data.current_page;
         getData();
     }
 
@@ -59,17 +61,21 @@ function onDeleteItemDialogClosed(value) {
 
     if (value) {
         selectedItems.value = [];
-        purchaseStore.query.page = purchaseStore.data.current_page;
+        adminUserStore.query.page = adminUserStore.data.current_page;
         getData();
     }
 }
 
 async function getData(params) {
-    await purchaseStore.getAllItems(params);
+    await adminUserStore.getAllItems(params);
+}
+
+async function disableOrEnableItem(item) {
+    await adminUserStore.disableOrEnableItem(item);
 }
 
 const changePage = (page) => {
-    purchaseStore.query.page = page;
+    adminUserStore.query.page = page;
 
     getData();
 
@@ -81,7 +87,7 @@ const changePage = (page) => {
 watch(
     () => selectedItems.value.length,
     (newValue, oldValue) => {
-        console.log("current page: ", purchaseStore.data.current_page);
+        console.log("current page: ", adminUserStore.data.current_page);
     }
 );
 
@@ -90,23 +96,35 @@ watch(
     (newValue, oldValue) => {
         if (!oldValue && newValue) {
             selectedItems.value = JSON.parse(
-                JSON.stringify(purchaseStore.items)
+                JSON.stringify(
+                    adminUserStore.items.filter((i) => i.role_id >= 3)
+                )
             );
         }
 
         if (
             oldValue &&
             !newValue &&
-            selectedItems.value.length === purchaseStore.items?.length
+            selectedItems.value.length === adminUserStore.items?.length
         ) {
             selectedItems.value = [];
         }
-
-        selectedItems.value = selectedItems.value;
     }
 );
 
 const selectionMode = computed(() => selectedItems.value?.length > 0);
+
+function canEdit(item) {
+    if (userStore.user.role_id == 1) {
+        return true;
+    }
+
+    if (item.role_id < 3 || item.id === userStore.user.id) {
+        return false;
+    }
+
+    return true;
+}
 
 onMounted(() => {
     getData();
@@ -159,7 +177,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Tanggal
+                                Nama
                             </h5>
                         </th>
 
@@ -167,7 +185,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Catatan
+                                Email
                             </h5>
                         </th>
 
@@ -175,7 +193,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Jumlah Item
+                                No. HP
                             </h5>
                         </th>
 
@@ -183,7 +201,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Total
+                                Alamat
                             </h5>
                         </th>
 
@@ -191,7 +209,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Pembayaran
+                                Role
                             </h5>
                         </th>
 
@@ -199,15 +217,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Kembalian
-                            </h5>
-                        </th>
-
-                        <th>
-                            <h5
-                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
-                            >
-                                Status
+                                Aktif
                             </h5>
                         </th>
 
@@ -224,12 +234,12 @@ defineExpose({
 
                 <tbody>
                     <tr
-                        v-for="(item, key) in purchaseStore.items"
+                        v-for="(item, key) in adminUserStore.items"
                         :key="key"
                         class="hover:bg-secondary hover:bg-opacity-10 dark:hover:bg-opacity-5 [&>td]:py-2.5 [&>td]:px-4 [&>td]:text-sm duration-300 ease-linear"
                         :class="{
                             'border-b border-stroke dark:border-strokedark':
-                                key !== purchaseStore.items.length - 1,
+                                key !== adminUserStore.items.length - 1,
                             'bg-secondary bg-opacity-20 dark:bg-opacity-10':
                                 selectedItems
                                     .map((i) => i.id)
@@ -238,7 +248,10 @@ defineExpose({
                     >
                         <!-- Checkbox -->
                         <td class="py-2.5 px-4 w-0">
-                            <CheckboxGroup :for="'formCheckbox_' + item.id">
+                            <CheckboxGroup
+                                v-if="item.role_id >= 3"
+                                :for="'formCheckbox_' + item.id"
+                            >
                                 <input
                                     type="checkbox"
                                     :id="'formCheckbox_' + item.id"
@@ -249,14 +262,10 @@ defineExpose({
                             </CheckboxGroup>
                         </td>
 
-                        <!-- Created At -->
+                        <!-- Name -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{
-                                    $formatDate.formatDate(item.created_at, {
-                                        dateStyle: "medium",
-                                    })
-                                }}
+                                {{ item.name }}
                             </p>
                             <p
                                 v-if="item.code"
@@ -266,52 +275,49 @@ defineExpose({
                             </p>
                         </td>
 
-                        <!-- Note -->
+                        <!-- Email -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.note ?? "-" }}
+                                {{ item.email }}
                             </p>
                         </td>
 
-                        <!-- Count Items -->
+                        <!-- Phone -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.purchase_items.length }}
+                                {{ item.phone }}
                             </p>
                         </td>
 
-                        <!-- Selling Price -->
+                        <!-- Address -->
                         <td>
                             <p class="text-black dark:text-white">
-                                Rp {{ $formatCurrency(item.total) }}
+                                {{ item.address }}
                             </p>
                         </td>
 
-                        <!-- Payment -->
+                        <!-- Role -->
                         <td>
                             <p class="text-black dark:text-white">
-                                Rp {{ $formatCurrency(item.payment) }}
+                                {{ item.role.name }}
                             </p>
                         </td>
 
-                        <!-- Return -->
+                        <!-- Active -->
                         <td>
-                            <p class="text-black dark:text-white">
-                                Rp {{ $formatCurrency(item.return) }}
-                            </p>
-                        </td>
-
-                        <!-- Payment Status -->
-                        <td>
-                            <p class="text-black dark:text-white">
-                                {{ item.status }}
-                            </p>
+                            <CustomSwitch
+                                v-model="item.is_active"
+                                @change="() => disableOrEnableItem(item)"
+                                :disable="!canEdit(item)"
+                                :disable-margin="true"
+                                :small="true"
+                            />
                         </td>
 
                         <!-- Actions -->
                         <td class="py-2.5 px-4">
                             <ItemActionButton
-                                v-if="!selectionMode"
+                                v-if="!selectionMode && canEdit(item)"
                                 @update-item="showItemFormDialog(item)"
                                 @delete-item="showDeleteItemDialog(item)"
                             />
@@ -325,17 +331,17 @@ defineExpose({
             class="flex flex-col items-start justify-between gap-2 py-6 sm:items-center sm:flex-row"
         >
             <vue-awesome-paginate
-                v-if="purchaseStore?.data?.current_page"
-                :total-items="purchaseStore.data.total"
-                :items-per-page="purchaseStore.data.per_page"
+                v-if="adminUserStore?.data?.current_page"
+                :total-items="adminUserStore.data.total"
+                :items-per-page="adminUserStore.data.per_page"
                 :max-pages-shown="5"
-                v-model="purchaseStore.data.current_page"
+                v-model="adminUserStore.data.current_page"
                 @click="changePage"
             />
             <p class="text-xs font-light text-gray-400">
-                Showing {{ purchaseStore.data?.from }} to
-                {{ purchaseStore.data?.to }} of
-                {{ purchaseStore.data?.total }} entries
+                Showing {{ adminUserStore.data?.from }} to
+                {{ adminUserStore.data?.to }} of
+                {{ adminUserStore.data?.total }} entries
             </p>
         </div>
 
@@ -344,16 +350,16 @@ defineExpose({
             :show-cancel="true"
             @cancel="onItemFormDialogClosed"
         >
-            <PurchaseForm
+            <UserForm
                 :show-close-button="true"
-                :item="selectedItems[0]"
+                :user="selectedItems[0]"
                 @close="onItemFormDialogClosed"
                 class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
             />
         </CustomDialog>
 
         <CustomDialog id="deleteItemDialog" :show-cancel="true">
-            <DeletePurchaseConfirmation
+            <DeleteUserConfirmation
                 :show-close-button="true"
                 :items="selectedItems"
                 @close="onDeleteItemDialogClosed"

@@ -1,5 +1,5 @@
 <script setup>
-import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import AdminDefaultLayout from "@/layouts/AdminDefaultLayout.vue";
 
 import { ref, onMounted, inject } from "vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
@@ -12,7 +12,6 @@ import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import ProfileForm from "@/components/Forms/ProfileForm.vue";
 import { useUserStore } from "@/stores/user";
 import { Link } from "@inertiajs/inertia-vue3";
-import StoreNotFoundAlert from "./customer/main/StoreNotFoundAlert.vue";
 
 const userStore = useUserStore();
 
@@ -56,7 +55,7 @@ onMounted(() => {
 
 <template>
     <main>
-        <DefaultLayout>
+        <AdminDefaultLayout>
             <div data-aos="fade-up" data-aos-once="true" class="mx-auto">
                 <BreadcrumbDefault pageTitle="Profil Saya" />
 
@@ -183,87 +182,9 @@ onMounted(() => {
                             </div>
                         </DefaultCard>
                     </div>
-
-                    <div class="flex flex-col gap-9 md:w-1/2">
-                        <DefaultCard
-                            :showShadow="false"
-                            :showBorder="false"
-                            cardTitle="Toko"
-                        >
-                            <div class="p-6.5">
-                                <div
-                                    v-if="
-                                        userStore.user &&
-                                        userStore.user.store.length > 0
-                                    "
-                                    class="flex flex-col items-center justify-center gap-8 max-sm:flex-col"
-                                >
-                                    <img
-                                        v-if="userStore.user.store[0]?.logo"
-                                        :src="userStore.user.store[0]?.logo"
-                                        alt="Brand"
-                                        class="opacity-50 size-35"
-                                    />
-
-                                    <svg
-                                        v-else
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke-width="1.5"
-                                        stroke="currentColor"
-                                        class="text-gray-400 duration-300 ease-linear dark:text-gray-500 size-[140px]"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
-                                        />
-                                    </svg>
-
-                                    <div class="flex flex-col w-full">
-                                        <DetailRow label="Nama">
-                                            {{
-                                                userStore.user.store[0]?.name ||
-                                                "-"
-                                            }}
-                                        </DetailRow>
-
-                                        <DetailRow label="Deskripsi">
-                                            {{
-                                                userStore.user.store[0]
-                                                    ?.description || "-"
-                                            }}
-                                        </DetailRow>
-
-                                        <DetailRow label="Alamat">
-                                            {{
-                                                userStore.user.store[0]
-                                                    ?.address || "-"
-                                            }}
-                                        </DetailRow>
-
-                                        <DetailRow
-                                            label="Dibuat pada"
-                                            :showBorderBottom="false"
-                                        >
-                                            {{
-                                                $formatDate.formatDate(
-                                                    userStore.user.store[0]
-                                                        ?.created_at
-                                                )
-                                            }}
-                                        </DetailRow>
-                                    </div>
-                                </div>
-
-                                <StoreNotFoundAlert v-else />
-                            </div>
-                        </DefaultCard>
-                    </div>
                 </div>
             </div>
-        </DefaultLayout>
+        </AdminDefaultLayout>
     </main>
 
     <CustomDialog

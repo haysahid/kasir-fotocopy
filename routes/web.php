@@ -31,3 +31,12 @@ Route::get('/purchase-history', fn()  => Inertia::render('customer/main/Purchase
 Route::get('/sales-history', fn()  => Inertia::render('customer/main/SalesHistoryView'))->name('sales-history');
 Route::get('/report', fn()  => Inertia::render('customer/main/ReportView'))->name('report');
 Route::get('/setting', fn()  => Inertia::render('customer/main/SettingView'))->name('setting');
+
+// Admin routes group
+Route::prefix('admin')->group(function () {
+    Route::get('/login', fn()  => Inertia::render('admin/LoginView'))->name('admin.login');
+    Route::get('/profile', fn()  => Inertia::render('admin/ProfileView'))->name('admin.profile');
+
+    Route::get('/dashboard', fn()  => Inertia::render('admin/main/DashboardView'))->name('admin.dashboard');
+    Route::get('/user', fn()  => Inertia::render('admin/main/UserView'))->name('admin.user');
+});

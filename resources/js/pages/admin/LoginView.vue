@@ -1,5 +1,5 @@
 <script setup>
-import LoginForm from "./customer/auth/LoginForm.vue";
+import LoginForm from "./auth/LoginForm.vue";
 import BaseNavbar from "@/components/landing/BaseNavbar.vue";
 import { useUserStore } from "@/stores/user";
 import { onMounted } from "vue";
@@ -8,11 +8,7 @@ const userStore = useUserStore();
 
 onMounted(() => {
     if (userStore.user) {
-        if (userStore.user.role_id >= 3) {
-            window.location.replace(route("dashboard"));
-        } else {
-            window.location.replace(route("admin.dashboard"));
-        }
+        window.location.replace(route("dashboard"));
     }
 });
 </script>
