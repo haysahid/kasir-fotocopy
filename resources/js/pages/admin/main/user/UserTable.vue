@@ -115,6 +115,10 @@ watch(
 const selectionMode = computed(() => selectedItems.value?.length > 0);
 
 function canEdit(item) {
+    if (selectionMode.value) {
+        return false;
+    }
+
     if (userStore.user.role_id == 1) {
         return true;
     }

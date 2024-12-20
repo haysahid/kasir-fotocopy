@@ -67,7 +67,11 @@ const props = defineProps({
                         props.inCartQuantity > 0,
                 }"
             >
-                {{ props.product.stock - props.inCartQuantity }}
+                {{
+                    props.priceToShow == "purchase_price"
+                        ? props.product.stock + props.inCartQuantity
+                        : props.product.stock - props.inCartQuantity
+                }}
             </p>
         </div>
 

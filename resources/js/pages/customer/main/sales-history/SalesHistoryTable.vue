@@ -337,11 +337,7 @@ defineExpose({
             </p>
         </div>
 
-        <CustomDialog
-            id="itemFormDialog"
-            :show-cancel="true"
-            @cancel="onItemFormDialogClosed"
-        >
+        <CustomDialog id="itemFormDialog" :show-cancel="true">
             <SalesForm
                 :show-close-button="true"
                 :item="selectedItems[0]"

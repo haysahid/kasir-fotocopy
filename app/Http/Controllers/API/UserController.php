@@ -161,10 +161,16 @@ class UserController extends Controller
         $search = $request->input('search');
         $limit = $request->input('limit', 10);
 
+        $roleId = $request->input('role_id');
+
         $users = User::query();
 
         if (!$showDisabled) {
             $users->whereNull('disabled_at');
+        }
+
+        if ($roleId) {
+            $users->where('role_id', $roleId);
         }
 
         if ($search) {

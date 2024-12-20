@@ -12,7 +12,7 @@ const props = defineProps({
         type: String,
         default: "Transaksi berhasil",
     },
-    returnPayment: {
+    paymentReturn: {
         type: Number,
         default: 0,
     },
@@ -56,7 +56,7 @@ function close(value) {
             </p>
 
             <p class="mb-4 text-center text-gray-500 dark:text-gray-400">
-                Kembalian: Rp {{ $formatCurrency(props.returnPayment) }}
+                Kembalian: Rp {{ $formatCurrency(props.paymentReturn) }}
             </p>
 
             <div

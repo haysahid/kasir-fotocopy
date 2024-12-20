@@ -41,7 +41,11 @@ async function login() {
 
         await userStore.fetchUser();
 
-        window.location = route("dashboard");
+        if (userStore.user.role_id >= 3) {
+            window.location = route("dashboard");
+        } else {
+            window.location = route("admin.dashboard");
+        }
     } catch (error) {
         console.log(error);
         errorMessage.value =

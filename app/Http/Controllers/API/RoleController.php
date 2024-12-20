@@ -14,8 +14,40 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::all();
+        $limit = $request->input('limit', 10);
+        $search = $request->input('search');
 
-        return ResponseFormatter::success($roles, 'Data role berhasil diambil');
+        $roles = Role::query();
+
+        if ($search) {
+            $roles->where('name', 'like', "%$search%");
+        }
+
+        $roles->get();
+
+        return ResponseFormatter::success(
+            $roles->paginate($limit),
+            'Data role berhasil ditemukan',
+        );
+    }
+
+    public function dropdown(Request $request)
+    {
+        $limit = $request->input('limit');
+        $search = $request->input('search');
+
+        $roles = Role::query();
+
+        if ($search) {
+            $roles->where('name', 'like', "%$search%");
+        }
+
+        if ($limit) {
+            $roles->limit($limit);
+        }
+
+        $roles = $roles->get();
+
+        return ResponseFormatter::success($roles, 'Data role berhasil ditemukan');
     }
 }

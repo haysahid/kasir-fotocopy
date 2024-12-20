@@ -39,6 +39,7 @@ function onItemFormDialogClosed(value) {
 
     if (value) {
         selectedItems.value = [];
+        isAllItemsSelected.value = false;
         getData();
     }
 }

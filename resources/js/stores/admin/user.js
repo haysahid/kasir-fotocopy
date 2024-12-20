@@ -213,7 +213,7 @@ export const useAdminUserStore = defineStore('admin-user', () => {
         }
     }
 
-    function clearProductStore() {
+    function clearAdminUserStore() {
         data.value = {}
         query.value = {
             limit: 10,
@@ -244,6 +244,6 @@ export const useAdminUserStore = defineStore('admin-user', () => {
         updateItem,
         deleteItems,
         disableOrEnableItem,
-        clearProductStore,
+        clearAdminUserStore,
     }
 })

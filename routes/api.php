@@ -66,6 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('store/{id}/low-stock-product', [StoreController::class, 'lowStockProduct']);
 
     Route::apiResource('role', RoleController::class);
+    Route::get('role-dropdown', [RoleController::class, 'dropdown']);
 
     // Admin
     Route::middleware(CheckAdminRole::class)->group(function () {

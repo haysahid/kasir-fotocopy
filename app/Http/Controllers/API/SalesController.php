@@ -12,6 +12,7 @@ use App\Models\UserStore;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SalesController extends Controller
 {
@@ -79,57 +80,62 @@ class SalesController extends Controller
         ]);
 
         try {
+            $salesId = null;
 
-            $address = $request->input('address');
-            $note = $request->input('note');
-            $payment = $request->input('payment');
-            $sales_items = $request->input('sales_items');
+            DB::transaction(function () use ($request, $store, $user, &$salesId) {
+                $address = $request->input('address');
+                $note = $request->input('note');
+                $payment = $request->input('payment');
+                $sales_items = $request->input('sales_items');
 
-            // Count total
-            // $total = 0;
+                // Count total
+                // $total = 0;
 
-            // foreach ($sales_items as $sales_item) {
-            //     $item = new SalesItem($sales_item);
-            //     $total += $item->quantity * $item->item_price;
-            // }
+                // foreach ($sales_items as $sales_item) {
+                //     $item = new SalesItem($sales_item);
+                //     $total += $item->quantity * $item->item_price;
+                // }
 
-            // // Check payment
-            // if ($payment < $total) {
-            //     return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
-            // }
+                // // Check payment
+                // if ($payment < $total) {
+                //     return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
+                // }
 
-            // Create order
-            $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
+                // Create order
+                $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
 
-            if ($storeAcronym) {
-                $code = $storeAcronym->value . '-J-' . date('YmdHis');
-            } else {
-                $code = 'J-' . date('YmdHis');
-            }
+                if ($storeAcronym) {
+                    $code = $storeAcronym->value . '-J-' . date('YmdHis');
+                } else {
+                    $code = 'J-' . date('YmdHis');
+                }
 
 
-            $sale = Sale::create([
-                'code' => $code,
-                'user_id' => $user->id,
-                'address' => $address,
-                'note' => $note,
-                'payment' => $payment,
-                'store_id' => $store->id,
-            ]);
-
-            // Create order items
-            foreach ($sales_items as $sales_item) {
-                $item = new SalesItem($sales_item);
-                SalesItem::create([
-                    'sales_id' => $sale->id,
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'item_price' => $item->item_price,
+                $sale = Sale::create([
+                    'code' => $code,
+                    'user_id' => $user->id,
+                    'address' => $address,
+                    'note' => $note,
+                    'payment' => $payment,
                     'store_id' => $store->id,
                 ]);
-            }
 
-            $sale = Sale::with(['sales_items'])->find($sale->id);
+                // Create order items
+                foreach ($sales_items as $sales_item) {
+                    $item = new SalesItem($sales_item);
+                    SalesItem::create([
+                        'sales_id' => $sale->id,
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'item_price' => $item->item_price,
+                        'store_id' => $store->id,
+                    ]);
+                }
+
+                $salesId = $sale->id;
+            });
+
+            $sale = Sale::with(['sales_items'])->find($salesId);
 
             return ResponseFormatter::success($sale, 'Penjualan berhasil ditambahkan.', 201);
         } catch (Exception $error) {

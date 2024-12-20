@@ -13,6 +13,7 @@ use App\Models\UserStore;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
 {
@@ -80,61 +81,69 @@ class PurchaseController extends Controller
         ]);
 
         try {
-            $address = $request->input('address');
-            $note = $request->input('note');
-            $payment = $request->input('payment');
-            $purchase_items = $request->input('purchase_items');
+            $purchaseId = null;
 
-            // Count total
-            // $total = 0;
+            DB::transaction(function () use ($request, $store, $user, &$purchaseId) {
+                $address = $request->input('address');
+                $note = $request->input('note');
+                $payment = $request->input('payment');
+                $purchase_items = $request->input('purchase_items');
 
-            // foreach ($purchase_items as $purchase_item) {
-            //     $item = new PurchaseItem($purchase_item);
-            //     $total += $item->quantity * $item->item_price;
-            // }
+                // Count total
+                // $total = 0;
 
-            // // Check payment
-            // if ($payment < $total) {
-            //     return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
-            // }
+                // foreach ($purchase_items as $purchase_item) {
+                //     $item = new PurchaseItem($purchase_item);
+                //     $total += $item->quantity * $item->item_price;
+                // }
 
-            // Create order
-            $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
+                // // Check payment
+                // if ($payment < $total) {
+                //     return ResponseFormatter::error('Pembayaran tidak mencukupi.', 400);
+                // }
 
-            if ($storeAcronym) {
-                $code = $storeAcronym->value . '-B-' . date('YmdHis');
-            } else {
-                $code = 'B-' . date('YmdHis');
-            }
+                // Create order
+                $storeAcronym = StoreConfig::where('key', 'store_acronym')->where('store_id', $store->id)->first();
 
-            $purchase = Purchase::create([
-                'code' => $code,
-                'user_id' => $user->id,
-                'address' => $address,
-                'note' => $note,
-                'payment' => $payment,
-                'store_id' => $store->id,
-            ]);
+                if ($storeAcronym) {
+                    $code = $storeAcronym->value . '-B-' . date('YmdHis');
+                } else {
+                    $code = 'B-' . date('YmdHis');
+                }
 
-            // Create order items
-            foreach ($purchase_items as $purchase_item) {
-                $item = new PurchaseItem($purchase_item);
-                PurchaseItem::create([
-                    'purchase_id' => $purchase->id,
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'item_price' => $item->item_price,
+
+
+                $purchase = Purchase::create([
+                    'code' => $code,
+                    'user_id' => $user->id,
+                    'address' => $address,
+                    'note' => $note,
+                    'payment' => $payment,
                     'store_id' => $store->id,
                 ]);
 
-                // Update product purchase price
-                $product = Product::find($item->product_id);
-                $product->update([
-                    'purchase_price' => $item->item_price,
-                ]);
-            }
+                // Create order items
+                foreach ($purchase_items as $purchase_item) {
+                    $item = new PurchaseItem($purchase_item);
+                    PurchaseItem::create([
+                        'purchase_id' => $purchase->id,
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'item_price' => $item->item_price,
+                        'store_id' => $store->id,
+                    ]);
 
-            $purchase = Purchase::with(['purchase_items'])->find($purchase->id);
+                    // Update product purchase price
+                    $product = Product::find($item->product_id);
+                    $product->update([
+                        'purchase_price' => $item->item_price,
+                    ]);
+                }
+
+                $purchaseId = $purchase->id;
+            });
+
+            $purchase = Purchase::with(['purchase_items'])->find($purchaseId);
 
             return ResponseFormatter::success($purchase, 'Pembelian berhasil ditambahkan.', 201);
         } catch (Exception $error) {

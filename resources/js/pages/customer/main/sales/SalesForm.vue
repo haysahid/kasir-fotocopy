@@ -39,11 +39,15 @@ const formValidation = ref({
     payment: "",
 });
 
+const finalPaymentReturn = ref(0);
+
 function clearErrorMessage() {
     salesStore.errorMessage = "";
 }
 
 async function saveItem() {
+    finalPaymentReturn.value = 0;
+
     if (props.item.id) {
         updateItem();
     } else {
@@ -68,6 +72,8 @@ async function addItem() {
     };
 
     const response = await salesStore.addItem(updatedForm);
+
+    finalPaymentReturn.value = response.result.return;
 }
 
 async function updateItem() {
@@ -165,7 +171,7 @@ function close(value) {
         v-if="salesStore.saveStatus === 'success'"
         title="Berhasil!"
         description="Penjualan berhasil ditambahkan"
-        :paymentReturn="2000"
+        :paymentReturn="finalPaymentReturn"
         class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
         @close="onSuccesDialogClose"
     />

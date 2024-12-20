@@ -10,6 +10,7 @@ import EmptyCart from "./EmptyCart.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
 import PurchaseForm from "./PurchaseForm.vue";
+import { get } from "@vueuse/core";
 
 const props = defineProps({
     title: {
@@ -39,6 +40,8 @@ function onItemFormDialogClosed(value) {
 
     if (value) {
         selectedItems.value = [];
+        isAllItemsSelected.value = false;
+        getData();
     }
 }
 
