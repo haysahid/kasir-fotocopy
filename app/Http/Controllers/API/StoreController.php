@@ -259,7 +259,7 @@ class StoreController extends Controller
         }
 
         // Delete relation
-        UserStore::where('store_id', $store->id)->delete();
+        // UserStore::where('store_id', $store->id)->delete();
 
         // Delete store
         $store->delete();
@@ -383,9 +383,9 @@ class StoreController extends Controller
 
             return ResponseFormatter::success([
                 'store' => $store,
-            ], 'Toko berhasil diaktifkan.', 200);
+            ], 'Toko berhasil dinonaktifkan', 200);
         } catch (Exception $error) {
-            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal diaktifkan.' . $error, 500);
+            return ResponseFormatter::error('Terjadi kesalahan. Toko gagal dinonaktifkan.' . $error, 500);
         }
     }
 

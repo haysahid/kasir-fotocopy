@@ -149,9 +149,8 @@ export const useStoreStore = defineStore('store', () => {
             deleteStatus.value = "loading";
 
             for (let i = 0; i < items.length; i++) {
-                const response = await axios.put(
-                    `/api/store/${items[i].id}/disable`,
-                    {},
+                const response = await axios.delete(
+                    `/api/store/${items[i].id}`,
                     {
                         headers: {
                             Accept: "application/json",
@@ -233,7 +232,40 @@ export const useStoreStore = defineStore('store', () => {
         }
     }
 
-    function clearProductStore() {
+    async function disableOrEnableItem(item) {
+        try {
+            const action = item.is_active ? "enable" : "disable";
+
+            const response = await axios.put(
+                `/api/store/${item.id}/${action}`,
+                {},
+                {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: token,
+                    },
+                }
+            );
+
+            Toast.fire({
+                icon: "success",
+                title: response.data.meta.message,
+            });
+
+            return true;
+        } catch (error) {
+            const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+
+            Toast.fire({
+                icon: "warning",
+                title: errorText,
+            });
+
+            return false;
+        }
+    }
+
+    function clearStoreStore() {
         data.value = {}
         query.value = {
             limit: 10,
@@ -265,8 +297,9 @@ export const useStoreStore = defineStore('store', () => {
         addItem,
         updateItem,
         deleteItems,
+        disableOrEnableItem,
         getSummary,
         getGraph,
-        clearProductStore,
+        clearStoreStore,
     }
 })

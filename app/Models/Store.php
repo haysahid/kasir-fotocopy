@@ -13,7 +13,7 @@ class Store extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $appends = ['check_stock'];
+    public $appends = ['is_active', 'check_stock'];
 
     /**
      * The attributes that are mass assignable.
@@ -136,6 +136,11 @@ class Store extends Model
             'stock_running_low' => $stockRunningLow,
             'out_of_stock' => $outOfStock,
         ];
+    }
+
+    public function getIsActiveAttribute()
+    {
+        return $this->activated_at != null && $this->disabled_at == null;
     }
 
     public function getCheckStockAttribute()
