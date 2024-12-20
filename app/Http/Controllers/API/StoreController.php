@@ -73,6 +73,7 @@ class StoreController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:255',
             'logo' => 'nullable|file',
             'banner' => 'nullable|file',
         ]);
@@ -96,6 +97,7 @@ class StoreController extends Controller
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'address' => $request->input('address'),
+                'phone' => $request->input('phone'),
                 'community_id' => 1,
             ]);
 
@@ -175,6 +177,7 @@ class StoreController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:255',
             'logo' => 'nullable|file',
             'banner' => 'nullable|file',
         ]);
@@ -199,6 +202,7 @@ class StoreController extends Controller
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'address' => $request->input('address'),
+                'phone' => $request->input('phone'),
             ]);
 
             // Logo
