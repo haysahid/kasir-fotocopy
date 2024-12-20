@@ -5,21 +5,26 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import DefaultAuthCard from "@/components/authentication/DefaultAuthCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import SelectGroup from "@/components/Forms/SelectGroup.vue";
+import { useUserStore } from "@/stores/user";
 
 import { Link } from "@inertiajs/inertia-vue3";
 
 const axios = inject("axios");
 
+const userStore = useUserStore();
+
 const form = ref({
     name: "",
     description: "",
     address: "",
+    phone: "",
 });
 
 const formValidation = ref({
     name: "",
     description: "",
     address: "",
+    phone: "",
 });
 
 const errorMessage = ref("");
@@ -41,7 +46,7 @@ async function createStore() {
             },
         });
 
-        console.log(response.data);
+        await userStore.fetchUser();
 
         createStoreStatus.value = "success";
 
@@ -68,6 +73,11 @@ function validate() {
 
     if (form.value.address.length < 1) {
         formValidation.value.address = "Alamat toko tidak boleh kosong";
+        result = false;
+    }
+
+    if (form.value.phone.length < 1) {
+        formValidation.value.phone = "Nomor telepon tidak boleh kosong";
         result = false;
     }
 
@@ -129,6 +139,16 @@ watch(
                 type="text"
                 placeholder="Alamat"
                 :warning="formValidation.address"
+            />
+
+            <InputGroup
+                @enter="createStore"
+                v-model="form.phone"
+                id="phone"
+                label="Nomor Telepon"
+                type="text"
+                placeholder="Nomor Telepon"
+                :warning="formValidation.phone"
             />
 
             <CustomButton

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject, onUpdated, computed, watch, onMounted } from "vue";
+import { ref, onUpdated, computed, watch } from "vue";
 import InputGroup from "@/components/Forms/InputGroup.vue";
 import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
@@ -20,9 +20,6 @@ const props = defineProps({
     },
 });
 const emit = defineEmits(["close"]);
-
-const axios = inject("axios");
-const Toast = inject("Toast");
 
 const adminUserStore = useAdminUserStore();
 
@@ -265,7 +262,7 @@ function close(value) {
 
 <template>
     <DefaultCard
-        card-title="Ubah Profil"
+        :card-title="props.user ? 'Ubah Pengguna' : 'Tambah Pengguna'"
         :show-close-button="props.showCloseButton"
         @close="close(false)"
     >

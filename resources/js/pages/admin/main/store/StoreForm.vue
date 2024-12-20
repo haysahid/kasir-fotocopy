@@ -1,59 +1,79 @@
 <script setup>
-import { ref, inject, computed, watch, onMounted } from "vue";
+import { ref, onUpdated, computed, watch } from "vue";
 import InputGroup from "@/components/Forms/InputGroup.vue";
 import AlertWarning from "@/components/Alerts/AlertWarning.vue";
-import DefaultAuthCard from "@/components/authentication/DefaultAuthCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
-import SelectGroup from "@/components/Forms/SelectGroup.vue";
+import DefaultCard from "@/components/Forms/DefaultCard.vue";
+import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
+import { useStoreStore } from "@/stores/store";
 
-import { Link } from "@inertiajs/inertia-vue3";
+const props = defineProps({
+    showCloseButton: {
+        type: Boolean,
+    },
+    item: {
+        type: Object,
+    },
+    autoClearData: {
+        type: Boolean,
+        default: true,
+    },
+});
+const emit = defineEmits(["close"]);
 
-const axios = inject("axios");
+const storeStore = useStoreStore();
 
 const form = ref({
     name: "",
     description: "",
     address: "",
+    phone: "",
 });
 
 const formValidation = ref({
     name: "",
     description: "",
     address: "",
+    phone: "",
 });
 
-const errorMessage = ref("");
-const createStoreStatus = ref("");
-
 function clearErrorMessage() {
-    errorMessage.value = "";
+    storeStore.errorMessage = "";
 }
 
-async function createStore() {
-    if (!validate()) return;
-
-    createStoreStatus.value = "loading";
-
-    try {
-        const response = await axios.post("/api/store", form.value, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-        });
-
-        console.log(response.data);
-
-        createStoreStatus.value = "success";
-
-        window.location = route("dashboard");
-    } catch (error) {
-        errorMessage.value =
-            error.response?.data?.meta?.message ?? "Terjadi kesalahan";
-        createStoreStatus.value = "error";
+async function saveItem() {
+    if (props.item) {
+        updateItem();
+    } else {
+        addItem();
     }
 }
 
-function validate() {
+async function addItem() {
+    if (!validateAddItem()) return;
+
+    const response = await storeStore.addItem(form.value);
+
+    if (response.meta.code === 201) {
+        close(true);
+    }
+}
+
+async function updateItem() {
+    if (!validateUpdateItem()) return;
+
+    const response = await storeStore.updateItem(props.item.id, form.value);
+
+    if (response && response.meta.code === 200) {
+        close(true);
+    } else {
+        document
+            .getElementById("pagetop")
+            ?.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+}
+
+function validateAddItem() {
     let result = true;
 
     if (form.value.name.length < 1) {
@@ -71,7 +91,16 @@ function validate() {
         result = false;
     }
 
+    if (form.value.phone && form.value.phone.length < 1) {
+        formValidation.value.phone = "Nomor telepon tidak boleh kosong";
+        result = false;
+    }
+
     return result;
+}
+
+function validateUpdateItem() {
+    return validateAddItem();
 }
 
 watch(
@@ -91,15 +120,52 @@ watch(
         }
     }
 );
+
+onUpdated(() => {
+    if (props.item) {
+        form.value = {
+            name: props.item.name,
+            description: props.item.description,
+            address: props.item.address,
+            phone: props.item.phone,
+        };
+    }
+});
+
+function close(value) {
+    if (props.autoClearData) {
+        form.value = {
+            name: "",
+            description: "",
+            address: "",
+            phone: "",
+        };
+    } else {
+        form.value = {
+            name: props.item.name,
+            description: props.item.description,
+            address: props.item.address,
+            phone: props.item.phone,
+        };
+    }
+
+    emit("close", value);
+    storeStore.saveStatus = "";
+    storeStore.errorMessage = "";
+}
 </script>
 
 <template>
-    <DefaultAuthCard title="Buat Toko" :centerTitle="true">
-        <form action="#">
+    <DefaultCard
+        :card-title="props.item ? 'Ubah Toko' : 'Tambah Toko'"
+        :show-close-button="props.showCloseButton"
+        @close="close(false)"
+    >
+        <div class="p-6.5">
             <AlertWarning
-                v-if="errorMessage"
+                v-if="storeStore.errorMessage"
                 @close="clearErrorMessage"
-                :description="errorMessage"
+                :description="storeStore.errorMessage"
                 class="mb-6"
             />
 
@@ -122,7 +188,7 @@ watch(
             />
 
             <InputGroup
-                @enter="createStore"
+                @enter="saveItem"
                 v-model="form.address"
                 id="address"
                 label="Alamat"
@@ -131,15 +197,39 @@ watch(
                 :warning="formValidation.address"
             />
 
-            <CustomButton
-                @click="createStore"
-                :loading="createStoreStatus === 'loading'"
-                :enable="true"
-                color="bg-primary"
-                class="mt-6"
-            >
-                Buat Toko
-            </CustomButton>
-        </form>
-    </DefaultAuthCard>
+            <InputGroup
+                @enter="saveItem"
+                v-model="form.phone"
+                id="phone"
+                label="Nomor Telepon"
+                type="text"
+                placeholder="Nomor Telepon"
+                :warning="formValidation.phone"
+            />
+
+            <div class="flex flex-col-reverse mt-6 gap-x-4 sm:flex-row">
+                <CustomButton
+                    @click="close(false)"
+                    :enable="storeStore.saveStatus !== 'loading'"
+                    color="bg-danger"
+                    :is-full="true"
+                    padding="p-3"
+                    margin="mt-4"
+                >
+                    Batal
+                </CustomButton>
+
+                <CustomButton
+                    @click="saveItem"
+                    :loading="storeStore.saveStatus === 'loading'"
+                    color="bg-primary"
+                    :is-full="true"
+                    padding="p-3"
+                    margin="mt-4"
+                >
+                    Simpan
+                </CustomButton>
+            </div>
+        </div>
+    </DefaultCard>
 </template>

@@ -115,12 +115,8 @@ function canEdit(item) {
         return false;
     }
 
-    if (userStore.user.role_id == 1) {
+    if (userStore.user.role_id <= 1) {
         return true;
-    }
-
-    if (item.role_id < 3 || item.id === userStore.user.id) {
-        return false;
     }
 
     return true;
@@ -305,10 +301,7 @@ defineExpose({
 
                         <!-- Owner -->
                         <td>
-                            <ul
-                                v-if="item.owners.length > 0"
-                                class="list-disc list-inside"
-                            >
+                            <ul v-if="item.owners.length > 0" class="list-disc">
                                 <li
                                     v-for="owner in item.owners"
                                     class="text-black dark:text-white"

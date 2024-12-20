@@ -5,10 +5,13 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import DefaultAuthCard from "@/components/authentication/DefaultAuthCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import SelectGroup from "@/components/Forms/SelectGroup.vue";
+import { useUserStore } from "@/stores/user";
 
 import { Link } from "@inertiajs/inertia-vue3";
 
 const axios = inject("axios");
+
+const userStore = useUserStore();
 
 const form = ref({
     name: "",
@@ -44,6 +47,8 @@ async function register() {
         const response = await axios.post("/api/auth/register", form.value);
 
         localStorage.setItem("access_token", response.data.result.access_token);
+
+        await userStore.fetchUser();
 
         registerStatus.value = "success";
 

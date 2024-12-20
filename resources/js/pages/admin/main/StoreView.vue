@@ -65,12 +65,6 @@ getRoleDropdown();
                 class="col-span-12 mb-4 text-sm xl:col-span-8"
             >
                 <div class="flex items-center justify-center w-full gap-4">
-                    <!-- <SelectGroup
-                        v-model="query.role_id"
-                        id="role_id"
-                        :options="getRoleOptions"
-                    /> -->
-
                     <SearchSelectGroup
                         id="role_id"
                         type="single"
@@ -96,14 +90,6 @@ getRoleDropdown();
                             @click="tableData.showDeleteItemDialog()"
                         >
                             Hapus ({{ tableData.selectedItems.length }})
-                        </CustomButton>
-
-                        <CustomButton
-                            v-if="tableData && !tableData.selectionMode"
-                            :isFull="false"
-                            @click="tableData.showItemFormDialog(null)"
-                        >
-                            Tambah
                         </CustomButton>
                     </div>
                 </div>
