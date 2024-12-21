@@ -4,7 +4,9 @@ import BaseFooter from "@/components/landing/BaseFooter.vue";
 </script>
 
 <template>
-    <div class="relative min-h-screen font-sans antialiased">
+    <div
+        class="relative min-h-screen font-sans antialiased duration-300 ease-linear bg-blue-50 dark:bg-gray-900"
+    >
         <div class="relative">
             <!-- <div
                 class="absolute top-0 left-0 w-full h-[125vh] sm:h-[225vh] lg:h-[125vh] cover-gradient"

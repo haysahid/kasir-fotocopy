@@ -26,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <nav id="navbar" class="relative z-10 w-full text-neutral-800">
+    <nav id="navbar" class="relative z-10 w-full">
         <div
             class="flex flex-col max-w-screen-xl px-8 py-4 mx-auto lg:items-center lg:justify-between lg:flex-row"
         >
@@ -61,48 +61,71 @@ onMounted(() => {
                         </div>
                     </Link>
 
-                    <!-- Hamburger Toggle BTN -->
-                    <button
-                        class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
-                        @click="open = !open"
-                    >
-                        <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                    <div class="flex gap-4">
+                        <ul
+                            v-if="!open"
+                            class="flex items-center gap-2 2xsm:gap-4 lg:hidden"
+                        >
+                            <li>
+                                <DarkModeSwitcher />
+                            </li>
+                        </ul>
+
+                        <!-- Hamburger Toggle BTN -->
+                        <button
+                            class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+                            @click="open = !open"
+                        >
                             <span
-                                class="absolute right-0 w-full h-full du-block"
+                                class="relative block h-5.5 w-5.5 cursor-pointer"
                             >
                                 <span
-                                    class="relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"
-                                    :class="{ '!w-full delay-300': !open }"
-                                ></span>
+                                    class="absolute right-0 w-full h-full du-block"
+                                >
+                                    <span
+                                        class="relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"
+                                        :class="{ '!w-full delay-300': !open }"
+                                    ></span>
+                                    <span
+                                        class="relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white"
+                                        :class="{ '!w-full delay-400': !open }"
+                                    ></span>
+                                    <span
+                                        class="relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white"
+                                        :class="{ '!w-full delay-500': !open }"
+                                    ></span>
+                                </span>
                                 <span
-                                    class="relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white"
-                                    :class="{ '!w-full delay-400': !open }"
-                                ></span>
-                                <span
-                                    class="relative top-0 left-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white"
-                                    :class="{ '!w-full delay-500': !open }"
-                                ></span>
+                                    class="absolute right-0 w-full h-full rotate-45 du-block"
+                                >
+                                    <span
+                                        class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white"
+                                        :class="{ '!h-0 delay-[0]': !open }"
+                                    ></span>
+                                    <span
+                                        class="delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white"
+                                        :class="{ '!h-0 dealy-200': !open }"
+                                    ></span>
+                                </span>
                             </span>
-                            <span
-                                class="absolute right-0 w-full h-full rotate-45 du-block"
-                            >
-                                <span
-                                    class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white"
-                                    :class="{ '!h-0 delay-[0]': !open }"
-                                ></span>
-                                <span
-                                    class="delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white"
-                                    :class="{ '!h-0 dealy-200': !open }"
-                                ></span>
-                            </span>
-                        </span>
-                    </button>
+                        </button>
+                    </div>
                     <!-- Hamburger Toggle BTN -->
                 </div>
             </div>
 
-            <div class="flex items-center gap-8 2xsm:gap-7">
-                <ul class="flex items-center gap-2 2xsm:gap-4">
+            <div
+                class="flex items-center gap-8 2xsm:gap-7"
+                :class="{
+                    'justify-between': open,
+                }"
+            >
+                <ul
+                    class="flex items-center gap-2 2xsm:gap-4"
+                    :class="{
+                        'hidden lg:flex': !open,
+                    }"
+                >
                     <li>
                         <DarkModeSwitcher />
                     </li>

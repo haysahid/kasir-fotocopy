@@ -22,6 +22,7 @@ Route::get('/login', fn()  => Inertia::render('LoginView'))->name('login');
 Route::get('/register', fn()  => Inertia::render('RegisterView'))->name('register');
 Route::get('/profile', fn()  => Inertia::render('ProfileView'))->name('profile');
 Route::get('/create-store', fn()  => Inertia::render('customer/store/CreateStoreView'))->name('create-store');
+Route::get('/subscription/{id}', fn()  => Inertia::render('customer/public/SubscriptionPlanDetailView'))->name('subscription.detail');
 
 Route::get('/dashboard', fn()  => Inertia::render('customer/main/DashboardView'))->name('dashboard');
 Route::get('/product', fn()  => Inertia::render('customer/main/ProductView'))->name('product');

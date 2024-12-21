@@ -100,9 +100,7 @@ watch(
     () => isAllItemsSelected.value,
     (newValue, oldValue) => {
         if (!oldValue && newValue) {
-            selectedItems.value = JSON.parse(
-                JSON.stringify(planStore.items.filter((i) => i.role_id >= 3))
-            );
+            selectedItems.value = JSON.parse(JSON.stringify(planStore.items));
         }
 
         if (

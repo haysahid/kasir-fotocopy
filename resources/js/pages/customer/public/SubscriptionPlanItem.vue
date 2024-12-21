@@ -12,27 +12,36 @@ const props = defineProps({
         default: () => [],
     },
     priority: Boolean,
+    showButton: {
+        type: Boolean,
+        default: true,
+    },
 });
+
+const emit = defineEmits(["select"]);
+
+function selectPlan() {
+    emit("select");
+}
 </script>
 
 <template>
     <div class="flex flex-col h-full gap-4">
-        <div>
-            <div>
-                <h2 class="text-xl font-bold dark:text-white">
-                    {{ props.title }}
-                </h2>
-                <p class="text-gray-500">{{ props.description }}</p>
-            </div>
+        <div class="flex flex-col items-start">
+            <h2 class="text-xl font-bold dark:text-white">
+                {{ props.title }}
+            </h2>
 
             <div>
                 <span
-                    class="text-xl font-bold text-primary dark:text-secondary"
+                    class="text-2xl font-bold text-primary dark:text-secondary"
                 >
                     Rp {{ $formatCurrency(props.price) }}
                 </span>
                 <span class="dark:text-gray-300"> / {{ props.duration }}</span>
             </div>
+
+            <p class="mt-2 text-sm text-gray-500">{{ props.description }}</p>
         </div>
 
         <div class="flex flex-col h-full gap-2">
@@ -61,9 +70,10 @@ const props = defineProps({
             </div>
         </div>
 
-        <div class="mt-4">
+        <div v-if="props.showButton" class="mt-4">
             <BaseButton
                 v-if="props.priority"
+                @click="selectPlan"
                 class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
             >
                 Pilih Paket
@@ -71,6 +81,7 @@ const props = defineProps({
 
             <BaseButton
                 v-else
+                @click="selectPlan"
                 class="w-full px-6 py-3 bg-inherit text-gradient border border-[#0c66ee] text-[#0c66ee]"
             >
                 Pilih Paket

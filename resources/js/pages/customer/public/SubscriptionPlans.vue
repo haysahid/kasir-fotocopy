@@ -8,6 +8,12 @@ const planStore = usePlanStore();
 
 planStore.getDropdown();
 
+function selectPlan(plan) {
+    window.location.href = route("subscription.detail", {
+        id: plan.id,
+    });
+}
+
 function translateDurationType(type) {
     switch (type) {
         case "days":
@@ -35,7 +41,7 @@ function getDurationText(duration, type) {
         <div
             data-aos="fade-up"
             data-aos-once="true"
-            data-aos-delay="200"
+            data-aos-delay="150"
             class="flex flex-col items-center justify-center h-full px-12"
         >
             <h1
@@ -48,13 +54,13 @@ function getDurationText(duration, type) {
             </p>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-4 p-12 mt-4">
+        <div class="flex flex-wrap justify-center gap-6 p-12 mt-4">
             <DefaultCard
                 v-for="plan in planStore.dropdown"
                 data-aos="fade-up"
                 data-aos-once="true"
-                data-aos-delay="300"
-                class="px-5 pt-6 pb-5 rounded-2xl w-full sm:w-[260px]"
+                data-aos-delay="200"
+                class="px-5 pt-6 pb-5 rounded-3xl w-full sm:w-[260px]"
                 :class="{
                     ' !border-secondary': plan.priority,
                 }"
@@ -68,6 +74,7 @@ function getDurationText(duration, type) {
                     "
                     :options="plan.options"
                     :priority="plan.priority"
+                    @select="() => selectPlan(plan)"
                 />
             </DefaultCard>
         </div>

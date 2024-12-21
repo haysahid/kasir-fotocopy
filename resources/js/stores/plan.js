@@ -59,8 +59,6 @@ export const usePlanStore = defineStore('plan', () => {
     }
 
     async function getItem(id) {
-        if (params) query.value = params;
-
         try {
             getItemStatus.value = "loading";
 
@@ -68,7 +66,7 @@ export const usePlanStore = defineStore('plan', () => {
                 headers: { Authorization: token }
             });
 
-            data.value = response.data.result;
+            item.value = response.data.result;
 
             getItemStatus.value = "success";
 

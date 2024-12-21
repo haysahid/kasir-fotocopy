@@ -5,7 +5,7 @@ import BaseLayout from "@/layouts/BaseLayout.vue";
 import { ref } from "vue";
 import { useConfigStore } from "@/stores/config";
 import { Link } from "@inertiajs/inertia-vue3";
-import SubscriptionPlan from "./customer/public/SubscriptionPlan.vue";
+import SubscriptionPlans from "./customer/public/SubscriptionPlans.vue";
 
 const configStore = useConfigStore();
 
@@ -116,7 +116,7 @@ function scrollToTop() {
 
             <!-- Subsription Plan -->
             <section>
-                <SubscriptionPlan />
+                <SubscriptionPlans />
             </section>
         </div>
     </BaseLayout>

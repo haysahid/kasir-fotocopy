@@ -26,7 +26,7 @@ watch(
     <AdminDefaultLayout>
         <div data-aos="fade-up" data-aos-once="true">
             <PageSection
-                :page-title="'Paket'"
+                :page-title="'Opsi'"
                 id="pagetop"
                 class="col-span-12 mb-4 text-sm xl:col-span-8"
             >

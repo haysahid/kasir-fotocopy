@@ -13,11 +13,12 @@ const props = defineProps([
 ]);
 const emit = defineEmits(["update:modelValue", "enter"]);
 
+const debounceTimeout = ref(null);
+
 function updateValue(event) {
     if (props.useDebounce) {
-        let timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
+        window.clearTimeout(debounceTimeout.value);
+        debounceTimeout.value = window.setTimeout(() => {
             emit("update:modelValue", event.target.value);
         }, 500);
     } else {
