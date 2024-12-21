@@ -12,12 +12,17 @@ class Plan extends Model
 
     protected $fillable = [
         'name',
+        'description',
         'price',
+        'duration_type',
+        'duration',
         'is_active',
+        'priority',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'priority' => 'boolean',
     ];
 
     public function options()

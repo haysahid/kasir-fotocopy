@@ -2,12 +2,12 @@
 import { ref, onMounted, computed, watch } from "vue";
 import ItemActionButton from "@/components/ItemActionButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
-import DeletePlanConfirmation from "./DeletePlanConfirmation.vue";
+import DeleteOptionConfirmation from "./DeleteOptionConfirmation.vue";
 import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useUserStore } from "@/stores/user";
-import { usePlanStore } from "@/stores/plan";
-import PlanForm from "./PlanForm.vue";
+import { useOptionStore } from "@/stores/option";
+import OptionForm from "./OptionForm.vue";
 import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import StatusLabel from "@/components/StatusLabel.vue";
 
@@ -18,7 +18,7 @@ const props = defineProps({
 });
 
 const userStore = useUserStore();
-const planStore = usePlanStore();
+const optionStore = useOptionStore();
 
 const selectedItems = ref([]);
 const isAllItemsSelected = ref(false);
@@ -45,7 +45,7 @@ function onItemFormDialogClosed(value) {
     itemFormDialog.value.close(value);
 
     if (value) {
-        planStore.query.page = planStore.data.current_page;
+        optionStore.query.page = optionStore.data.current_page;
         getData();
     }
 
@@ -61,26 +61,21 @@ function onDeleteItemDialogClosed(value) {
 
     if (value) {
         selectedItems.value = [];
-        planStore.query.page = planStore.data.current_page;
+        optionStore.query.page = optionStore.data.current_page;
         getData();
     }
 }
 
 async function getData(params) {
-    await planStore.getAllItems(params);
+    await optionStore.getAllItems(params);
 }
 
 async function disableOrEnableItem(item) {
-    await planStore.disableOrEnableItem(item);
-}
-
-async function setPriority(item) {
-    await planStore.setPriority(item);
-    getData();
+    await optionStore.disableOrEnableItem(item);
 }
 
 const changePage = (page) => {
-    planStore.query.page = page;
+    optionStore.query.page = page;
 
     getData();
 
@@ -92,7 +87,7 @@ const changePage = (page) => {
 watch(
     () => selectedItems.value.length,
     (newValue, oldValue) => {
-        console.log("current page: ", planStore.data.current_page);
+        console.log("current page: ", optionStore.data.current_page);
     }
 );
 
@@ -101,14 +96,14 @@ watch(
     (newValue, oldValue) => {
         if (!oldValue && newValue) {
             selectedItems.value = JSON.parse(
-                JSON.stringify(planStore.items.filter((i) => i.role_id >= 3))
+                JSON.stringify(optionStore.items.filter((i) => i.role_id >= 3))
             );
         }
 
         if (
             oldValue &&
             !newValue &&
-            selectedItems.value.length === planStore.items?.length
+            selectedItems.value.length === optionStore.items?.length
         ) {
             selectedItems.value = [];
         }
@@ -127,19 +122,6 @@ function canEdit(item) {
     }
 
     return true;
-}
-
-function translateDurationType(type) {
-    switch (type) {
-        case "days":
-            return "hari";
-        case "months":
-            return "bulan";
-        case "years":
-            return "tahun";
-        default:
-            return "";
-    }
 }
 
 onMounted(() => {
@@ -201,39 +183,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Harga
-                            </h5>
-                        </th>
-
-                        <th>
-                            <h5
-                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
-                            >
-                                Opsi
-                            </h5>
-                        </th>
-
-                        <th>
-                            <h5
-                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
-                            >
-                                Durasi
-                            </h5>
-                        </th>
-
-                        <th>
-                            <h5
-                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
-                            >
-                                Prioritas
-                            </h5>
-                        </th>
-
-                        <th>
-                            <h5
-                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
-                            >
-                                Aktif
+                                Tgl. Dibuat
                             </h5>
                         </th>
 
@@ -250,12 +200,12 @@ defineExpose({
 
                 <tbody>
                     <tr
-                        v-for="(item, key) in planStore.items"
+                        v-for="(item, key) in optionStore.items"
                         :key="key"
                         class="hover:bg-secondary hover:bg-opacity-10 dark:hover:bg-opacity-5 [&>td]:py-2.5 [&>td]:px-4 [&>td]:text-sm duration-300 ease-linear"
                         :class="{
                             'border-b border-stroke dark:border-strokedark':
-                                key !== planStore.items.length - 1,
+                                key !== optionStore.items.length - 1,
                             'bg-secondary bg-opacity-20 dark:bg-opacity-10':
                                 selectedItems
                                     .map((i) => i.id)
@@ -281,62 +231,18 @@ defineExpose({
                                 {{ item.name }}
                             </p>
                             <p
-                                v-if="item.description"
+                                v-if="item.code"
                                 class="mt-0.5 text-xs text-gray-400 dark:text-gray-400"
                             >
-                                {{ item.description }}
+                                {{ item.code }}
                             </p>
                         </td>
 
-                        <!-- Price -->
+                        <!-- Created At -->
                         <td>
                             <p class="text-black dark:text-white">
-                                Rp {{ $formatCurrency(item.price) }}
+                                {{ $formatDate.formatDate(item.created_at) }}
                             </p>
-                        </td>
-
-                        <!-- Options -->
-                        <td>
-                            <ul
-                                v-if="item.options.length > 0"
-                                class="list-disc"
-                            >
-                                <li
-                                    v-for="option in item.options"
-                                    class="text-black dark:text-white"
-                                >
-                                    {{ option.name }}
-                                </li>
-                            </ul>
-                        </td>
-
-                        <!-- Duration -->
-                        <td>
-                            <p class="text-black dark:text-white">
-                                {{ item.duration }}
-                                {{ translateDurationType(item.duration_type) }}
-                            </p>
-                        </td>
-
-                        <!-- Priority -->
-                        <td>
-                            <CustomSwitch
-                                v-model="item.priority"
-                                @change="() => setPriority(item)"
-                                :disable-margin="true"
-                                :small="true"
-                            />
-                        </td>
-
-                        <!-- Active -->
-                        <td>
-                            <CustomSwitch
-                                v-model="item.is_active"
-                                @change="() => disableOrEnableItem(item)"
-                                :disable="!canEdit(item)"
-                                :disable-margin="true"
-                                :small="true"
-                            />
                         </td>
 
                         <!-- Actions -->
@@ -356,16 +262,17 @@ defineExpose({
             class="flex flex-col items-start justify-between gap-2 py-6 sm:items-center sm:flex-row"
         >
             <vue-awesome-paginate
-                v-if="planStore?.data?.current_page"
-                :total-items="planStore.data.total"
-                :items-per-page="planStore.data.per_page"
+                v-if="optionStore?.data?.current_page"
+                :total-items="optionStore.data.total"
+                :items-per-page="optionStore.data.per_page"
                 :max-pages-shown="5"
-                v-model="planStore.data.current_page"
+                v-model="optionStore.data.current_page"
                 @click="changePage"
             />
             <p class="text-xs font-light text-gray-400">
-                Showing {{ planStore.data?.from }} to
-                {{ planStore.data?.to }} of {{ planStore.data?.total }} entries
+                Showing {{ optionStore.data?.from }} to
+                {{ optionStore.data?.to }} of
+                {{ optionStore.data?.total }} entries
             </p>
         </div>
 
@@ -374,7 +281,7 @@ defineExpose({
             :show-cancel="true"
             @cancel="onItemFormDialogClosed"
         >
-            <PlanForm
+            <OptionForm
                 :show-close-button="true"
                 :item="selectedItems[0]"
                 @close="onItemFormDialogClosed"
@@ -383,7 +290,7 @@ defineExpose({
         </CustomDialog>
 
         <CustomDialog id="deleteItemDialog" :show-cancel="true">
-            <DeletePlanConfirmation
+            <DeleteOptionConfirmation
                 :show-close-button="true"
                 :items="selectedItems"
                 @close="onDeleteItemDialogClosed"

@@ -7,9 +7,9 @@ const configStore = useConfigStore();
 
 <template>
     <footer class="max-w-screen-xl px-8 mx-auto">
-        <div class="w-full border-y border-[#DDDDDD]"></div>
+        <div class="w-full border-gray-100 dark:border-gray-800 border-y-[1px]"></div>
         <div
-            class="py-8 sm:py-4 text-center text-sm text-[#666666] hover:text-gray-900"
+            class="py-8 text-sm text-center text-gray-500 dark:text-gray-600 sm:py-4 hover:text-gray-900"
         >
             &copy; Copyright {{ configStore.copyrightYear }}
             {{ configStore.copyrightName }}. All rights reserved

@@ -30,15 +30,29 @@ const planStore = usePlanStore();
 
 const form = ref({
     name: "",
+    description: "",
     price: 0,
+    duration_type: "",
+    duration: null,
     is_active: true,
     options: [],
 });
 
 const formValidation = ref({
     name: "",
+    description: "",
     price: "",
+    duration_type: "",
+    duration: "",
     options: "",
+});
+
+const durationTypeOptions = computed(() => {
+    return [
+        { value: "days", text: "Hari" },
+        { value: "months", text: "Bulan" },
+        { value: "years", text: "Tahun" },
+    ];
 });
 
 function clearErrorMessage() {
@@ -68,7 +82,7 @@ async function addItem() {
 }
 
 async function updateItem() {
-    if (!validateAddItem()) return;
+    if (!validateUpdateItem()) return;
 
     const response = await planStore.updateItem(props.item.id, form.value);
 
@@ -89,7 +103,7 @@ function validateAddItem() {
         result = false;
     }
 
-    if (form.value.price < 1) {
+    if (form.value.price < 0) {
         formValidation.value.price = "Harga tidak boleh kosong";
         result = false;
     }
@@ -137,6 +151,9 @@ onUpdated(() => {
     if (props.item) {
         form.value = {
             name: props.item.name,
+            description: props.item.description,
+            duration_type: props.item.duration_type,
+            duration: props.item.duration,
             price: props.item.price,
             is_active: props.item.is_active,
             options: props.item.options.map((option) => option.id),
@@ -152,6 +169,9 @@ function close(value) {
     if (props.autoClearData) {
         form.value = {
             name: "",
+            description: "",
+            duration_type: "",
+            duration: null,
             price: 0,
             is_active: true,
             options: [],
@@ -159,6 +179,9 @@ function close(value) {
     } else {
         form.value = {
             name: props.item.name,
+            description: props.item.description,
+            duration_type: props.item.duration_type,
+            duration: props.item.duration,
             price: props.item.price,
             is_active: props.item.is_active,
             options: props.item.options.map((option) => option.id),
@@ -193,6 +216,35 @@ function close(value) {
                 type="text"
                 placeholder="Masukkan Nama Paket"
                 :warning="formValidation.name"
+            />
+
+            <InputGroup
+                v-model="form.description"
+                id="description"
+                label="Deskripsi Paket"
+                type="text"
+                placeholder="Masukkan Deskripsi Paket"
+                :warning="formValidation.description"
+            />
+
+            <SearchSelectGroup
+                v-model="form.duration_type"
+                :options="durationTypeOptions"
+                id="duration_type"
+                label="Tipe Durasi"
+                type="single"
+                placeholder="Pilih Tipe Durasi"
+                :warning="formValidation.duration_type"
+                class="mb-4"
+            />
+
+            <InputGroup
+                v-model="form.duration"
+                id="duration"
+                label="Durasi Paket"
+                type="number"
+                placeholder="Masukkan Durasi Paket"
+                :warning="formValidation.duration"
             />
 
             <InputGroup

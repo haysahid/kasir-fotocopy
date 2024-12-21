@@ -21,6 +21,10 @@ export const usePlanStore = defineStore('plan', () => {
     const item = ref({});
     const getItemStatus = ref("");
 
+    // Get dropdown states
+    const dropdown = ref([]);
+    const getDropdownStatus = ref("");
+
     // Save item states
     const saveStatus = ref("");
 
@@ -212,15 +216,55 @@ export const usePlanStore = defineStore('plan', () => {
         }
     }
 
+    async function setPriority(item) {
+        try {
+            const value = item.priority ? "true" : "false";
+
+            const response = await axios.put(
+                `/api/plan/${item.id}/priority/${value}`,
+                {},
+                {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: token,
+                    },
+                }
+            );
+
+            Toast.fire({
+                icon: "success",
+                title: response.data.meta.message,
+            });
+
+            return true;
+        } catch (error) {
+            const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+
+            Toast.fire({
+                icon: "warning",
+                title: errorText,
+            });
+
+            return false;
+        }
+    }
+
     async function getDropdown(search) {
         try {
+            getDropdownStatus.value = "loading";
+
             const response = await axios.get("/api/plan-dropdown", {
                 headers: { Authorization: token },
                 params: { search },
             });
 
+            dropdown.value = response.data.result;
+
+            getDropdownStatus.value = "success";
+
             return response.data;
         } catch (error) {
+            getDropdownStatus.value = "error";
             return {};
         }
     }
@@ -244,18 +288,23 @@ export const usePlanStore = defineStore('plan', () => {
     return {
         data,
         items,
+        item,
+        dropdown,
         query,
         getAllItemsStatus,
+        getItemStatus,
         saveStatus,
         deleteStatus,
         deleteProgress,
         errorMessage,
         getAllItems,
+        getDropdown,
         getItem,
         addItem,
         updateItem,
         deleteItems,
         disableOrEnableItem,
+        setPriority,
         clearPlanStore,
     }
 })

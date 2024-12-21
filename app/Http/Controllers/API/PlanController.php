@@ -40,6 +40,9 @@ class PlanController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string',
             'price' => 'required|integer',
+            'description' => 'nullable|string|max:255',
+            'duration_type' => 'required|in:days,months,years',
+            'duration' => 'required|integer',
             'is_active' => 'required|boolean',
             'options' => 'required|array',
             'options.*' => 'required|integer|exists:options,id',
@@ -88,6 +91,9 @@ class PlanController extends Controller
         $validatedData = $request->validate([
             'name' => 'string',
             'price' => 'integer',
+            'description' => 'nullable|string|max:255',
+            'duration_type' => 'required|in:days,months,years',
+            'duration' => 'required|integer',
             'is_active' => 'boolean',
             'options' => 'array',
             'options.*' => 'integer|exists:options,id',
@@ -140,7 +146,7 @@ class PlanController extends Controller
 
         $plans = Plan::query();
 
-        $plans->with('options');
+        $plans->with('options')->where('is_active', true);
 
         if ($search) {
             $plans->where('name', 'like', "%$search%");
@@ -150,8 +156,67 @@ class PlanController extends Controller
             $plans->limit($limit);
         }
 
-        $plans = $plans->latest()->get();
+        $plans = $plans->get();
 
         return ResponseFormatter::success($plans, 'Data paket berhasil ditemukan');
+    }
+
+    // Disable plan by id
+    public function disable($id)
+    {
+        $plan = Plan::find($id);
+
+        // Check plan availability
+        if (!$plan) {
+            return ResponseFormatter::error('Data paket tidak ditemukan.', 404);
+        }
+
+        $plan->update([
+            'is_active' => false,
+        ]);
+
+        return ResponseFormatter::success(null, 'Data paket berhasil dinonaktifkan.', 200);
+    }
+
+    // Enable plan by id
+    public function enable($id)
+    {
+        $plan = Plan::find($id);
+
+        // Check plan availability
+        if (!$plan) {
+            return ResponseFormatter::error('Data paket tidak ditemukan.', 404);
+        }
+
+        $plan->update([
+            'is_active' => true,
+        ]);
+
+        return ResponseFormatter::success(null, 'Data paket berhasil diaktifkan.', 200);
+    }
+
+    // Set plan priority
+    public function setPriority($id, $value)
+    {
+        $plan = Plan::find($id);
+
+        // Check plan availability
+        if (!$plan) {
+            return ResponseFormatter::error('Data paket tidak ditemukan.', 404);
+        }
+
+        $value = $value == 'true' ? true : false;
+
+        $plan->update([
+            'priority' => $value,
+        ]);
+
+        if ($value == true) {
+            Plan::where('id', '!=', $id)->update([
+                'priority' => false,
+            ]);
+        }
+
+        return ResponseFormatter::success(null, 'Data prioritas paket berhasil diubah.', 200);
     }
 }

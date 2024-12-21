@@ -131,6 +131,7 @@ const select = (indexAndOption, event: MouseEvent) => {
         options.value = newOptions;
 
         emit("select", selectedOptions.value[0].value);
+        emit("update:modelValue", selectedOptions.value[0].value);
 
         show.value = false;
     }
@@ -149,10 +150,14 @@ const remove = (option: Option) => {
 
     options.value = newOptions;
 
-    emit(
-        "update:modelValue",
-        selectedOptions.value.map((option) => option.value)
-    );
+    if (props.type == "multiple") {
+        emit(
+            "update:modelValue",
+            selectedOptions.value.map((option) => option.value)
+        );
+    } else {
+        emit("update:modelValue", selectedOptions.value[0]?.value);
+    }
 };
 
 const clearSelectedOptions = () => {
@@ -161,7 +166,12 @@ const clearSelectedOptions = () => {
         option.selected = false;
     });
     emit("clear");
-    emit("update:modelValue", []);
+
+    if (props.type == "multiple") {
+        emit("update:modelValue", []);
+    } else {
+        emit("update:modelValue", "");
+    }
 };
 
 watch(
@@ -241,20 +251,6 @@ defineExpose({
                         'bg-whiten dark:bg-slate-700': props.disabled,
                     }"
                 >
-                    <input
-                        v-if="isOpen()"
-                        :id="'multiple_' + props.id"
-                        :placeholder="props.placeholder"
-                        class="w-full p-0 text-black duration-300 ease-linear bg-transparent border-none rounded-lg !outline-none appearance-none focus:!outline-none stroke-none focus:stroke-none focus-visible:border-none focus:border-none focus:ring-0 focus-visible:shadow-none dark:text-white placeholder:text-gray-400"
-                        :class="{
-                            '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
-                                props.warning,
-                            'bg-whiten dark:bg-slate-700': props.disabled,
-                        }"
-                        autocomplete="off"
-                        @input="search"
-                    />
-
                     <div class="flex flex-wrap gap-1">
                         <div
                             v-for="(option, i) in selectedOptions"
@@ -284,6 +280,20 @@ defineExpose({
                             </button>
                         </div>
                     </div>
+
+                    <input
+                        v-if="isOpen()"
+                        :id="'multiple_' + props.id"
+                        :placeholder="props.placeholder"
+                        class="w-full p-0 text-black duration-300 ease-linear bg-transparent border-none rounded-lg !outline-none appearance-none focus:!outline-none stroke-none focus:stroke-none focus-visible:border-none focus:border-none focus:ring-0 focus-visible:shadow-none dark:text-white placeholder:text-gray-400"
+                        :class="{
+                            '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
+                                props.warning,
+                            'bg-whiten dark:bg-slate-700': props.disabled,
+                        }"
+                        autocomplete="off"
+                        @input="search"
+                    />
                 </div>
 
                 <!-- Single -->
@@ -386,9 +396,11 @@ defineExpose({
                         <template v-for="(option, index) in options">
                             <div
                                 v-if="
-                                    !selectedOptions
-                                        .map((option) => option.value)
-                                        .includes(option.value)
+                                    props.type == 'multiple'
+                                        ? !selectedOptions
+                                              .map((option) => option.value)
+                                              .includes(option.value)
+                                        : true
                                 "
                                 :key="index"
                                 @click="

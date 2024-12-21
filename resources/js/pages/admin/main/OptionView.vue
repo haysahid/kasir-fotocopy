@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminDefaultLayout from "@/layouts/AdminDefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
-import PlanTable from "@/pages/admin/main/plan/PlanTable.vue";
+import OptionTable from "@/pages/admin/main/option/OptionTable.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import { ref, watch } from "vue";
 import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";
@@ -58,7 +58,7 @@ watch(
                     </div>
                 </div>
             </PageSection>
-            <PlanTable ref="tableData" />
+            <OptionTable ref="tableData" />
         </div>
     </AdminDefaultLayout>
 </template>

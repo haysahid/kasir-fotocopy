@@ -2,6 +2,32 @@
 import BaseSection from "@/components/landing/BaseSection.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import SubscriptionPlanItem from "./SubscriptionPlanItem.vue";
+import { usePlanStore } from "@/stores/plan";
+
+const planStore = usePlanStore();
+
+planStore.getDropdown();
+
+function translateDurationType(type) {
+    switch (type) {
+        case "days":
+            return "hari";
+        case "months":
+            return "bulan";
+        case "years":
+            return "tahun";
+        default:
+            return "";
+    }
+}
+
+function getDurationText(duration, type) {
+    if (duration === 1) {
+        return translateDurationType(type);
+    }
+
+    return duration + " " + translateDurationType(type);
+}
 </script>
 
 <template>
@@ -10,7 +36,7 @@ import SubscriptionPlanItem from "./SubscriptionPlanItem.vue";
             data-aos="fade-up"
             data-aos-once="true"
             data-aos-delay="200"
-            class="flex flex-col items-center justify-center h-full"
+            class="flex flex-col items-center justify-center h-full px-12"
         >
             <h1
                 class="text-3xl font-bold text-center text-header-gradient dark:text-white"
@@ -22,40 +48,26 @@ import SubscriptionPlanItem from "./SubscriptionPlanItem.vue";
             </p>
         </div>
 
-        <div class="grid grid-cols-3 gap-4 p-12 mt-8">
+        <div class="flex flex-wrap justify-center gap-4 p-12 mt-4">
             <DefaultCard
+                v-for="plan in planStore.dropdown"
                 data-aos="fade-up"
                 data-aos-once="true"
                 data-aos-delay="300"
+                class="px-5 pt-6 pb-5 rounded-2xl w-full sm:w-[260px]"
+                :class="{
+                    ' !border-secondary': plan.priority,
+                }"
             >
                 <SubscriptionPlanItem
-                    title="Paket Basic"
-                    description="Paket berlangganan untuk usaha kecil."
-                    :price="100000"
-                />
-            </DefaultCard>
-
-            <DefaultCard
-                data-aos="fade-up"
-                data-aos-once="true"
-                data-aos-delay="400"
-            >
-                <SubscriptionPlanItem
-                    title="Paket Medium"
-                    description="Paket berlangganan untuk usaha menengah."
-                    :price="200000"
-                />
-            </DefaultCard>
-
-            <DefaultCard
-                data-aos="fade-up"
-                data-aos-once="true"
-                data-aos-delay="500"
-            >
-                <SubscriptionPlanItem
-                    title="Paket Large"
-                    description="Paket berlangganan untuk usaha besar."
-                    :price="300000"
+                    :title="plan.name"
+                    :description="plan.description"
+                    :price="plan.price"
+                    :duration="
+                        getDurationText(plan.duration, plan.duration_type)
+                    "
+                    :options="plan.options"
+                    :priority="plan.priority"
                 />
             </DefaultCard>
         </div>

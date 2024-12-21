@@ -82,6 +82,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('option-dropdown', [OptionController::class, 'dropdown']);
 
     Route::apiResource('plan', PlanController::class);
+    Route::put('plan/{id}/disable', [PlanController::class, 'disable']);
+    Route::put('plan/{id}/enable', [PlanController::class, 'enable']);
+    Route::put('plan/{id}/priority/{value}', [PlanController::class, 'setPriority']);
 
     Route::apiResource('payment-method', PaymentMethodController::class);
 });
