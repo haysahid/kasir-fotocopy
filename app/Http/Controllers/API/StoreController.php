@@ -99,6 +99,7 @@ class StoreController extends Controller
                 'address' => $request->input('address'),
                 'phone' => $request->input('phone'),
                 'community_id' => 1,
+                'activated_at' => now(),
             ]);
 
             // Logo

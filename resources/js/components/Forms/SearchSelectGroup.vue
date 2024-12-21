@@ -19,8 +19,9 @@ const props = defineProps([
     "options",
     "warning",
     "type",
+    "modelValue",
 ]);
-const emit = defineEmits(["search", "select", "clear"]);
+const emit = defineEmits(["search", "select", "clear", "update:modelValue"]);
 
 const target = ref(null);
 const options = ref<Option[]>();
@@ -104,6 +105,11 @@ const select = (indexAndOption, event: MouseEvent) => {
             selectedOptions.value.map((option) => option.value)
         );
 
+        emit(
+            "update:modelValue",
+            selectedOptions.value.map((option) => option.value)
+        );
+
         // Auto focus input
         const input = document.getElementById(
             `multiple_${props.id}`
@@ -142,6 +148,11 @@ const remove = (option: Option) => {
     );
 
     options.value = newOptions;
+
+    emit(
+        "update:modelValue",
+        selectedOptions.value.map((option) => option.value)
+    );
 };
 
 const clearSelectedOptions = () => {
@@ -150,7 +161,58 @@ const clearSelectedOptions = () => {
         option.selected = false;
     });
     emit("clear");
+    emit("update:modelValue", []);
 };
+
+watch(
+    () => props.modelValue,
+    () => {
+        if (props.type == "single") {
+            const newOptions = [...options.value];
+
+            newOptions.forEach((option) => {
+                option.selected = false;
+            });
+
+            const selectedOption = newOptions.find(
+                (option) => option.value === props.modelValue
+            );
+
+            if (selectedOption) {
+                selectedOption.selected = true;
+                selectedOptions.value = [selectedOption];
+            }
+
+            options.value = newOptions;
+        }
+
+        if (props.type == "multiple") {
+            const newOptions = [...options.value];
+
+            newOptions.forEach((option) => {
+                option.selected = false;
+            });
+
+            selectedOptions.value = props.modelValue.map((value) => {
+                const selectedOption = newOptions.find(
+                    (option) => option.value === value
+                );
+
+                if (selectedOption) {
+                    selectedOption.selected = true;
+                }
+
+                return selectedOption;
+            });
+
+            options.value = newOptions;
+        }
+    }
+);
+
+defineExpose({
+    clearSelectedOptions,
+});
 </script>
 
 <template>
@@ -166,6 +228,7 @@ const clearSelectedOptions = () => {
         <div class="relative flex flex-col items-center">
             <!-- Input -->
             <div @click="open" class="relative w-full">
+                <!-- Multiple -->
                 <div
                     v-if="
                         props.type == 'multiple' && selectedOptions.length > 0
@@ -192,35 +255,38 @@ const clearSelectedOptions = () => {
                         @input="search"
                     />
 
-                    <div
-                        v-for="(option, i) in selectedOptions"
-                        :key="i"
-                        class="flex items-center px-2 py-0.5 text-sm rounded-full bg-primary/5 dark:bg-primary/10 w-min text-nowrap"
-                    >
-                        <span>{{ option.text }}</span>
-                        <button
-                            @click="remove(option)"
-                            type="button"
-                            class="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400"
+                    <div class="flex flex-wrap gap-1">
+                        <div
+                            v-for="(option, i) in selectedOptions"
+                            :key="i"
+                            class="flex items-center px-2 py-0.5 text-sm rounded-full bg-primary/5 dark:bg-primary/10 w-min text-nowrap"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-5"
+                            <span>{{ option.text }}</span>
+                            <button
+                                @click="remove(option)"
+                                type="button"
+                                class="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400"
                             >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M6 18 18 6M6 6l12 12"
-                                />
-                            </svg>
-                        </button>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    class="size-5"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M6 18 18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Single -->
                 <div
                     v-else-if="
                         props.type == 'single' &&
@@ -317,43 +383,49 @@ const clearSelectedOptions = () => {
                     class="absolute left-0 z-40 w-full mt-1 overflow-y-auto bg-white rounded shadow max-h-select top-full dark:bg-form-input"
                 >
                     <div class="flex flex-col w-full">
-                        <div
-                            v-for="(option, index) in options"
-                            :key="index"
-                            @click="
-                                select(
-                                    {
-                                        index: index,
-                                        option: option,
-                                    },
-                                    $event
-                                )
-                            "
-                            class="w-full rounded-t cursor-pointer border-stroke hover:bg-primary/5 dark:hover:bg-secondary/5 dark:border-form-strokedark"
-                        >
+                        <template v-for="(option, index) in options">
                             <div
-                                :class="[
-                                    'relative flex w-full items-center border-l-2 border-transparent p-2 pl-2',
-                                ]"
+                                v-if="
+                                    !selectedOptions
+                                        .map((option) => option.value)
+                                        .includes(option.value)
+                                "
+                                :key="index"
+                                @click="
+                                    select(
+                                        {
+                                            index: index,
+                                            option: option,
+                                        },
+                                        $event
+                                    )
+                                "
+                                class="w-full rounded-t cursor-pointer border-stroke hover:bg-primary/5 dark:hover:bg-secondary/5 dark:border-form-strokedark"
                             >
-                                <div class="flex flex-col w-full">
-                                    <div
-                                        class="mx-2 leading-6 dark:text-white"
-                                        :class="{
-                                            'font-bold': option.selected,
-                                        }"
-                                    >
-                                        {{ option.text }}
+                                <div
+                                    :class="[
+                                        'relative flex w-full items-center border-l-2 border-transparent p-2 pl-2',
+                                    ]"
+                                >
+                                    <div class="flex flex-col w-full">
+                                        <div
+                                            class="mx-2 leading-6 dark:text-white"
+                                            :class="{
+                                                'font-bold': option.selected,
+                                            }"
+                                        >
+                                            {{ option.text }}
+                                        </div>
+                                        <p
+                                            v-if="option.subtext"
+                                            class="mx-2 text-sm leading-6 text-body"
+                                        >
+                                            {{ option.subtext }}
+                                        </p>
                                     </div>
-                                    <p
-                                        v-if="option.subtext"
-                                        class="mx-2 text-sm leading-6 text-body"
-                                    >
-                                        {{ option.subtext }}
-                                    </p>
                                 </div>
                             </div>
-                        </div>
+                        </template>
                     </div>
                 </div>
             </div>

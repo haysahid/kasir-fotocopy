@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('plan_id')->constrained()->onDelete('cascade');
             $table->foreignId('option_id')->constrained()->onDelete('cascade');
-            $table->date('date_added');
+            $table->date('date_added')->default(now());
             $table->date('date_removed')->nullable();
             $table->timestamps();
         });

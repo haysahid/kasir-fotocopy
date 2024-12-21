@@ -97,7 +97,7 @@ class PlanController extends Controller
             $plan->update($validatedData);
 
             if (isset($validatedData['options'])) {
-                $plan->options()->sync($validatedData['options'], [
+                $plan->options()->syncWithPivotValues($validatedData['options'], [
                     'date_added' => now(),
                 ]);
             }
@@ -106,7 +106,7 @@ class PlanController extends Controller
 
             return ResponseFormatter::success($plan, 'Data paket berhasil diperbarui');
         } catch (Exception $error) {
-            return ResponseFormatter::error('Data paket gagal diperbarui', 500);
+            return ResponseFormatter::error("Data paket gagal diperbarui: $error", 500);
         }
     }
 

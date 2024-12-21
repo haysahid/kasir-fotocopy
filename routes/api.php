@@ -80,7 +80,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Subcription
     Route::apiResource('option', OptionController::class);
     Route::get('option-dropdown', [OptionController::class, 'dropdown']);
+
     Route::apiResource('plan', PlanController::class);
-    Route::get('plan-dropdown', [PlanController::class, 'dropdown']);
+
     Route::apiResource('payment-method', PaymentMethodController::class);
 });
+
+Route::get('plan-dropdown', [PlanController::class, 'dropdown']);

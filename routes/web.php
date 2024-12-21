@@ -40,4 +40,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/dashboard', fn()  => Inertia::render('admin/main/DashboardView'))->name('admin.dashboard');
     Route::get('/user', fn()  => Inertia::render('admin/main/UserView'))->name('admin.user');
     Route::get('/store', fn()  => Inertia::render('admin/main/StoreView'))->name('admin.store');
+    Route::get('/subscription', fn()  => Inertia::render('admin/main/SubscriptionView'))->name('admin.subscription');
+    Route::get('/plan', fn()  => Inertia::render('admin/main/PlanView'))->name('admin.plan');
 });
