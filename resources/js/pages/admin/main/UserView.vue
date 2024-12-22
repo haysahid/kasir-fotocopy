@@ -71,7 +71,7 @@ getRoleDropdown();
                     /> -->
 
                     <SearchSelectGroup
-                        id="role_id"
+                        id="role"
                         type="single"
                         placeholder="Pilih role"
                         :options="getRoleOptions"

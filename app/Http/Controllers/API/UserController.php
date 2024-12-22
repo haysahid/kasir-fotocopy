@@ -90,7 +90,7 @@ class UserController extends Controller
 
     public function fetch()
     {
-        $user = User::with(['store', 'role', 'subscriptions'])->find(Auth::user()->id);
+        $user = User::with(['store', 'role'])->find(Auth::user()->id);
 
         return ResponseFormatter::success([
             'user' => $user,

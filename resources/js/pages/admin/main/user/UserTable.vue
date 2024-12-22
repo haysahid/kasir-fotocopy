@@ -221,6 +221,14 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
+                                Langganan
+                            </h5>
+                        </th>
+
+                        <th>
+                            <h5
+                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
+                            >
                                 Aktif
                             </h5>
                         </th>
@@ -272,10 +280,10 @@ defineExpose({
                                 {{ item.name }}
                             </p>
                             <p
-                                v-if="item.code"
+                                v-if="item.store.length > 0"
                                 class="mt-0.5 text-xs text-gray-400 dark:text-gray-400"
                             >
-                                {{ item.code }}
+                                {{ item.store[0].name }}
                             </p>
                         </td>
 
@@ -304,6 +312,13 @@ defineExpose({
                         <td>
                             <p class="text-black dark:text-white">
                                 {{ item.role.name }}
+                            </p>
+                        </td>
+
+                        <!-- Subscription -->
+                        <td>
+                            <p class="text-black dark:text-white">
+                                {{ item.active_subscription?.plan?.name }}
                             </p>
                         </td>
 

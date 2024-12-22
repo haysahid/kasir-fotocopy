@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onUpdated, computed, watch } from "vue";
+import { ref, onMounted, onUpdated, computed, watch } from "vue";
 import InputGroup from "@/components/Forms/InputGroup.vue";
 import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import { useAdminUserStore } from "@/stores/admin/user";
+import { useRoleStore } from "@/stores/admin/role";
+import SearchSelectGroup from "@/components/Forms/SearchSelectGroup.vue";
 
 const props = defineProps({
     showCloseButton: {
@@ -23,6 +25,39 @@ const emit = defineEmits(["close"]);
 
 const adminUserStore = useAdminUserStore();
 
+const roleStore = useRoleStore();
+const roleOptions = ref([]);
+
+async function getRoleDropdown() {
+    await roleStore.getDropdown();
+
+    roleOptions.value = roleStore.dropdown.map((role) => ({
+        value: role.id,
+        text: role.name,
+    }));
+}
+
+function filterRoleOptions(search = null) {
+    if (!roleStore.dropdown) return;
+
+    console.log("search", search);
+
+    const options = roleStore.dropdown.map((role) => ({
+        value: role.id,
+        text: role.name,
+    }));
+
+    if (search) {
+        roleOptions.value = options.filter((option) =>
+            option.text.toLowerCase().includes(search.toLowerCase())
+        );
+
+        return;
+    }
+
+    roleOptions.value = options;
+}
+
 const form = ref({
     name: "",
     email: "",
@@ -30,6 +65,7 @@ const form = ref({
     passwordConfirmation: "",
     phone: "",
     address: "",
+    role_id: "",
 });
 
 const formValidation = ref({
@@ -39,6 +75,7 @@ const formValidation = ref({
     passwordConfirmation: "",
     phone: "",
     address: "",
+    role_id: "",
 });
 
 function clearErrorMessage() {
@@ -113,6 +150,11 @@ function validateUpdateUser() {
         result = false;
     } else if (!form.value.phone.match(/^\d+$/)) {
         formValidation.value.phone = "Nomor HP tidak valid";
+        result = false;
+    }
+
+    if (form.value.role_id.length < 1) {
+        formValidation.value.role_id = "Role tidak boleh kosong";
         result = false;
     }
 
@@ -220,6 +262,15 @@ watch(
     }
 );
 
+watch(
+    () => form.value.role_id,
+    (newValue, oldValue) => {
+        if (newValue && newValue.length > 0 && formValidation.value.role_id) {
+            formValidation.value.role_id = "";
+        }
+    }
+);
+
 onUpdated(() => {
     if (props.user) {
         form.value = {
@@ -229,8 +280,13 @@ onUpdated(() => {
             passwordConfirmation: "",
             phone: props.user.phone,
             address: props.user.address,
+            role_id: props.user.role_id,
         };
     }
+});
+
+onMounted(() => {
+    getRoleDropdown();
 });
 
 function close(value) {
@@ -242,6 +298,7 @@ function close(value) {
             passwordConfirmation: "",
             phone: "",
             address: "",
+            role_id: "",
         };
     } else {
         form.value = {
@@ -251,6 +308,7 @@ function close(value) {
             passwordConfirmation: "",
             phone: props.user.phone,
             address: props.user.address,
+            role_id: props.user.role_id,
         };
     }
 
@@ -310,6 +368,17 @@ function close(value) {
                 type="text"
                 placeholder="Masukkan Alamat"
                 :warning="formValidation.address"
+            />
+
+            <SearchSelectGroup
+                v-model="form.role_id"
+                id="role_id"
+                label="Role"
+                placeholder="Pilih Role"
+                :options="roleOptions"
+                @search="filterRoleOptions"
+                :warning="formValidation.role_id"
+                class="mb-4"
             />
 
             <InputGroup

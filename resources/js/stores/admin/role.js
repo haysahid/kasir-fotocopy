@@ -16,6 +16,10 @@ export const useRoleStore = defineStore('role', () => {
     const getAllItemsStatus = ref("");
     const items = computed(() => data.value.data);
 
+    // Get dropdown states
+    const dropdown = ref([]);
+    const getDropdownStatus = ref("");
+
     // Get item states
     const item = ref({});
     const getItemStatus = ref("");
@@ -55,13 +59,20 @@ export const useRoleStore = defineStore('role', () => {
 
     async function getDropdown(search) {
         try {
+            getDropdownStatus.value = "loading";
+
             const response = await axios.get("/api/role-dropdown", {
                 headers: { Authorization: token },
                 params: { search },
             });
 
+            dropdown.value = response.data.result;
+
+            getDropdownStatus.value = "success";
+
             return response.data;
         } catch (error) {
+            getDropdownStatus.value = "error";
             return {};
         }
     }
@@ -84,9 +95,12 @@ export const useRoleStore = defineStore('role', () => {
 
     return {
         data,
+        item,
+        dropdown,
         items,
         query,
         getAllItemsStatus,
+        getDropdownStatus,
         saveStatus,
         deleteStatus,
         deleteProgress,

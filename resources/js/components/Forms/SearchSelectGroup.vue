@@ -10,17 +10,35 @@ interface Option {
     element?: HTMLElement;
 }
 
-const debounce = inject("debounce");
+const props = defineProps({
+    id: {
+        type: String,
+    },
+    label: {
+        type: String,
+    },
+    placeholder: {
+        type: String,
+        default: "",
+    },
+    options: {
+        type: Array,
+        required: true,
+    },
+    warning: {
+        type: String,
+        default: "",
+    },
+    type: {
+        type: String,
+        default: "single",
+    },
+    modelValue: {
+        type: [Number, String, Array],
+        default: "",
+    },
+});
 
-const props = defineProps([
-    "id",
-    "label",
-    "placeholder",
-    "options",
-    "warning",
-    "type",
-    "modelValue",
-]);
 const emit = defineEmits(["search", "select", "clear", "update:modelValue"]);
 
 const target = ref(null);
