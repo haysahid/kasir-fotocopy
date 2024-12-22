@@ -110,21 +110,21 @@ onMounted(() => {
                                 >
                                     <div
                                         v-if="getProfileState === 'loading'"
-                                        class="rounded-full h-35 aspect-square bg-slate-200 dark:bg-slate-700"
+                                        class="h-24 rounded-full aspect-square bg-slate-200 dark:bg-slate-700"
                                     ></div>
 
                                     <img
                                         v-else-if="userStore.user.avatar"
                                         :src="userStore.user.avatar"
                                         alt="User"
-                                        class="opacity-50 size-35"
+                                        class="opacity-50 size-24"
                                     />
 
                                     <img
                                         v-else
                                         src="@/assets/images/user/user-icon.png"
                                         alt="User"
-                                        class="opacity-50 size-35"
+                                        class="opacity-50 size-24"
                                     />
 
                                     <div
@@ -234,7 +234,7 @@ onMounted(() => {
                                         v-if="userStore.user.store[0]?.logo"
                                         :src="userStore.user.store[0]?.logo"
                                         alt="Brand"
-                                        class="opacity-50 size-35"
+                                        class="opacity-50 size-24"
                                     />
 
                                     <svg
@@ -244,7 +244,7 @@ onMounted(() => {
                                         viewBox="0 0 24 24"
                                         stroke-width="1.5"
                                         stroke="currentColor"
-                                        class="text-gray-400 duration-300 ease-linear dark:text-gray-500 size-[140px]"
+                                        class="text-gray-400 duration-300 ease-linear dark:text-gray-500 size-24"
                                     >
                                         <path
                                             stroke-linecap="round"
@@ -377,17 +377,47 @@ onMounted(() => {
                                                 )
                                             }}
                                         </DetailRow>
-
-                                        <BaseButton
-                                            @click="selectPlan"
-                                            class="px-6 py-3 mt-6 bg-inherit text-gradient border border-[#0c66ee] text-[#0c66ee] dark:text-secondary dark:border-secondary"
-                                        >
-                                            Upgrade Langganan
-                                        </BaseButton>
                                     </div>
                                 </div>
 
                                 <ActiveSubscriptionNotFoundAlert v-else />
+
+                                <div
+                                    class="flex items-center justify-between gap-4 mt-6"
+                                >
+                                    <Link
+                                        v-if="userStore.hasActiveSubscription"
+                                        :href="route('home')"
+                                    >
+                                        <BaseButton
+                                            class="px-6 py-3 bg-inherit text-gradient border border-[#0c66ee] text-[#0c66ee] dark:!text-secondary dark:border-secondary"
+                                        >
+                                            Upgrade / Perpanjang
+                                        </BaseButton>
+                                    </Link>
+
+                                    <Link
+                                        :href="route('subscription-history')"
+                                        class="flex items-center justify-center gap-1 text-sm text-right text-primary dark:text-secondary hover:text-primary/90 dark:hover:text-secondary/90"
+                                    >
+                                        <p>Lihat Riwayat Langganan</p>
+
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            class="w-4 h-4 pt-[1.5px]"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 5l7 7-7 7"
+                                            />
+                                        </svg>
+                                    </Link>
+                                </div>
                             </div>
                         </DefaultCard>
                     </div>

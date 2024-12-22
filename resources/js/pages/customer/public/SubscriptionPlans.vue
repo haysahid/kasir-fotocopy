@@ -60,7 +60,7 @@ function getDurationText(duration, type) {
                 data-aos="fade-up"
                 data-aos-once="true"
                 data-aos-delay="200"
-                class="px-5 pt-6 pb-5 rounded-3xl w-full sm:w-[260px]"
+                class="px-5 pt-6 pb-5 !rounded-3xl w-full sm:w-[260px]"
                 :class="{
                     ' !border-secondary': plan.priority,
                 }"

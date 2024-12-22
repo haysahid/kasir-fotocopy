@@ -47,26 +47,49 @@ class InvoiceController extends Controller
         try {
             DB::beginTransaction();
 
-            $dateSubscribed = now();
-
             if ($plan->duration_type == 'days') {
-                $validTo = now()->addDays($plan->duration);
+                $validTo = now()->addDays($plan->duration * $quantity);
             } elseif ($plan->duration_type == 'weeks') {
-                $validTo = now()->addWeeks($plan->duration);
+                $validTo = now()->addWeeks($plan->duration * $quantity);
             } elseif ($plan->duration_type == 'months') {
-                $validTo = now()->addMonths($plan->duration);
+                $validTo = now()->addMonths($plan->duration * $quantity);
             } elseif ($plan->duration_type == 'years') {
-                $validTo = now()->addYears($plan->duration);
+                $validTo = now()->addYears($plan->duration * $quantity);
             }
 
+            // Check is subscription is trial
             if ($plan->price == 0) {
-                $trialPeriodeStart = $dateSubscribed;
+                // Check if user has trial subscription before
+                $trialSubscription = $customer->subscriptions()
+                    ->where('trial_periode_start', '!=', null)
+                    ->where('trial_periode_end', '!=', null)
+                    ->exists();
+
+                if ($trialSubscription) {
+                    return ResponseFormatter::error('Anda sudah pernah menggunakan paket uji coba sebelumnya', 400);
+                }
+
+                $trialPeriodeStart = now();
                 $trialPeriodeEnd = $validTo;
-                $subscribeAfterTrial = true;
+                $subscribeAfterTrial = false;
             } else {
                 $trialPeriodeStart = null;
                 $trialPeriodeEnd = null;
                 $subscribeAfterTrial = false;
+            }
+
+            // Check is user subscribe after trial
+            $latestSubscription = $customer->subscriptions()
+                ->where('subscriptions.valid_to', '!=', null)
+                ->latest()
+                ->first();
+
+            if ($latestSubscription) {
+                $isLatestSubscriptionTrial = $latestSubscription->trial_periode_start != null && $latestSubscription->trial_periode_end != null;
+
+                if ($isLatestSubscriptionTrial) {
+                    $subscribeAfterTrial = true;
+                }
             }
 
             // Create subscription
@@ -74,7 +97,7 @@ class InvoiceController extends Controller
                 'trial_periode_start' => $trialPeriodeStart,
                 'trial_periode_end' => $trialPeriodeEnd,
                 'subscribe_after_trial' => $subscribeAfterTrial,
-                'date_subscribed' => $dateSubscribed,
+                'date_subscribed' => now(),
                 'valid_to' => $validTo,
             ]);
 
@@ -82,7 +105,7 @@ class InvoiceController extends Controller
             $planHistory = $subscription->planHistories()->create([
                 'plan_id' => $plan->id,
                 'quantity' => $quantity,
-                'date_start' => $dateSubscribed,
+                'date_start' => now(),
                 'date_end' => $validTo,
             ]);
 
@@ -91,8 +114,20 @@ class InvoiceController extends Controller
                 'plan_history_id' => $planHistory->id,
                 'description' => 'Silahkan melakukan pembayaran untuk berlangganan ' . $plan->name,
                 'amount' => $grossAmount,
-                'due_at' => $dateSubscribed->addDays(1),
+                'due_at' => now()->addDays(1),
             ]);
+
+            // Handle trial subscription
+            if ($plan->price == 0) {
+                $invoice->update([
+                    'paid_at' => now(),
+                ]);
+
+                $subscription->update([
+                    'date_subscribed' => now(),
+                    'valid_to' => $validTo,
+                ]);
+            }
 
             DB::commit();
 

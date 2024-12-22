@@ -2,33 +2,32 @@
 import AdminDefaultLayout from "@/layouts/AdminDefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
 import { useUserStore } from "@/stores/user";
-import { useStoreStore } from "@/stores/store";
+import { useDashboardStore } from "@/stores/admin/dashboard";
 import CustomBarChart from "@/components/Charts/CustomBarChart.vue";
 import { ref, computed, onMounted } from "vue";
 import SummaryCard from "./dashboard/SummaryCard.vue";
 
 const userStore = useUserStore();
-const storeStore = useStoreStore();
+const dashboardStore = useDashboardStore();
 
 const storeGraph = ref(null);
-const storeSummary = ref(null);
+const summary = ref(null);
 
 async function getStoreGraph() {
-    const response = await storeStore.getGraph(userStore.user?.store[0].id);
+    const response = await dashboardStore.getGraph(userStore.user?.store[0].id);
 
     storeGraph.value = response;
 }
 
-async function getStoreSummary() {
-    const response = await storeStore.getSummary(userStore.user?.store[0].id);
+async function getSummary() {
+    const response = await dashboardStore.getSummary();
 
-    storeSummary.value = response;
+    summary.value = response;
 }
 
 const getChartData = computed(() => {
-    if (!storeGraph.value) {
-        return null;
-    }
+    if (!userStore.hasStore) return null;
+    if (!storeGraph.value) return null;
 
     const labels = storeGraph.value.result.labels;
 
@@ -44,8 +43,8 @@ const getChartData = computed(() => {
 });
 
 onMounted(() => {
-    getStoreGraph();
-    getStoreSummary();
+    // getStoreGraph();
+    getSummary();
 });
 </script>
 
@@ -61,46 +60,27 @@ onMounted(() => {
             </PageSection>
 
             <div
-                v-if="storeSummary"
+                v-if="summary"
                 class="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
+                <SummaryCard title="Pengguna" :value="summary.result.users" />
                 <SummaryCard
-                    title="Pembelian"
+                    title="Pengguna Aktif Berlangganan"
+                    :value="summary.result.subscribed_users"
+                />
+                <SummaryCard title="Toko" :value="summary.result.stores" />
+                <SummaryCard
+                    title="Total Pemasukan"
+                    :value="
+                        'Rp ' + $formatCurrency(summary.result.total_income)
+                    "
+                />
+                <SummaryCard
+                    title="Rata-rata Pemasukan Bulanan"
                     :value="
                         'Rp ' +
-                        $formatCurrency(storeSummary.result.total_purchases)
+                        $formatCurrency(summary.result.mean_monthly_income)
                     "
-                />
-                <SummaryCard
-                    title="Penjualan"
-                    :value="
-                        'Rp ' + $formatCurrency(storeSummary.result.total_sales)
-                    "
-                />
-                <SummaryCard
-                    title="Total Pembelian"
-                    :value="storeSummary.result.total_purchases_count"
-                />
-                <SummaryCard
-                    title="Total Penjualan"
-                    :value="storeSummary.result.total_sales_count"
-                />
-                <SummaryCard
-                    title="Rata-rata Pembelian"
-                    :value="
-                        'Rp ' +
-                        $formatCurrency(storeSummary.result.mean_purchases)
-                    "
-                />
-                <SummaryCard
-                    title="Rata-rata Penjualan"
-                    :value="
-                        'Rp ' + $formatCurrency(storeSummary.result.mean_sales)
-                    "
-                />
-                <SummaryCard
-                    title="Produk Terjual"
-                    :value="storeSummary.result.sold_products"
                 />
             </div>
 
@@ -109,7 +89,7 @@ onMounted(() => {
                 title="Pemasukan"
                 height="260"
                 :chart-data="getChartData"
-                :loading="storeStore.getGraphStatus === 'loading'"
+                :loading="dashboardStore.getGraphStatus === 'loading'"
             />
         </div>
     </AdminDefaultLayout>

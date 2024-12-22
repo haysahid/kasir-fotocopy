@@ -8,6 +8,8 @@ import ActiveSubscriptionNotFoundAlert from "../pages/customer/main/ActiveSubscr
 
 const userStore = useUserStore();
 
+const allowedRoutes = ["profile", "subscription-history"];
+
 const hasActiveSubscription = computed(
     () => userStore.user && userStore.user?.has_active_subscription
 );
@@ -30,7 +32,7 @@ const currentRoute = computed(() => route().current());
             <HeaderArea />
             <main>
                 <div class="p-4 mx-auto max-w-screen-2xl md:p-6 2xl:p-10">
-                    <slot v-if="currentRoute == 'profile'"></slot>
+                    <slot v-if="allowedRoutes.includes(currentRoute)"></slot>
 
                     <ActiveSubscriptionNotFoundAlert
                         v-else-if="!hasActiveSubscription"

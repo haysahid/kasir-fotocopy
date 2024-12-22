@@ -2,14 +2,14 @@
 import { ref, onMounted, computed, watch } from "vue";
 import ItemActionButton from "@/components/ItemActionButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
-import DeleteStoreConfirmation from "./DeleteStoreConfirmation.vue";
+import DeleteSubscriptionConfirmation from "./DeleteSubscriptionConfirmation.vue";
 import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useUserStore } from "@/stores/user";
-import { useStoreStore } from "@/stores/store";
+import { useSubscriptionStore } from "@/stores/subscription";
 import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import StatusLabel from "@/components/StatusLabel.vue";
-import StoreForm from "./StoreForm.vue";
+import SubscriptionForm from "./SubscriptionForm.vue";
 
 const props = defineProps({
     title: {
@@ -18,7 +18,7 @@ const props = defineProps({
 });
 
 const userStore = useUserStore();
-const storeStore = useStoreStore();
+const subscriptionStore = useSubscriptionStore();
 
 const selectedItems = ref([]);
 const isAllItemsSelected = ref(false);
@@ -45,7 +45,7 @@ function onItemFormDialogClosed(value) {
     itemFormDialog.value.close(value);
 
     if (value) {
-        storeStore.query.page = storeStore.data.current_page;
+        subscriptionStore.query.page = subscriptionStore.data.current_page;
         getData();
     }
 
@@ -61,21 +61,21 @@ function onDeleteItemDialogClosed(value) {
 
     if (value) {
         selectedItems.value = [];
-        storeStore.query.page = storeStore.data.current_page;
+        subscriptionStore.query.page = subscriptionStore.data.current_page;
         getData();
     }
 }
 
 async function getData(params) {
-    await storeStore.getAllItems(params);
+    await subscriptionStore.getAllItems(params);
 }
 
 async function disableOrEnableItem(item) {
-    await storeStore.disableOrEnableItem(item);
+    await subscriptionStore.disableOrEnableItem(item);
 }
 
 const changePage = (page) => {
-    storeStore.query.page = page;
+    subscriptionStore.query.page = page;
 
     getData();
 
@@ -87,7 +87,7 @@ const changePage = (page) => {
 watch(
     () => selectedItems.value.length,
     (newValue, oldValue) => {
-        console.log("current page: ", storeStore.data.current_page);
+        console.log("current page: ", subscriptionStore.data.current_page);
     }
 );
 
@@ -95,13 +95,15 @@ watch(
     () => isAllItemsSelected.value,
     (newValue, oldValue) => {
         if (!oldValue && newValue) {
-            selectedItems.value = JSON.parse(JSON.stringify(storeStore.items));
+            selectedItems.value = JSON.parse(
+                JSON.stringify(subscriptionStore.items)
+            );
         }
 
         if (
             oldValue &&
             !newValue &&
-            selectedItems.value.length === storeStore.items?.length
+            selectedItems.value.length === subscriptionStore.items?.length
         ) {
             selectedItems.value = [];
         }
@@ -173,7 +175,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Nama
+                                Tgl. Dibuat
                             </h5>
                         </th>
 
@@ -181,7 +183,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Deskripsi
+                                Kustomer
                             </h5>
                         </th>
 
@@ -189,7 +191,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                No. HP
+                                Paket
                             </h5>
                         </th>
 
@@ -197,7 +199,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Alamat
+                                Tagihan
                             </h5>
                         </th>
 
@@ -205,7 +207,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Pemilik
+                                Status
                             </h5>
                         </th>
 
@@ -213,7 +215,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Tgl. Aktivasi
+                                Durasi
                             </h5>
                         </th>
 
@@ -221,7 +223,15 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Aktif
+                                Tgl. Mulai
+                            </h5>
+                        </th>
+
+                        <th>
+                            <h5
+                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
+                            >
+                                Tgl. Berakhir
                             </h5>
                         </th>
 
@@ -238,12 +248,12 @@ defineExpose({
 
                 <tbody>
                     <tr
-                        v-for="(item, key) in storeStore.items"
+                        v-for="(item, key) in subscriptionStore.items"
                         :key="key"
                         class="hover:bg-secondary hover:bg-opacity-10 dark:hover:bg-opacity-5 [&>td]:py-2.5 [&>td]:px-4 [&>td]:text-sm duration-300 ease-linear"
                         :class="{
                             'border-b border-stroke dark:border-strokedark':
-                                key !== storeStore.items.length - 1,
+                                key !== subscriptionStore.items.length - 1,
                             'bg-secondary bg-opacity-20 dark:bg-opacity-10':
                                 selectedItems
                                     .map((i) => i.id)
@@ -263,70 +273,99 @@ defineExpose({
                             </CheckboxGroup>
                         </td>
 
-                        <!-- Name -->
+                        <!-- Date Created -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.name }}
+                                {{ $formatDate.formatDate(item.created_at) }}
                             </p>
                             <p
-                                v-if="item.code"
+                                v-if="item.id"
                                 class="mt-0.5 text-xs text-gray-400 dark:text-gray-400"
                             >
-                                {{ item.code }}
+                                {{ item.id }}
                             </p>
                         </td>
 
-                        <!-- Description -->
+                        <!-- Customer -->
                         <td>
                             <p
                                 class="text-black dark:text-white line-clamp-2 overflow-ellipsis"
                             >
-                                {{ item.description }}
+                                {{ item.customer?.name }}
                             </p>
                         </td>
 
-                        <!-- Phone -->
+                        <!-- Plan -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.phone }}
+                                {{ item.plan?.name }}
                             </p>
                         </td>
 
-                        <!-- Address -->
+                        <!-- Total Price -->
                         <td>
                             <p class="text-black dark:text-white">
-                                {{ item.address }}
+                                Rp {{ $formatCurrency(item.amount) }}
                             </p>
                         </td>
 
-                        <!-- Owner -->
+                        <!-- Status -->
                         <td>
-                            <ul v-if="item.owners.length > 0" class="list-disc">
-                                <li
-                                    v-for="owner in item.owners"
-                                    class="text-black dark:text-white"
-                                >
-                                    {{ owner.name }}
-                                </li>
-                            </ul>
-                        </td>
-
-                        <!-- Activation Date -->
-                        <td>
-                            <p class="text-black dark:text-white">
-                                {{ $formatDate.formatDate(item.activated_at) }}
-                            </p>
-                        </td>
-
-                        <!-- Active -->
-                        <td>
-                            <CustomSwitch
-                                v-model="item.is_active"
-                                @change="() => disableOrEnableItem(item)"
-                                :disable="!canEdit(item)"
-                                :disable-margin="true"
-                                :small="true"
+                            <StatusLabel
+                                v-if="item.status == 'Active'"
+                                :name="item.status"
+                                status="success"
                             />
+
+                            <StatusLabel
+                                v-else-if="item.status == 'Pending Payment'"
+                                :name="item.status"
+                                status="warning"
+                            />
+
+                            <StatusLabel
+                                v-else-if="item.status == 'Expired'"
+                                :name="item.status"
+                                status="danger"
+                            />
+
+                            <StatusLabel v-else :name="item.status" />
+                        </td>
+
+                        <!-- Duration -->
+                        <td>
+                            <p class="text-black dark:text-white">
+                                {{ item.duration_text }}
+                            </p>
+                        </td>
+
+                        <!-- Start Date -->
+                        <td>
+                            <p class="text-black dark:text-white">
+                                {{
+                                    $formatDate.formatDate(
+                                        item.date_subscribed,
+                                        {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                        }
+                                    )
+                                }}
+                            </p>
+                        </td>
+
+                        <!-- End Date -->
+                        <td>
+                            <p class="text-black dark:text-white">
+                                {{
+                                    $formatDate.formatDate(item.valid_to, {
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "numeric",
+                                    })
+                                }}
+                            </p>
                         </td>
 
                         <!-- Actions -->
@@ -346,17 +385,17 @@ defineExpose({
             class="flex flex-col items-start justify-between gap-2 py-6 sm:items-center sm:flex-row"
         >
             <vue-awesome-paginate
-                v-if="storeStore?.data?.current_page"
-                :total-items="storeStore.data.total"
-                :items-per-page="storeStore.data.per_page"
+                v-if="subscriptionStore?.data?.current_page"
+                :total-items="subscriptionStore.data.total"
+                :items-per-page="subscriptionStore.data.per_page"
                 :max-pages-shown="5"
-                v-model="storeStore.data.current_page"
+                v-model="subscriptionStore.data.current_page"
                 @click="changePage"
             />
             <p class="text-xs font-light text-gray-400">
-                Showing {{ storeStore.data?.from }} to
-                {{ storeStore.data?.to }} of
-                {{ storeStore.data?.total }} entries
+                Showing {{ subscriptionStore.data?.from }} to
+                {{ subscriptionStore.data?.to }} of
+                {{ subscriptionStore.data?.total }} entries
             </p>
         </div>
 
@@ -365,7 +404,7 @@ defineExpose({
             :show-cancel="true"
             @cancel="onItemFormDialogClosed"
         >
-            <StoreForm
+            <SubscriptionForm
                 :show-close-button="true"
                 :item="selectedItems[0]"
                 @close="onItemFormDialogClosed"
@@ -374,7 +413,7 @@ defineExpose({
         </CustomDialog>
 
         <CustomDialog id="deleteItemDialog" :show-cancel="true">
-            <DeleteStoreConfirmation
+            <DeleteSubscriptionConfirmation
                 :show-close-button="true"
                 :items="selectedItems"
                 @close="onDeleteItemDialogClosed"

@@ -5,10 +5,10 @@ const formatDate = (
         timeStyle: "short",
     }
 ) => {
-    if (!datetime) return '-';
+    if (!datetime) return null;
 
     options = {
-        timeZone: "Asia/Tokyo",
+        timeZone: "Asia/Jakarta",
         ...options,
     };
 

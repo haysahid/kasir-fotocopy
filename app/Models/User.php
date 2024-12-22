@@ -93,13 +93,33 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
     }
 
-    public function getActiveSubscriptionAttribute()
+    public function activeSubscriptions()
     {
         return $this->subscriptions()
+            ->where('date_subscribed', '<', now())
             ->where('valid_to', '>', now())
             ->where('date_unsubscribed', null)
             ->latest()
-            ->first();
+            ->get();
+    }
+
+    public function activeSubscription()
+    {
+        $subscriptions = $this->activeSubscriptions();
+
+        // Return the first active subscription
+        foreach ($subscriptions as $subscription) {
+            if ($subscription->status === 'Active') {
+                return $subscription;
+            }
+        }
+
+        return null;
+    }
+
+    public function getActiveSubscriptionAttribute()
+    {
+        return $this->activeSubscription();
     }
 
     public function getHasActiveSubscriptionAttribute()

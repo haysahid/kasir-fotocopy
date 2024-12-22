@@ -7,6 +7,17 @@ export const useUserStore = defineStore('user', () => {
     const user = ref(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : false)
 
     const axios = inject("axios");
+    const Toast = inject("Toast");
+    const token = `Bearer ${localStorage.getItem("access_token")}`;
+
+    const subscriptionHistoryData = ref(null);
+    const getSubscriptionHistoryStatus = ref("");
+
+    const query = ref({
+        limit: 10,
+        page: 1,
+        search: null,
+    });
 
     async function fetchUser() {
         try {
@@ -26,6 +37,29 @@ export const useUserStore = defineStore('user', () => {
         } catch (error) {
             console.error(error)
             user.value = false
+
+            return false
+        }
+    }
+
+    async function getSubscriptionHistory(params) {
+        if (params) query.value = params;
+
+        try {
+            getSubscriptionHistoryStatus.value = "loading";
+
+            const response = await axios.get("/api/subscription-history", {
+                headers: { Authorization: token },
+                params: query.value,
+            })
+
+            subscriptionHistoryData.value = response.data.result;
+
+            getSubscriptionHistoryStatus.value = "success";
+
+            return response.data;
+        } catch (error) {
+            getSubscriptionHistoryStatus.value = "error";
 
             return false
         }
@@ -56,6 +90,10 @@ export const useUserStore = defineStore('user', () => {
         clearUser,
         isEnabled,
         hasStore,
-        hasActiveSubscription
+        hasActiveSubscription,
+        subscriptionHistoryData,
+        getSubscriptionHistory,
+        getSubscriptionHistoryStatus,
+        query,
     }
 })

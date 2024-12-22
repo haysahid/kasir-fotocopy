@@ -34,6 +34,8 @@ Route::get('/sales-history', fn()  => Inertia::render('customer/main/SalesHistor
 Route::get('/report', fn()  => Inertia::render('customer/main/ReportView'))->name('report');
 Route::get('/setting', fn()  => Inertia::render('customer/main/SettingView'))->name('setting');
 
+Route::get('subscription-history', fn()  => Inertia::render('customer/main/subscription-history/SubscriptionHistoryView'))->name('subscription-history');
+
 // Admin routes group
 Route::prefix('admin')->group(function () {
     Route::get('/login', fn()  => Inertia::render('admin/LoginView'))->name('admin.login');

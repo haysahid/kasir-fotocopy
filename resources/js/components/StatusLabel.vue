@@ -6,7 +6,7 @@ const props = defineProps({
     },
     status: {
         type: String,
-        default: "normal",
+        default: "info",
     },
     autoScale: {
         type: Boolean,
@@ -17,7 +17,7 @@ const props = defineProps({
 
 <template>
     <p
-        class="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-opacity-10 dark:bg-opacity-60"
+        class="inline-flex px-3 py-1 text-xs font-medium text-gray-500 bg-gray-500 rounded-full dark:text-white bg-opacity-10 dark:bg-opacity-60 dark:text-opacity-80 text-nowrap"
         :class="{
             'max-md:text-xs max-md:px-2 max-md:py-0.5': props.autoScale,
             'bg-primary text-primary dark:text-white dark:text-opacity-80':

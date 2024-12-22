@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminDefaultLayout from "@/layouts/AdminDefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
-import PaymentMethodTable from "@/pages/admin/main/payment_method/PaymentMethodTable.vue";
+import PaymentMethodTable from "@/pages/admin/main/payment-method/PaymentMethodTable.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import { ref, watch } from "vue";
 import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";

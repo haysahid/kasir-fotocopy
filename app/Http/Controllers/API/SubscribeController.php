@@ -55,7 +55,7 @@ class SubscribeController extends Controller
                 ],
                 [
                     'id' => 'PPN',
-                    'price' => $plan->price * 0.12,
+                    'price' => $plan->price * $quantity * 0.12,
                     'quantity' => 1,
                     'name' => 'PPN (12%)',
                 ]
@@ -80,7 +80,5 @@ class SubscribeController extends Controller
         ], 'Snap token generated successfully');
     }
 
-    public function setPayment(Request $request) {
-        
-    }
+    public function setPayment(Request $request) {}
 }

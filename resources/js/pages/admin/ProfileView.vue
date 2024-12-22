@@ -75,21 +75,21 @@ onMounted(() => {
                                 >
                                     <div
                                         v-if="getProfileState === 'loading'"
-                                        class="rounded-full h-35 aspect-square bg-slate-200 dark:bg-slate-700"
+                                        class="h-24 rounded-full aspect-square bg-slate-200 dark:bg-slate-700"
                                     ></div>
 
                                     <img
                                         v-else-if="userStore.user.avatar"
                                         :src="userStore.user.avatar"
                                         alt="User"
-                                        class="opacity-50 size-35"
+                                        class="opacity-50 size-24"
                                     />
 
                                     <img
                                         v-else
                                         src="@/assets/images/user/user-icon.png"
                                         alt="User"
-                                        class="opacity-50 size-35"
+                                        class="opacity-50 size-24"
                                     />
 
                                     <div

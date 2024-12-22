@@ -16,6 +16,7 @@ use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SubscribeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoicePaymentController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Middleware\CheckAdminRole;
 use App\Http\Middleware\CheckUserRoleAndStore;
 use Illuminate\Http\Request;
@@ -98,6 +99,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('invoice', InvoiceController::class);
 
     Route::post('subscribe/create-snap-token', [SubscribeController::class, 'createSnapToken']);
+
+    Route::apiResource('subscription', SubscriptionController::class);
+    Route::get('subscription-history', [SubscriptionController::class, 'history']);
 });
 
 Route::get('plan/{id}', [PlanController::class, 'show']);

@@ -34,11 +34,13 @@ onMounted(() => {
     });
 });
 
+const date = ref(null);
+
 onUpdated(() => {
     if (props.modelValue) {
-        fp.value.setDate(props.modelValue);
+        date.value = props.modelValue;
     } else {
-        fp.value.setDate(null);
+        date.value = null;
     }
 });
 </script>
@@ -59,6 +61,7 @@ onUpdated(() => {
                 :id="props.id"
                 :placeholder="props.placeholder"
                 data-input
+                v-model="date"
                 class="w-full py-2 pl-3 pr-4 text-black bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"
                 :class="{
                     '!border-danger focus:border-danger dark:!border-danger dark:focus:border-danger':

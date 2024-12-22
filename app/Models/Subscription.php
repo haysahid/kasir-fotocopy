@@ -21,7 +21,15 @@ class Subscription extends Model
     ];
 
     protected $appends = [
+        'invoice_id',
+        'duration_text',
+        'amount',
         'plan',
+        'status',
+    ];
+
+    protected $casts = [
+        'subscribe_after_trial' => 'boolean',
     ];
 
     public function customer()
@@ -44,5 +52,59 @@ class Subscription extends Model
         $planHistory = $this->planHistories()->latest()->first();
 
         return $planHistory ? $planHistory->plan : null;
+    }
+
+    public function getStatusAttribute()
+    {
+        $latestInvoice = $this->invoices()->latest()->first();
+
+        if ($latestInvoice && $latestInvoice->status === 'Pending') {
+            return 'Pending Payment';
+        }
+
+        if ($latestInvoice && $latestInvoice->status !== 'Paid') {
+            return 'Unpaid';
+        }
+
+        if ($this->date_unsubscribed) {
+            return 'Unsubscribed';
+        }
+
+        if ($this->valid_to < now()) {
+            return 'Expired';
+        }
+
+        return 'Active';
+    }
+
+    public function getInvoiceIdAttribute()
+    {
+        return $this->invoices()->latest()->first()->id;
+    }
+
+    public function getAmountAttribute()
+    {
+        return $this->invoices()->latest()->first()->amount;
+    }
+
+    public function getDurationTextAttribute()
+    {
+        $planHistory = $this->planHistories()->latest()->first();
+        $plan = $planHistory->plan;
+
+        $quantity = $planHistory->quantity;
+        $durationUnit = '';
+
+        if ($plan->duration_type === 'days') {
+            $durationUnit = 'hari';
+        } elseif ($plan->duration_type === 'weeks') {
+            $durationUnit = 'minggu';
+        } elseif ($plan->duration_type === 'months') {
+            $durationUnit = 'bulan';
+        } elseif ($plan->duration_type === 'years') {
+            $durationUnit = 'tahun';
+        }
+
+        return $quantity . ' ' . $durationUnit;
     }
 }

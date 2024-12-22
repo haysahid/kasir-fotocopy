@@ -76,6 +76,44 @@ class InvoicePaymentController extends Controller
             'paid_at' => now(),
         ]);
 
+        // Update plan history
+        $planHistory = $invoice->planHistory;
+        $plan = $planHistory->plan;
+        $quantity = $planHistory->quantity;
+
+        if ($plan->duration_type == 'days') {
+            $dateEnd = now()->addDays($plan->duration * $quantity);
+        } elseif ($plan->duration_type == 'weeks') {
+            $dateEnd = now()->addWeeks($plan->duration * $quantity);
+        } elseif ($plan->duration_type == 'months') {
+            $dateEnd = now()->addMonths($plan->duration * $quantity);
+        } elseif ($plan->duration_type == 'years') {
+            $dateEnd = now()->addYears($plan->duration * $quantity);
+        }
+
+        $planHistory->update([
+            'date_start' => now(),
+            'date_end' => $dateEnd,
+        ]);
+
+        // Update subscription
+        $subscription = $invoice->subscription;
+
+        $subscription->update([
+            'date_subscribed' => $planHistory->date_start,
+            'valid_to' => $planHistory->date_end,
+        ]);
+
+        // Unsubscribe previous active subscriptions
+        $previousSubscription = $subscription->customer->activeSubscription();
+
+        if ($previousSubscription && $previousSubscription->id != $subscription->id) {
+            $previousSubscription->update([
+                'date_unsubscribed' => now(),
+            ]);
+        }
+
+        // Load invoice with relationship
         $invoice->load('subscription.customer', 'planHistory.plan');
 
         return ResponseFormatter::success([
