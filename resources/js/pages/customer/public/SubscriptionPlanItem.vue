@@ -86,7 +86,7 @@ function selectPlan() {
             <BaseButton
                 v-else
                 @click="selectPlan"
-                class="w-full px-6 py-3 bg-inherit text-gradient border border-[#0c66ee] text-[#0c66ee]"
+                class="w-full px-6 py-3 border bg-inherit border-primary text-primary dark:text-secondary dark:border-secondary"
             >
                 Pilih Paket
             </BaseButton>

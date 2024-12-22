@@ -390,7 +390,7 @@ onMounted(() => {
                                         :href="route('home')"
                                     >
                                         <BaseButton
-                                            class="px-6 py-3 bg-inherit text-gradient border border-[#0c66ee] text-[#0c66ee] dark:!text-secondary dark:border-secondary"
+                                            class="px-6 py-3 border bg-inherit border-primary text-primary dark:text-secondary dark:border-secondary"
                                         >
                                             Upgrade / Perpanjang
                                         </BaseButton>
