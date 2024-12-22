@@ -17,4 +17,18 @@ class InvoicePayment extends Model
         'is_valid',
         'note',
     ];
+
+    protected $casts = [
+        'is_valid' => 'boolean',
+    ];
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
 }

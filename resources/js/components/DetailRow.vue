@@ -16,21 +16,17 @@ const props = defineProps({
 
 <template>
     <div
-        class="flex flex-row items-center justify-between max-sm:py-3 max-sm:gap-y-0.5 duration-300 ease-linear"
+        class="flex flex-row items-center justify-between py-2.5 max-sm:gap-y-0.5 duration-300 ease-linear"
         :class="{
             'flex-wrap max-sm:!items-start': props.autoWrap,
             'border-b border-stroke dark:border-strokedark':
                 props.showBorderBottom,
         }"
     >
-        <p
-            class="text-sm text-body sm:w-1/3 dark:text-slate-300 px-1.5 sm:py-2 md:p-3"
-        >
+        <p class="text-sm text-body sm:w-1/3 dark:text-slate-300">
             {{ props.label }}
         </p>
-        <div
-            class="text-black sm:w-2/3 dark:text-white px-1.5 sm:py-2 md:p-3 text-sm"
-        >
+        <div class="text-sm text-black sm:w-2/3 dark:text-white">
             <slot></slot>
         </div>
     </div>

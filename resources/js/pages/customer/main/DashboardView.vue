@@ -14,21 +14,24 @@ const storeGraph = ref(null);
 const storeSummary = ref(null);
 
 async function getStoreGraph() {
+    if (!userStore.hasStore) return;
+
     const response = await storeStore.getGraph(userStore.user?.store[0].id);
 
     storeGraph.value = response;
 }
 
 async function getStoreSummary() {
+    if (!userStore.hasStore) return;
+
     const response = await storeStore.getSummary(userStore.user?.store[0].id);
 
     storeSummary.value = response;
 }
 
 const getChartData = computed(() => {
-    if (!storeGraph.value) {
-        return null;
-    }
+    if (!userStore.hasStore) return null;
+    if (!storeGraph.value) return null;
 
     const labels = storeGraph.value.result.labels;
 

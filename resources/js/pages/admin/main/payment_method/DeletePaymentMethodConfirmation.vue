@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
-import { useOptionStore } from "@/stores/option";
+import { usePaymentMethodStore } from "@/stores/payment_method";
 
 const props = defineProps({
     showCloseButton: Boolean,
@@ -13,10 +13,10 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const optionStore = useOptionStore();
+const paymentMethodStore = usePaymentMethodStore();
 
 async function deleteItems() {
-    const result = await optionStore.deleteItems(props.items);
+    const result = await paymentMethodStore.deleteItems(props.items);
 
     if (result) {
         emit("close", true);
@@ -94,7 +94,7 @@ function close(value) {
             >
                 <CustomButton
                     @click="close(false)"
-                    :enable="optionStore.deleteStatus !== 'loading'"
+                    :enable="paymentMethodStore.deleteStatus !== 'loading'"
                     color="bg-slate-400"
                     :is-full="true"
                     padding="py-2.5 px-6"
@@ -103,8 +103,8 @@ function close(value) {
                 </CustomButton>
                 <CustomButton
                     @click="deleteItems"
-                    :loading="optionStore.deleteStatus === 'loading'"
-                    :loading-text="`${optionStore.deleteProgress}/${props.items.length}`"
+                    :loading="paymentMethodStore.deleteStatus === 'loading'"
+                    :loading-text="`${paymentMethodStore.deleteProgress}/${props.items.length}`"
                     color="bg-danger"
                     :is-full="true"
                     padding="py-2.5 px-6"

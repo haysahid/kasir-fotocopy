@@ -12,6 +12,10 @@ const props = defineProps({
         default: () => [],
     },
     priority: Boolean,
+    showOptions: {
+        type: Boolean,
+        default: true,
+    },
     showButton: {
         type: Boolean,
         default: true,
@@ -44,7 +48,7 @@ function selectPlan() {
             <p class="mt-2 text-sm text-gray-500">{{ props.description }}</p>
         </div>
 
-        <div class="flex flex-col h-full gap-2">
+        <div v-if="props.showOptions" class="flex flex-col h-full gap-2">
             <div
                 v-for="option in props.options"
                 :key="option.id"

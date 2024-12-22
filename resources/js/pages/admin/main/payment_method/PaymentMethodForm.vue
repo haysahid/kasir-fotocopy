@@ -5,7 +5,7 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
-import { useOptionStore } from "@/stores/option";
+import { usePaymentMethodStore } from "@/stores/payment_method";
 import SearchSelectGroup from "@/components/Forms/SearchSelectGroup.vue";
 
 const props = defineProps({
@@ -22,18 +22,20 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const optionStore = useOptionStore();
+const paymentMethodStore = usePaymentMethodStore();
 
 const form = ref({
     name: "",
+    description: "",
 });
 
 const formValidation = ref({
     name: "",
+    description: "",
 });
 
 function clearErrorMessage() {
-    optionStore.errorMessage = "";
+    paymentMethodStore.errorMessage = "";
 }
 
 async function saveItem() {
@@ -47,7 +49,7 @@ async function saveItem() {
 async function addItem() {
     if (!validateAddItem()) return;
 
-    const response = await optionStore.addItem(form.value);
+    const response = await paymentMethodStore.addItem(form.value);
 
     if (response && response.meta.code === 200) {
         close(true);
@@ -61,7 +63,10 @@ async function addItem() {
 async function updateItem() {
     if (!validateUpdateItem()) return;
 
-    const response = await optionStore.updateItem(props.item.id, form.value);
+    const response = await paymentMethodStore.updateItem(
+        props.item.id,
+        form.value
+    );
 
     if (response && response.meta.code === 200) {
         close(true);
@@ -100,6 +105,7 @@ onUpdated(() => {
     if (props.item) {
         form.value = {
             name: props.item.name,
+            description: props.item.description,
         };
     }
 });
@@ -108,30 +114,34 @@ function close(value) {
     if (props.autoClearData) {
         form.value = {
             name: "",
+            description: "",
         };
     } else {
         form.value = {
             name: props.item.name,
+            description: props.item.description,
         };
     }
 
     emit("close", value);
-    optionStore.saveStatus = "";
-    optionStore.errorMessage = "";
+    paymentMethodStore.saveStatus = "";
+    paymentMethodStore.errorMessage = "";
 }
 </script>
 
 <template>
     <DefaultCard
-        :card-title="props.item ? 'Ubah Opsi' : 'Tambah Opsi'"
+        :card-title="
+            props.item ? 'Ubah Metode Pembayaran' : 'Tambah Metode Pembayaran'
+        "
         :show-close-button="props.showCloseButton"
         @close="close(false)"
     >
         <div class="p-6.5">
             <AlertWarning
-                v-if="optionStore.errorMessage"
+                v-if="paymentMethodStore.errorMessage"
                 @close="clearErrorMessage"
-                :description="optionStore.errorMessage"
+                :description="paymentMethodStore.errorMessage"
                 class="mb-6"
             />
 
@@ -139,16 +149,26 @@ function close(value) {
                 @enter="saveItem"
                 v-model="form.name"
                 id="name"
-                label="Nama Opsi"
+                label="Nama Metode Pembayaran"
                 type="text"
-                placeholder="Masukkan Nama Opsi"
+                placeholder="Masukkan Nama Metode Pembayaran"
                 :warning="formValidation.name"
+            />
+
+            <InputGroup
+                @enter="saveItem"
+                v-model="form.description"
+                id="description"
+                label="Deskripsi"
+                type="text"
+                placeholder="Masukkan Deskripsi"
+                :warning="formValidation.description"
             />
 
             <div class="flex flex-col-reverse mt-6 gap-x-4 sm:flex-row">
                 <CustomButton
                     @click="close(false)"
-                    :enable="optionStore.saveStatus !== 'loading'"
+                    :enable="paymentMethodStore.saveStatus !== 'loading'"
                     color="bg-danger"
                     :is-full="true"
                     padding="p-3"
@@ -159,7 +179,7 @@ function close(value) {
 
                 <CustomButton
                     @click="saveItem"
-                    :loading="optionStore.saveStatus === 'loading'"
+                    :loading="paymentMethodStore.saveStatus === 'loading'"
                     color="bg-primary"
                     :is-full="true"
                     padding="p-3"

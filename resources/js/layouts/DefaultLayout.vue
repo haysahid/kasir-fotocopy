@@ -3,14 +3,20 @@ import HeaderArea from "@/components/Header/HeaderArea.vue";
 import SidebarArea from "@/components/Sidebar/SidebarArea.vue";
 import { useUserStore } from "@/stores/user";
 import StoreNotFoundAlert from "@/pages/customer/main/StoreNotFoundAlert.vue";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
+import ActiveSubscriptionNotFoundAlert from "../pages/customer/main/ActiveSubscriptionNotFoundAlert.vue";
 
 const userStore = useUserStore();
-const showContent =
-    (userStore.user && route().current() == "profile") ||
-    (userStore.user && userStore.user?.store?.length > 0);
 
-onMounted(() => {});
+const hasActiveSubscription = computed(
+    () => userStore.user && userStore.user?.has_active_subscription
+);
+
+const hasStore = computed(
+    () => userStore.user && userStore.user?.store?.length > 0
+);
+
+const currentRoute = computed(() => route().current());
 </script>
 
 <template>
@@ -24,14 +30,23 @@ onMounted(() => {});
             <HeaderArea />
             <main>
                 <div class="p-4 mx-auto max-w-screen-2xl md:p-6 2xl:p-10">
-                    <slot v-if="showContent"></slot>
+                    <slot v-if="currentRoute == 'profile'"></slot>
 
-                    <StoreNotFoundAlert
-                        v-else
+                    <ActiveSubscriptionNotFoundAlert
+                        v-else-if="!hasActiveSubscription"
                         data-aos="fade-up"
                         data-aos-once="true"
                         class="mt-24"
                     />
+
+                    <StoreNotFoundAlert
+                        v-else-if="!hasStore"
+                        data-aos="fade-up"
+                        data-aos-once="true"
+                        class="mt-24"
+                    />
+
+                    <slot v-else></slot>
                 </div>
             </main>
         </div>

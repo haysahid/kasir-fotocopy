@@ -13,7 +13,18 @@ class PlanHistory extends Model
     protected $fillable = [
         'subscription_id',
         'plan_id',
+        'quantity',
         'date_start',
         'date_end',
     ];
+
+    public function subscription()
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class)->with('options');
+    }
 }

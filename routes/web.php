@@ -23,6 +23,7 @@ Route::get('/register', fn()  => Inertia::render('RegisterView'))->name('registe
 Route::get('/profile', fn()  => Inertia::render('ProfileView'))->name('profile');
 Route::get('/create-store', fn()  => Inertia::render('customer/store/CreateStoreView'))->name('create-store');
 Route::get('/subscription/{id}', fn()  => Inertia::render('customer/public/SubscriptionPlanDetailView'))->name('subscription.detail');
+Route::get('/invoice/{id}', fn()  => Inertia::render('customer/invoice/InvoiceDetailView'))->name('invoice.detail');
 
 Route::get('/dashboard', fn()  => Inertia::render('customer/main/DashboardView'))->name('dashboard');
 Route::get('/product', fn()  => Inertia::render('customer/main/ProductView'))->name('product');
@@ -44,4 +45,5 @@ Route::prefix('admin')->group(function () {
     Route::get('/subscription', fn()  => Inertia::render('admin/main/SubscriptionView'))->name('admin.subscription');
     Route::get('/plan', fn()  => Inertia::render('admin/main/PlanView'))->name('admin.plan');
     Route::get('/option', fn()  => Inertia::render('admin/main/OptionView'))->name('admin.option');
+    Route::get('/payment-method', fn()  => Inertia::render('admin/main/PaymentMethodView'))->name('admin.payment-method');
 });

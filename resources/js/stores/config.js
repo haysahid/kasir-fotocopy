@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useConfigStore = defineStore('config', () => {
-    const title = ref(import.meta.env.APP_NAME || 'Kasir Fotocopy')
+    const title = ref(import.meta.env.VITE_APP_NAME || 'Kasir Fotocopy')
     const copyrightYear = ref(import.meta.env.VITE_COPYRIGHT_YEAR || 2024)
     const copyrightName = ref(import.meta.env.VITE_COPYRIGHT_NAME || 'Sahid Anwar & Fadhil Fisnanda')
 

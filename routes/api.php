@@ -14,6 +14,8 @@ use App\Http\Controllers\API\PurchaseController;
 use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SubscribeController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Middleware\CheckAdminRole;
 use App\Http\Middleware\CheckUserRoleAndStore;
 use Illuminate\Http\Request;
@@ -83,16 +85,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('option-dropdown', [OptionController::class, 'dropdown']);
 
     Route::get('plan', [PlanController::class, 'index']);
+    Route::put('plan/{id}', [PlanController::class, 'update']);
+    Route::delete('plan/{id}', [PlanController::class, 'destroy']);
     Route::put('plan/{id}/disable', [PlanController::class, 'disable']);
     Route::put('plan/{id}/enable', [PlanController::class, 'enable']);
     Route::put('plan/{id}/priority/{value}', [PlanController::class, 'setPriority']);
 
     Route::apiResource('payment-method', PaymentMethodController::class);
+    Route::get('payment-method-dropdown', [PaymentMethodController::class, 'dropdown']);
+    Route::apiResource('invoice-payment', InvoicePaymentController::class);
+
+    Route::apiResource('invoice', InvoiceController::class);
 
     Route::post('subscribe/create-snap-token', [SubscribeController::class, 'createSnapToken']);
 });
 
 Route::get('plan/{id}', [PlanController::class, 'show']);
-Route::put('plan/{id}', [PlanController::class, 'update']);
-Route::delete('plan/{id}', [PlanController::class, 'destroy']);
 Route::get('plan-dropdown', [PlanController::class, 'dropdown']);

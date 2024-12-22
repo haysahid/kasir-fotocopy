@@ -56,6 +56,8 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
         'is_active',
+        'has_active_subscription',
+        'active_subscription',
     ];
 
     /**
@@ -84,5 +86,24 @@ class User extends Authenticatable
     public function getIsActiveAttribute()
     {
         return $this->disabled_at === null;
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function getActiveSubscriptionAttribute()
+    {
+        return $this->subscriptions()
+            ->where('valid_to', '>', now())
+            ->where('date_unsubscribed', null)
+            ->latest()
+            ->first();
+    }
+
+    public function getHasActiveSubscriptionAttribute()
+    {
+        return $this->getActiveSubscriptionAttribute() !== null;
     }
 }

@@ -37,9 +37,25 @@ export const useUserStore = defineStore('user', () => {
         return user.value.disabled_at === null
     });
 
+    const hasStore = computed(() => {
+        return user.value.store?.length > 0
+    });
+
+    const hasActiveSubscription = computed(() => {
+        return user.value.has_active_subscription
+    });
+
     function clearUser() {
         user.value = false
     }
 
-    return { user, fetchUser, isLoggedIn, clearUser, isEnabled }
+    return {
+        user,
+        fetchUser,
+        isLoggedIn,
+        clearUser,
+        isEnabled,
+        hasStore,
+        hasActiveSubscription
+    }
 })

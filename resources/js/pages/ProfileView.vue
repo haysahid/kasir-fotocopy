@@ -1,7 +1,7 @@
 <script setup>
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 
-import { ref, onMounted, inject } from "vue";
+import { ref, onMounted, computed, inject } from "vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
@@ -13,6 +13,9 @@ import ProfileForm from "@/components/Forms/ProfileForm.vue";
 import { useUserStore } from "@/stores/user";
 import { Link } from "@inertiajs/inertia-vue3";
 import StoreNotFoundAlert from "./customer/main/StoreNotFoundAlert.vue";
+import ActiveSubscriptionNotFoundAlert from "./customer/main/ActiveSubscriptionNotFoundAlert.vue";
+import SubscriptionPlanItem from "./customer/public/SubscriptionPlanItem.vue";
+import BaseButton from "@/components/landing/BaseButton.vue";
 
 const userStore = useUserStore();
 
@@ -46,6 +49,37 @@ function onUpdateUserDialogClosed(value) {
     if (value) {
         getProfile();
     }
+}
+
+const hasActiveSubscription = computed(
+    () => userStore.user && userStore.user?.has_active_subscription
+);
+
+const hasStore = computed(
+    () => userStore.user && userStore.user?.store?.length > 0
+);
+
+function translateDurationType(type) {
+    switch (type) {
+        case "days":
+            return "hari";
+        case "months":
+            return "bulan";
+        case "years":
+            return "tahun";
+        default:
+            return "";
+    }
+}
+
+function getDurationText(duration, type) {
+    console.log(duration, type);
+
+    if (duration === 1) {
+        return translateDurationType(type);
+    }
+
+    return duration + " " + translateDurationType(type);
 }
 
 onMounted(() => {
@@ -185,6 +219,7 @@ onMounted(() => {
                     </div>
 
                     <div class="flex flex-col gap-9 md:w-1/2">
+                        <!-- Store -->
                         <DefaultCard
                             :showShadow="false"
                             :showBorder="false"
@@ -192,10 +227,7 @@ onMounted(() => {
                         >
                             <div class="p-6.5">
                                 <div
-                                    v-if="
-                                        userStore.user &&
-                                        userStore.user.store.length > 0
-                                    "
+                                    v-if="hasStore"
                                     class="flex flex-col items-center justify-center gap-8 max-sm:flex-col"
                                 >
                                     <img
@@ -257,7 +289,105 @@ onMounted(() => {
                                     </div>
                                 </div>
 
+                                <ActiveSubscriptionNotFoundAlert
+                                    v-else-if="!hasActiveSubscription"
+                                />
+
                                 <StoreNotFoundAlert v-else />
+                            </div>
+                        </DefaultCard>
+
+                        <!-- Subscription -->
+                        <DefaultCard
+                            :showShadow="false"
+                            :showBorder="false"
+                            cardTitle="Langganan Aktif"
+                        >
+                            <div class="p-6.5">
+                                <div
+                                    v-if="userStore.hasActiveSubscription"
+                                    class="flex flex-col gap-4"
+                                >
+                                    <SubscriptionPlanItem
+                                        :title="
+                                            userStore.user.active_subscription
+                                                .plan.name
+                                        "
+                                        :description="
+                                            userStore.user.active_subscription
+                                                .plan.description
+                                        "
+                                        :price="
+                                            userStore.user.active_subscription
+                                                .plan.price
+                                        "
+                                        :duration="
+                                            getDurationText(
+                                                userStore.user
+                                                    .active_subscription.plan
+                                                    .duration,
+                                                userStore.user
+                                                    .active_subscription.plan
+                                                    .duration_type
+                                            )
+                                        "
+                                        :options="
+                                            userStore.user.active_subscription
+                                                .plan.options
+                                        "
+                                        :priority="
+                                            userStore.user.active_subscription
+                                                .plan.priority
+                                        "
+                                        :showButton="false"
+                                        :showOptions="false"
+                                        @select="() => selectPlan(plan)"
+                                    />
+
+                                    <div class="">
+                                        <DetailRow label="Mulai">
+                                            {{
+                                                $formatDate.formatDate(
+                                                    userStore.user
+                                                        .active_subscription
+                                                        .date_subscribed,
+                                                    {
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "numeric",
+                                                    }
+                                                )
+                                            }}
+                                        </DetailRow>
+
+                                        <DetailRow
+                                            label="Berakhir"
+                                            :show-border-bottom="false"
+                                        >
+                                            {{
+                                                $formatDate.formatDate(
+                                                    userStore.user
+                                                        .active_subscription
+                                                        .valid_to,
+                                                    {
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "numeric",
+                                                    }
+                                                )
+                                            }}
+                                        </DetailRow>
+
+                                        <BaseButton
+                                            @click="selectPlan"
+                                            class="px-6 py-3 mt-6 bg-inherit text-gradient border border-[#0c66ee] text-[#0c66ee] dark:text-secondary dark:border-secondary"
+                                        >
+                                            Upgrade Langganan
+                                        </BaseButton>
+                                    </div>
+                                </div>
+
+                                <ActiveSubscriptionNotFoundAlert v-else />
                             </div>
                         </DefaultCard>
                     </div>

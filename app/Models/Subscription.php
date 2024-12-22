@@ -20,7 +20,29 @@ class Subscription extends Model
         'date_unsubscribed',
     ];
 
-    public function user() {
-        return $this->belongsTo(User::class);
+    protected $appends = [
+        'plan',
+    ];
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function planHistories()
+    {
+        return $this->hasMany(PlanHistory::class);
+    }
+
+    public function getPlanAttribute()
+    {
+        $planHistory = $this->planHistories()->latest()->first();
+
+        return $planHistory ? $planHistory->plan : null;
     }
 }

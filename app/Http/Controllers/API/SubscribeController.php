@@ -4,29 +4,37 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use App\Models\Plan;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SubscribeController extends Controller
 {
     public function createSnapToken(Request $request)
     {
         $validatedData = $request->validate([
-            'plan_id' => 'required|integer',
-            'quantity' => 'required|integer',
+            'invoice_id' => 'required|integer',
         ]);
 
-        $plan = Plan::find($validatedData['plan_id']);
-        $quantity = $validatedData['quantity'];
+        $invvoiceId = $validatedData['invoice_id'];
+        $invoice = Invoice::find($invvoiceId);
 
-        if (!$plan) {
-            return ResponseFormatter::error('Plan not found', 404);
+        if (!$invoice) {
+            return ResponseFormatter::error('Invoice not found', 404);
         }
 
-        $grossAmount = $plan->price * $quantity;
+        $invoice->load('subscription.customer', 'planHistory.plan');
 
-        $customer = Auth::user();
+        $plan = $invoice->planHistory->plan;
+        $quantity = $invoice->planHistory->quantity;
+        $grossAmount = $invoice->amount;
+        $customer = $invoice->subscription->customer;
+
+        // Midtrans
 
         // Set your Merchant Server Key
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -44,6 +52,12 @@ class SubscribeController extends Controller
                     'price' => $plan->price,
                     'quantity' => $quantity,
                     'name' => $plan->name,
+                ],
+                [
+                    'id' => 'PPN',
+                    'price' => $plan->price * 0.12,
+                    'quantity' => 1,
+                    'name' => 'PPN (12%)',
                 ]
             ],
             'transaction_details' => [
@@ -62,7 +76,11 @@ class SubscribeController extends Controller
 
         return ResponseFormatter::success([
             'snap_token' => $snapToken,
-            'params' => $params,
+            'invoice' => $invoice,
         ], 'Snap token generated successfully');
+    }
+
+    public function setPayment(Request $request) {
+        
     }
 }

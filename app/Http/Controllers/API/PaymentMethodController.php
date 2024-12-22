@@ -16,8 +16,15 @@ class PaymentMethodController extends Controller
     public function index()
     {
         $limit = request()->input('limit', 10);
+        $search = request()->input('search');
 
-        $paymentMethods = PaymentMethod::all();
+        $paymentMethods = PaymentMethod::query();
+
+        if ($search) {
+            $paymentMethods->where('name', 'like', "%$search%");
+        }
+
+        $paymentMethods->latest();
 
         return ResponseFormatter::success(
             $paymentMethods->paginate($limit),
@@ -32,7 +39,7 @@ class PaymentMethodController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string',
-            'description' => 'required|string|nullable',
+            'description' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -71,7 +78,7 @@ class PaymentMethodController extends Controller
 
         $validatedData = $request->validate([
             'name' => 'required|string',
-            'description' => 'required|string|nullable',
+            'description' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -101,5 +108,28 @@ class PaymentMethodController extends Controller
         } catch (Exception $error) {
             return ResponseFormatter::error('Data metode pembayaran gagal dihapus', 500);
         }
+    }
+
+    /**
+     * Get payment method dropdown.
+     */
+    public function dropdown(Request $request)
+    {
+        $limit = $request->input('limit');
+        $search = $request->input('search');
+
+        $paymentMethod = PaymentMethod::query();
+
+        if ($search) {
+            $paymentMethod->where('name', 'like', "%$search%");
+        }
+
+        if ($limit) {
+            $paymentMethod->limit($limit);
+        }
+
+        $paymentMethod = $paymentMethod->latest()->get();
+
+        return ResponseFormatter::success($paymentMethod, 'Data metode pembayaran berhasil ditemukan');
     }
 }

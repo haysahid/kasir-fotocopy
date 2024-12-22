@@ -42,8 +42,18 @@ async function login() {
         await userStore.fetchUser();
 
         if (userStore.user.role_id >= 3) {
+            if (route().params.redirect) {
+                window.location = route().params.redirect;
+                return;
+            }
+
             window.location = route("dashboard");
         } else {
+            if (route().params.redirect) {
+                window.location = route().params.redirect;
+                return;
+            }
+
             window.location = route("admin.dashboard");
         }
     } catch (error) {

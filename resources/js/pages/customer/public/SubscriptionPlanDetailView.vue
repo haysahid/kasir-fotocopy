@@ -9,16 +9,44 @@ import BaseButton from "@/components/landing/BaseButton.vue";
 import { ref, computed } from "vue";
 import PageSection from "@/components/sections/PageSection.vue";
 import BaseLayout from "@/layouts/BaseLayout.vue";
-import BreadcrumbDefault from "../../../components/BreadcrumbDefault.vue";
+import BreadcrumbDefault from "@/components/BreadcrumbDefault.vue";
+import CheckoutDetail from "./CheckoutDetail.vue";
+import { useSubscribeStore } from "@/stores/subscribe";
 
 const userStore = useUserStore();
 const planStore = usePlanStore();
+const subscribeStore = useSubscribeStore();
 
 const selectedQuantity = ref(1);
 const quantityOptions = [1, 3, 6, 12];
 
 function selectQuantity(quantity) {
     selectedQuantity.value = quantity;
+}
+
+async function checkout() {
+    // Redirect to login page if user is not logged in
+    if (!userStore.user) {
+        window.location = route("login", {
+            redirect: window.location.href,
+        });
+        return;
+    }
+
+    // Check if user is admin
+    if (userStore.user.role_id < 3) {
+        alert("Anda tidak memiliki akses untuk berlangganan paket ini.");
+        return;
+    }
+
+    const planId = route().params.id;
+    await subscribeStore.createInvoice(planId, selectedQuantity.value);
+
+    if (subscribeStore.invoice) {
+        window.location = route("invoice.detail", {
+            id: subscribeStore.invoice.id,
+        });
+    }
 }
 
 async function getDetail() {
@@ -178,81 +206,40 @@ onMounted(() => {
                             Detail Pembayaran
                         </h2>
 
-                        <div class="flex flex-col gap-1">
-                            <div class="flex items-center justify-between">
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    Paket Berlangganan
-                                </p>
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    {{ planStore.item.name }}
-                                </p>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    Durasi ({{ selectedQuantity }}
-                                    {{
-                                        translateDurationType(
-                                            planStore.item.duration_type
-                                        )
-                                    }})
-                                </p>
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    {{
+                        <CheckoutDetail
+                            :items="[
+                                {
+                                    label: 'Paket Berlangganan',
+                                    value: planStore.item.name,
+                                },
+                                {
+                                    label: 'Durasi',
+                                    value:
                                         $formatDate.formatDate(
                                             getDateRange.start,
                                             {
-                                                month: "short",
-                                                year: "numeric",
-                                                day: "numeric",
+                                                month: 'short',
+                                                year: 'numeric',
+                                                day: 'numeric',
                                             }
                                         ) +
-                                        " - " +
+                                        ' - ' +
                                         $formatDate.formatDate(
                                             getDateRange.end,
                                             {
-                                                month: "short",
-                                                year: "numeric",
-                                                day: "numeric",
+                                                month: 'short',
+                                                year: 'numeric',
+                                                day: 'numeric',
                                             }
-                                        )
-                                    }}
-                                </p>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    Jumlah
-                                </p>
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    Rp {{ $formatCurrency(amount) }}
-                                </p>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    PPN (12%)
-                                </p>
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    Rp {{ $formatCurrency(amount * 0.12) }}
-                                </p>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <p class="text-gray-500 dark:text-gray-400">
-                                    Total
-                                </p>
-                                <p
-                                    class="text-xl font-bold text-primary dark:text-secondary"
-                                >
-                                    Rp
-                                    {{ $formatCurrency(total) }}
-                                </p>
-                            </div>
-                        </div>
+                                        ),
+                                },
+                            ]"
+                            :total="total"
+                            :amount="amount"
+                        />
 
                         <BaseButton
-                            @click="() => selectPlan(planStore.item)"
+                            @click="checkout"
                             class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
                         >
                             Lanjutkan Pembayaran
