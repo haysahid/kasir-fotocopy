@@ -44,11 +44,11 @@ function logout() {
 
                 <span class="">
                     <span
-                        class="block text-sm font-medium text-black dark:text-gray-300"
+                        class="block text-sm font-medium text-gray-900 dark:text-gray-300"
                         >{{ props.user.name }}</span
                     >
                     <span
-                        class="block text-xs font-medium text-black dark:text-gray-300"
+                        class="block text-xs font-medium text-gray-900 dark:text-gray-300"
                     >
                         {{ props.user.role.name }}</span
                     >

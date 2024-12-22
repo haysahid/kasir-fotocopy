@@ -76,7 +76,7 @@ const props = defineProps({
         </div>
 
         <div class="flex flex-col w-full gap-1">
-            <h4 class="text-sm font-semibold text-black dark:text-gray-300">
+            <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-300">
                 {{ props.product.name }}
             </h4>
 

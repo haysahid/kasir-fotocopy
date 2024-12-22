@@ -147,7 +147,7 @@ defineExpose({
     >
         <h4
             v-if="props.title"
-            class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
+            class="mb-6 text-xl font-semibold text-gray-900 dark:text-gray-200"
         >
             {{ props.title }}
         </h4>
@@ -275,7 +275,7 @@ defineExpose({
 
                         <!-- Date Created -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{ $formatDate.formatDate(item.created_at) }}
                             </p>
                             <p
@@ -289,7 +289,7 @@ defineExpose({
                         <!-- Customer -->
                         <td>
                             <p
-                                class="text-black dark:text-gray-200 line-clamp-2 overflow-ellipsis"
+                                class="text-gray-900 dark:text-gray-200 line-clamp-2 overflow-ellipsis"
                             >
                                 {{ item.customer?.name }}
                             </p>
@@ -297,14 +297,14 @@ defineExpose({
 
                         <!-- Plan -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{ item.plan?.name }}
                             </p>
                         </td>
 
                         <!-- Total Price -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 Rp {{ $formatCurrency(item.amount) }}
                             </p>
                         </td>
@@ -334,14 +334,14 @@ defineExpose({
 
                         <!-- Duration -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{ item.duration_text }}
                             </p>
                         </td>
 
                         <!-- Start Date -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{
                                     $formatDate.formatDate(
                                         item.date_subscribed,
@@ -357,7 +357,7 @@ defineExpose({
 
                         <!-- End Date -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{
                                     $formatDate.formatDate(item.valid_to, {
                                         year: "numeric",

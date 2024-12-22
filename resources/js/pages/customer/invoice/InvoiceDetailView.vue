@@ -225,7 +225,7 @@ onMounted(() => {
                             >
                                 <p>Batas waktu pembayaran</p>
                                 <p
-                                    class="font-semibold text-right text-black dark:text-gray-200"
+                                    class="font-semibold text-right text-gray-900 dark:text-gray-200"
                                 >
                                     {{
                                         $formatDate.formatDate(

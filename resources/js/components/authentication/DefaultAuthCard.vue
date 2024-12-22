@@ -41,7 +41,7 @@ const props = defineProps([
                         props.subtitle
                     }}</span>
                     <h2
-                        class="text-2xl font-bold text-black mb-9 dark:text-gray-200 sm:text-title-lg"
+                        class="text-2xl font-bold text-gray-900 mb-9 dark:text-gray-200 sm:text-title-lg"
                         :class="{
                             'text-center': props.centerTitle,
                         }"

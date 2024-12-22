@@ -34,7 +34,7 @@ onUpdated(() => {
     >
         <label
             v-if="props.label"
-            class="mb-2.5 block text-black dark:text-gray-200"
+            class="mb-2.5 block text-gray-900 dark:text-gray-200"
         >
             {{ props.label }}
         </label>

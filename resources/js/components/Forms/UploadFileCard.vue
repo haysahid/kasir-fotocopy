@@ -347,7 +347,7 @@ function validateTahapanDet() {
               </div>
 
               <div class="mx-2.5 w-full">
-                <p class="font-medium text-black dark:text-gray-200 text-nowrap">
+                <p class="font-medium text-gray-900 dark:text-gray-200 text-nowrap">
                   {{ form.file.name }}
                 </p>
 
@@ -386,7 +386,7 @@ function validateTahapanDet() {
 
               <button
                 v-else-if="uploadStatus === 'loading'"
-                class="flex justify-center px-6 py-2 font-medium text-black border rounded border-stroke hover:shadow-1 dark:border-strokedark dark:bg-slate-600 dark:text-gray dark:hover:bg-opacity-90"
+                class="flex justify-center px-6 py-2 font-medium text-gray-900 border rounded border-stroke hover:shadow-1 dark:border-strokedark dark:bg-slate-600 dark:text-gray dark:hover:bg-opacity-90"
                 type="button"
                 @click="cancelUpload"
               >
@@ -395,7 +395,7 @@ function validateTahapanDet() {
 
               <template v-else>
                 <button
-                  class="flex justify-center px-6 py-2 font-medium text-black border rounded border-stroke hover:shadow-1 dark:border-strokedark dark:bg-slate-600 dark:text-gray dark:hover:bg-opacity-90"
+                  class="flex justify-center px-6 py-2 font-medium text-gray-900 border rounded border-stroke hover:shadow-1 dark:border-strokedark dark:bg-slate-600 dark:text-gray dark:hover:bg-opacity-90"
                   type="button"
                   @click="resetFile"
                 >

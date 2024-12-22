@@ -137,7 +137,7 @@ const canAdd = computed(
 
             <div class="flex flex-col items-end justify-between">
                 <p class="text-xs text-gray-500 dark:text-gray-300">Subtotal</p>
-                <p class="text-sm font-semibold text-black dark:text-gray-300">
+                <p class="text-sm font-semibold text-gray-900 dark:text-gray-300">
                     Rp
                     {{
                         $formatCurrency(

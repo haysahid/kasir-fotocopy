@@ -38,7 +38,7 @@ onUpdated(() => {
   <div class="mb-4">
     <label
       :for="props.id"
-      class="mb-2.5 block font-normal text-black dark:text-gray-200"
+      class="mb-2.5 block font-normal text-gray-900 dark:text-gray-200"
       >{{ props.label }}</label
     >
 
@@ -95,7 +95,7 @@ onUpdated(() => {
         </div>
 
         <div class="mx-2.5 w-full">
-          <p class="font-medium text-black dark:text-gray-200 text-nowrap">
+          <p class="font-medium text-gray-900 dark:text-gray-200 text-nowrap">
             {{ selectedFile.name }}
           </p>
 

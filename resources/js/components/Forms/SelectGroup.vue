@@ -24,7 +24,7 @@ function updateValue(event) {
         <label
             v-if="props.label"
             :for="props.id"
-            class="mb-1.5 block text-black dark:text-gray-200"
+            class="mb-1.5 block text-gray-900 dark:text-gray-200"
         >
             {{ props.label }}
         </label>
@@ -36,7 +36,7 @@ function updateValue(event) {
             :class="{
                 '!border-danger focus:border-danger dark:!border-danger dark:focus:border-danger':
                     props.warning,
-                'text-black dark:text-gray-200':
+                'text-gray-900 dark:text-gray-200':
                     isOptionSelected && props.modelValue,
             }"
             @change="updateValue"

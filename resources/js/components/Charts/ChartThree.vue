@@ -51,7 +51,7 @@ const apexOptions = {
   >
     <div class="mb-3 justify-between gap-4 sm:flex">
       <div>
-        <h4 class="text-xl font-bold text-black dark:text-gray-200">Visitors Analytics</h4>
+        <h4 class="text-xl font-bold text-gray-900 dark:text-gray-200">Visitors Analytics</h4>
       </div>
       <div>
         <div class="relative z-20 inline-block">
@@ -101,7 +101,7 @@ const apexOptions = {
       <div class="w-full px-8 sm:w-1/2">
         <div class="flex w-full items-center">
           <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
-          <p class="flex w-full justify-between text-sm font-medium text-black dark:text-gray-200">
+          <p class="flex w-full justify-between text-sm font-medium text-gray-900 dark:text-gray-200">
             <span> Desktop </span>
             <span> 65% </span>
           </p>
@@ -110,7 +110,7 @@ const apexOptions = {
       <div class="w-full px-8 sm:w-1/2">
         <div class="flex w-full items-center">
           <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#6577F3]"></span>
-          <p class="flex w-full justify-between text-sm font-medium text-black dark:text-gray-200">
+          <p class="flex w-full justify-between text-sm font-medium text-gray-900 dark:text-gray-200">
             <span> Tablet </span>
             <span> 34% </span>
           </p>
@@ -119,7 +119,7 @@ const apexOptions = {
       <div class="w-full px-8 sm:w-1/2">
         <div class="flex w-full items-center">
           <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#8FD0EF]"></span>
-          <p class="flex w-full justify-between text-sm font-medium text-black dark:text-gray-200">
+          <p class="flex w-full justify-between text-sm font-medium text-gray-900 dark:text-gray-200">
             <span> Mobile </span>
             <span> 45% </span>
           </p>
@@ -128,7 +128,7 @@ const apexOptions = {
       <div class="w-full px-8 sm:w-1/2">
         <div class="flex w-full items-center">
           <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#0FADCF]"></span>
-          <p class="flex w-full justify-between text-sm font-medium text-black dark:text-gray-200">
+          <p class="flex w-full justify-between text-sm font-medium text-gray-900 dark:text-gray-200">
             <span> Unknown </span>
             <span> 12% </span>
           </p>

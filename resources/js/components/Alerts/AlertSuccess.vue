@@ -20,7 +20,7 @@
       </svg>
     </div>
     <div class="w-full">
-      <h5 class="mb-3 text-lg font-bold text-black dark:text-[#34D399]">
+      <h5 class="mb-3 text-lg font-bold text-gray-900 dark:text-[#34D399]">
         Message Sent Successfully
       </h5>
       <p class="text-base leading-relaxed text-body">

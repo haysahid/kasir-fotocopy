@@ -145,7 +145,7 @@ defineExpose({
     >
         <h4
             v-if="props.title"
-            class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
+            class="mb-6 text-xl font-semibold text-gray-900 dark:text-gray-200"
         >
             {{ props.title }}
         </h4>
@@ -265,7 +265,7 @@ defineExpose({
 
                         <!-- Name -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{ item.name }}
                             </p>
                             <p
@@ -279,7 +279,7 @@ defineExpose({
                         <!-- Description -->
                         <td>
                             <p
-                                class="text-black dark:text-gray-200 line-clamp-2 overflow-ellipsis"
+                                class="text-gray-900 dark:text-gray-200 line-clamp-2 overflow-ellipsis"
                             >
                                 {{ item.description }}
                             </p>
@@ -287,14 +287,14 @@ defineExpose({
 
                         <!-- Phone -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{ item.phone }}
                             </p>
                         </td>
 
                         <!-- Address -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{ item.address }}
                             </p>
                         </td>
@@ -304,7 +304,7 @@ defineExpose({
                             <ul v-if="item.owners.length > 0" class="list-disc">
                                 <li
                                     v-for="owner in item.owners"
-                                    class="text-black dark:text-gray-200"
+                                    class="text-gray-900 dark:text-gray-200"
                                 >
                                     {{ owner.name }}
                                 </li>
@@ -313,7 +313,7 @@ defineExpose({
 
                         <!-- Activation Date -->
                         <td>
-                            <p class="text-black dark:text-gray-200">
+                            <p class="text-gray-900 dark:text-gray-200">
                                 {{ $formatDate.formatDate(item.activated_at) }}
                             </p>
                         </td>
