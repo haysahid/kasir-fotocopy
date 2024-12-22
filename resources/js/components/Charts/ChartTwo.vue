@@ -95,7 +95,7 @@ const apexOptions = {
   >
     <div class="justify-between gap-4 mb-4 sm:flex">
       <div>
-        <h4 class="text-xl font-bold text-black dark:text-white">
+        <h4 class="text-xl font-bold text-black dark:text-gray-200">
           Profit this week
         </h4>
       </div>

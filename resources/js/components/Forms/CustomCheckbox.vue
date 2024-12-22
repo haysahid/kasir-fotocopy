@@ -48,7 +48,7 @@ watch(
       <div
         class="flex items-center justify-center w-5 h-5 border rounded box border-stroke dark:border-form-strokedark dark:bg-form-input"
       >
-        <span class="text-white opacity-0">
+        <span class="text-gray-200 opacity-0">
           <svg
             class="fill-current"
             width="10"
@@ -66,7 +66,7 @@ watch(
           </svg>
         </span>
       </div>
-      <div v-if="props.label" class="dark:text-white">{{ props.label }}</div>
+      <div v-if="props.label" class="dark:text-gray-200">{{ props.label }}</div>
     </label>
   </div>
 </template>

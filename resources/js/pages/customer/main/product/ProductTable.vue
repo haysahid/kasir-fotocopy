@@ -129,7 +129,7 @@ defineExpose({
     >
         <h4
             v-if="props.title"
-            class="mb-6 text-xl font-semibold text-black dark:text-white"
+            class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
         >
             {{ props.title }}
         </h4>
@@ -233,7 +233,7 @@ defineExpose({
 
                         <!-- Name -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.name }}
                             </p>
                             <p
@@ -246,28 +246,28 @@ defineExpose({
 
                         <!-- Category -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.category }}
                             </p>
                         </td>
 
                         <!-- Purchase Price -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 Rp {{ $formatCurrency(item.purchase_price) }}
                             </p>
                         </td>
 
                         <!-- Selling Price -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 Rp {{ $formatCurrency(item.selling_price) }}
                             </p>
                         </td>
 
                         <!-- Stock -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.stock }}
                             </p>
                         </td>

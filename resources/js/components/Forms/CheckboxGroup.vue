@@ -23,7 +23,7 @@ const props = defineProps({
             <div
                 class="flex items-center justify-center w-5 h-5 duration-300 ease-linear border rounded box border-stroke dark:border-form-strokedark dark:bg-form-input"
             >
-                <span class="text-white opacity-0">
+                <span class="text-gray-200 opacity-0">
                     <svg
                         class="fill-current"
                         width="10"

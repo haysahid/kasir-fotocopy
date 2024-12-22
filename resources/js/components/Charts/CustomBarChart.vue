@@ -146,7 +146,7 @@ onMounted(() => {
             class="justify-between gap-4 mb-4 transition-all duration-200 ease-in-out sm:flex"
         >
             <div>
-                <h4 class="text-xl font-bold text-black dark:text-white">
+                <h4 class="text-xl font-bold text-black dark:text-gray-200">
                     {{ props.title }}
                 </h4>
             </div>

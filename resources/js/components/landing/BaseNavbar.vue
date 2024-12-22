@@ -54,7 +54,7 @@ onMounted(() => {
                             </svg>
 
                             <span
-                                class="text-xl font-bold tracking-wide text-black dark:text-white"
+                                class="text-xl font-bold tracking-wide text-black dark:text-gray-200"
                             >
                                 {{ configStore.title }}
                             </span>
@@ -164,7 +164,7 @@ onMounted(() => {
                     </Link>
                     <Link :href="route('register')">
                         <BaseButton
-                            class="px-6 xl:px-8 py-2 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-white"
+                            class="px-6 xl:px-8 py-2 mt-2 !font-medium bg-gradient-to-r from-[#468ef9] to-[#0c66ee] text-gray-200"
                         >
                             Daftar
                         </BaseButton>

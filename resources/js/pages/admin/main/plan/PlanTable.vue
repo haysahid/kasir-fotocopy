@@ -163,7 +163,7 @@ defineExpose({
     >
         <h4
             v-if="props.title"
-            class="mb-6 text-xl font-semibold text-black dark:text-white"
+            class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
         >
             {{ props.title }}
         </h4>
@@ -275,7 +275,7 @@ defineExpose({
 
                         <!-- Name -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.name }}
                             </p>
                             <p
@@ -288,7 +288,7 @@ defineExpose({
 
                         <!-- Price -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 Rp {{ $formatCurrency(item.price) }}
                             </p>
                         </td>
@@ -301,7 +301,7 @@ defineExpose({
                             >
                                 <li
                                     v-for="option in item.options"
-                                    class="text-black dark:text-white"
+                                    class="text-black dark:text-gray-200"
                                 >
                                     {{ option.name }}
                                 </li>
@@ -310,7 +310,7 @@ defineExpose({
 
                         <!-- Duration -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.duration }}
                                 {{ translateDurationType(item.duration_type) }}
                             </p>

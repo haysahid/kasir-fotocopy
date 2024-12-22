@@ -50,7 +50,7 @@ onUpdated(() => {
         <label
             v-if="props.label"
             :for="props.id"
-            class="block mb-1.5 text-sm font-normal text-black dark:text-white"
+            class="block mb-1.5 text-sm font-normal text-black dark:text-gray-200"
         >
             {{ props.label }}
         </label>
@@ -62,7 +62,7 @@ onUpdated(() => {
                 :placeholder="props.placeholder"
                 data-input
                 v-model="date"
-                class="w-full py-2 pl-3 pr-4 text-black bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"
+                class="w-full py-2 pl-3 pr-4 text-black bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400"
                 :class="{
                     '!border-danger focus:border-danger dark:!border-danger dark:focus:border-danger':
                         props.warning,

@@ -145,7 +145,7 @@ defineExpose({
     >
         <h4
             v-if="props.title"
-            class="mb-6 text-xl font-semibold text-black dark:text-white"
+            class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
         >
             {{ props.title }}
         </h4>
@@ -225,7 +225,7 @@ defineExpose({
 
                         <!-- Name -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.name }}
                             </p>
                             <p
@@ -238,7 +238,7 @@ defineExpose({
 
                         <!-- Created At -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ $formatDate.formatDate(item.created_at) }}
                             </p>
                         </td>

@@ -32,13 +32,13 @@ function close() {
             v-if="cardTitle"
             class="flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark duration-300 ease-linear"
         >
-            <h3 class="font-medium text-black dark:text-white">
+            <h3 class="font-medium text-black dark:text-gray-200">
                 {{ props.cardTitle }}
             </h3>
             <button
                 v-if="showCloseButton"
                 @click="close"
-                class="text-black hover:text-danger dark:text-white dark:hover:text-danger"
+                class="text-black hover:text-danger dark:text-gray-200 dark:hover:text-danger"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

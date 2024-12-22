@@ -59,20 +59,20 @@ function close(value) {
             </svg>
 
             <h2
-                class="mb-4 text-center text-gray-700 text-title-lg dark:text-white"
+                class="mb-4 text-center text-gray-700 text-title-lg dark:text-gray-200"
             >
                 Apakah Anda yakin?
             </h2>
             <h2
                 v-if="items.length == 1"
-                class="mb-4 text-sm text-center text-gray-700 dark:text-white"
+                class="mb-4 text-sm text-center text-gray-700 dark:text-gray-200"
             >
                 Item <span class="font-bold">{{ items[0].id }}</span> akan
                 dihapus
             </h2>
             <h2
                 v-else
-                class="mb-4 text-sm text-center text-gray-700 dark:text-white"
+                class="mb-4 text-sm text-center text-gray-700 dark:text-gray-200"
             >
                 Item berikut akan dihapus
             </h2>

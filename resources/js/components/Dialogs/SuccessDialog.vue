@@ -46,7 +46,7 @@ function close(value) {
             </svg>
 
             <h2
-                class="mb-4 text-center text-gray-700 text-title-lg dark:text-white"
+                class="mb-4 text-center text-gray-700 text-title-lg dark:text-gray-200"
             >
                 {{ props.title }}
             </h2>

@@ -61,7 +61,7 @@ const props = defineProps({
             </div>
 
             <p
-                class="absolute text-xs text-white dark:text-white text-nowrap bottom-0 left-0 bg-secondary dark:bg-secondary dark:bg-opacity-15 rounded-b-lg px-1.5 py-0.5 w-full text-center duration-300 ease-linear"
+                class="absolute text-xs text-gray-200 dark:text-gray-200 text-nowrap bottom-0 left-0 bg-secondary dark:bg-secondary dark:bg-opacity-15 rounded-b-lg px-1.5 py-0.5 w-full text-center duration-300 ease-linear"
                 :class="{
                     '!bg-primary dark:!bg-secondary dark:!text-slate-700':
                         props.inCartQuantity > 0,

@@ -45,7 +45,7 @@ function getDurationText(duration, type) {
             class="flex flex-col items-center justify-center h-full px-12"
         >
             <h1
-                class="text-3xl font-bold text-center text-header-gradient dark:text-white"
+                class="text-3xl font-bold text-center text-header-gradient dark:text-gray-200"
             >
                 Pilih Paket Berlangganan
             </h1>

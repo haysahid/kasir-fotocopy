@@ -32,7 +32,7 @@ function selectPlan() {
 <template>
     <div class="flex flex-col h-full gap-4">
         <div class="flex flex-col items-start">
-            <h2 class="text-xl font-bold dark:text-white">
+            <h2 class="text-xl font-bold dark:text-gray-200">
                 {{ props.title }}
             </h2>
 
@@ -78,7 +78,7 @@ function selectPlan() {
             <BaseButton
                 v-if="props.priority"
                 @click="selectPlan"
-                class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
+                class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-gray-200"
             >
                 Pilih Paket
             </BaseButton>

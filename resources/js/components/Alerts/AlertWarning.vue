@@ -42,7 +42,7 @@ function close() {
         <h5 class="mb-1 text-lg font-bold text-[#9D5425]">{{ props.title }}</h5>
         <button
           @click="close"
-          class="text-danger dark:text-white dark:hover:text-danger"
+          class="text-danger dark:text-gray-200 dark:hover:text-danger"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

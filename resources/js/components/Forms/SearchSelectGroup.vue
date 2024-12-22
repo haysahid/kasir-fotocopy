@@ -248,7 +248,7 @@ defineExpose({
         <label
             :for="props.id"
             v-if="props.label"
-            class="block text-sm font-normal mb-1.5 text-black dark:text-white"
+            class="block text-sm font-normal mb-1.5 text-black dark:text-gray-200"
         >
             {{ props.label }}
         </label>
@@ -262,7 +262,7 @@ defineExpose({
                         props.type == 'multiple' && selectedOptions.length > 0
                     "
                     @click="open"
-                    class="flex flex-col w-full gap-1 py-2 pl-3 pr-4 text-base text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"
+                    class="flex flex-col w-full gap-1 py-2 pl-3 pr-4 text-base text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400"
                     :class="{
                         '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
                             props.warning,
@@ -303,7 +303,7 @@ defineExpose({
                         v-if="isOpen()"
                         :id="'multiple_' + props.id"
                         :placeholder="props.placeholder"
-                        class="w-full p-0 text-black duration-300 ease-linear bg-transparent border-none rounded-lg !outline-none appearance-none focus:!outline-none stroke-none focus:stroke-none focus-visible:border-none focus:border-none focus:ring-0 focus-visible:shadow-none dark:text-white placeholder:text-gray-400"
+                        class="w-full p-0 text-black duration-300 ease-linear bg-transparent border-none rounded-lg !outline-none appearance-none focus:!outline-none stroke-none focus:stroke-none focus-visible:border-none focus:border-none focus:ring-0 focus-visible:shadow-none dark:text-gray-200 placeholder:text-gray-400"
                         :class="{
                             '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
                                 props.warning,
@@ -322,7 +322,7 @@ defineExpose({
                         !isOpen()
                     "
                     @click="open"
-                    class="w-full py-2 pl-3 pr-4 text-base text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400 overflow-ellipsis"
+                    class="w-full py-2 pl-3 pr-4 text-base text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400 overflow-ellipsis"
                     :class="{
                         '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
                             props.warning,
@@ -336,7 +336,7 @@ defineExpose({
                     v-else
                     :id="props.id"
                     :placeholder="props.placeholder"
-                    class="w-full py-2 pl-3 pr-4 text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-white placeholder:text-gray-400"
+                    class="w-full py-2 pl-3 pr-4 text-black duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400"
                     :class="{
                         '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
                             props.warning,
@@ -439,7 +439,7 @@ defineExpose({
                                 >
                                     <div class="flex flex-col w-full">
                                         <div
-                                            class="mx-2 leading-6 dark:text-white"
+                                            class="mx-2 leading-6 dark:text-gray-200"
                                             :class="{
                                                 'font-bold': option.selected,
                                             }"

@@ -131,7 +131,7 @@ defineExpose({
     >
         <h4
             v-if="props.title"
-            class="mb-6 text-xl font-semibold text-black dark:text-white"
+            class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
         >
             {{ props.title }}
         </h4>
@@ -251,7 +251,7 @@ defineExpose({
 
                         <!-- Created At -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{
                                     $formatDate.formatDate(item.created_at, {
                                         dateStyle: "medium",
@@ -268,42 +268,42 @@ defineExpose({
 
                         <!-- Note -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.note ?? "-" }}
                             </p>
                         </td>
 
                         <!-- Count Items -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.purchase_items.length }}
                             </p>
                         </td>
 
                         <!-- Selling Price -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 Rp {{ $formatCurrency(item.total) }}
                             </p>
                         </td>
 
                         <!-- Payment -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 Rp {{ $formatCurrency(item.payment) }}
                             </p>
                         </td>
 
                         <!-- Return -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 Rp {{ $formatCurrency(item.return) }}
                             </p>
                         </td>
 
                         <!-- Payment Status -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.status }}
                             </p>
                         </td>

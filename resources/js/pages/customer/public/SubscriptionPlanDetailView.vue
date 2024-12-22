@@ -170,7 +170,7 @@ onMounted(() => {
                                 :key="quantity"
                                 @click="() => selectQuantity(quantity)"
                                 :class="{
-                                    'bg-primary text-white':
+                                    'bg-primary text-gray-200':
                                         selectedQuantity === quantity,
                                     'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600':
                                         selectedQuantity !== quantity,
@@ -202,7 +202,7 @@ onMounted(() => {
                         class="flex flex-col w-full gap-4 px-5 py-6 lg:w-2/5 rounded-2xl"
                     >
                         <!-- Checkout Detail -->
-                        <h2 class="text-lg font-bold dark:text-white">
+                        <h2 class="text-lg font-bold dark:text-gray-200">
                             Detail Pembayaran
                         </h2>
 
@@ -240,7 +240,7 @@ onMounted(() => {
 
                         <BaseButton
                             @click="checkout"
-                            class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
+                            class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-gray-200"
                         >
                             Lanjutkan Pembayaran
                         </BaseButton>

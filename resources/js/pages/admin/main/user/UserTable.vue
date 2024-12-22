@@ -153,7 +153,7 @@ defineExpose({
     >
         <h4
             v-if="props.title"
-            class="mb-6 text-xl font-semibold text-black dark:text-white"
+            class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
         >
             {{ props.title }}
         </h4>
@@ -276,7 +276,7 @@ defineExpose({
 
                         <!-- Name -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.name }}
                             </p>
                             <p
@@ -289,35 +289,35 @@ defineExpose({
 
                         <!-- Email -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.email }}
                             </p>
                         </td>
 
                         <!-- Phone -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.phone }}
                             </p>
                         </td>
 
                         <!-- Address -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.address }}
                             </p>
                         </td>
 
                         <!-- Role -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.role.name }}
                             </p>
                         </td>
 
                         <!-- Subscription -->
                         <td>
-                            <p class="text-black dark:text-white">
+                            <p class="text-black dark:text-gray-200">
                                 {{ item.active_subscription?.plan?.name }}
                             </p>
                         </td>

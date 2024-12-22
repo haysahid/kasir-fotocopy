@@ -134,7 +134,7 @@ const menuGroups = ref([
                     </svg>
 
                     <span
-                        class="text-xl font-bold tracking-wide text-black dark:text-white"
+                        class="text-xl font-bold tracking-wide text-black dark:text-gray-200"
                     >
                         {{ configStore.title }}
                     </span>

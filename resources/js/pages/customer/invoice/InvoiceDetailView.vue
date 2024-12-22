@@ -204,7 +204,7 @@ onMounted(() => {
                         class="flex flex-col w-full gap-4 px-5 py-6 rounded-2xl lg:w-1/2"
                     >
                         <div class="flex flex-col gap-1">
-                            <h3 class="text-lg font-semibold dark:text-white">
+                            <h3 class="text-lg font-semibold dark:text-gray-200">
                                 Tagihan #{{ subscribeStore.invoice.id }}
                             </h3>
                             <div
@@ -225,7 +225,7 @@ onMounted(() => {
                             >
                                 <p>Batas waktu pembayaran</p>
                                 <p
-                                    class="font-semibold text-right text-black dark:text-white"
+                                    class="font-semibold text-right text-black dark:text-gray-200"
                                 >
                                     {{
                                         $formatDate.formatDate(
@@ -310,7 +310,7 @@ onMounted(() => {
                             @click="pay"
                             :disabled="snapStatus === 'loading'"
                             :loading="snapStatus === 'loading'"
-                            class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
+                            class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-gray-200"
                         >
                             Bayar Sekarang
                         </CustomButton>
@@ -320,7 +320,7 @@ onMounted(() => {
                             :href="route('create-store')"
                         >
                             <CustomButton
-                                class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-white"
+                                class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-gray-200"
                             >
                                 Lanjutkan
                             </CustomButton>

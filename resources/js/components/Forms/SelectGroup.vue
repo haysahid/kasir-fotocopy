@@ -24,7 +24,7 @@ function updateValue(event) {
         <label
             v-if="props.label"
             :for="props.id"
-            class="mb-1.5 block text-black dark:text-white"
+            class="mb-1.5 block text-black dark:text-gray-200"
         >
             {{ props.label }}
         </label>
@@ -32,11 +32,11 @@ function updateValue(event) {
         <select
             :value="props.modelValue"
             :id="props.id"
-            class="relative z-20 w-full py-2 pl-3 pr-4 transition duration-300 ease-linear bg-transparent border rounded-lg outline-none appearance-none dark:text-white border-stroke focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary placeholder:text-gray-400"
+            class="relative z-20 w-full py-2 pl-3 pr-4 transition duration-300 ease-linear bg-transparent border rounded-lg outline-none appearance-none dark:text-gray-200 border-stroke focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary placeholder:text-gray-400"
             :class="{
                 '!border-danger focus:border-danger dark:!border-danger dark:focus:border-danger':
                     props.warning,
-                'text-black dark:text-white':
+                'text-black dark:text-gray-200':
                     isOptionSelected && props.modelValue,
             }"
             @change="updateValue"

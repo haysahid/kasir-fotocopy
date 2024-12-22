@@ -149,7 +149,7 @@ defineExpose({
         <div class="w-full">
             <h4
                 v-if="props.title"
-                class="mb-6 text-xl font-semibold text-black dark:text-white"
+                class="mb-6 text-xl font-semibold text-black dark:text-gray-200"
             >
                 {{ props.title }}
             </h4>
