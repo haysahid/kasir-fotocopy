@@ -153,7 +153,7 @@ onMounted(() => {
                                 <h5
                                     class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                                 >
-                                    Aksi
+                                    Tagihan
                                 </h5>
                             </th>
                         </tr>

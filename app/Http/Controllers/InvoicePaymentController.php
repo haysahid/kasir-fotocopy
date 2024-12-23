@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseFormatter;
 use App\Models\Invoice;
 use App\Models\PaymentMethod;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvoicePaymentController extends Controller
 {
@@ -63,63 +65,74 @@ class InvoicePaymentController extends Controller
             return ResponseFormatter::error('Jumlah pembayaran kurang dari tagihan', 400);
         }
 
-        // Create invoice payment
-        $invoicePayment = $invoice->invoicePayments()->create([
-            'payment_method_id' => $paymentMethodId,
-            'amount' => $amount,
-            'is_valid' => true,
-            'note' => $note,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Update invoice paid_at
-        $invoice->update([
-            'paid_at' => now(),
-        ]);
+            // Unsubscribe previous active subscriptions
+            $subscription = $invoice->subscription;
 
-        // Update plan history
-        $planHistory = $invoice->planHistory;
-        $plan = $planHistory->plan;
-        $quantity = $planHistory->quantity;
+            $previousSubscription = $subscription->customer->activeSubscription();
 
-        if ($plan->duration_type == 'days') {
-            $dateEnd = now()->addDays($plan->duration * $quantity);
-        } elseif ($plan->duration_type == 'weeks') {
-            $dateEnd = now()->addWeeks($plan->duration * $quantity);
-        } elseif ($plan->duration_type == 'months') {
-            $dateEnd = now()->addMonths($plan->duration * $quantity);
-        } elseif ($plan->duration_type == 'years') {
-            $dateEnd = now()->addYears($plan->duration * $quantity);
-        }
+            if ($previousSubscription && $previousSubscription->id != $subscription->id) {
+                $previousSubscription->update([
+                    'date_unsubscribed' => now(),
+                ]);
+            }
 
-        $planHistory->update([
-            'date_start' => now(),
-            'date_end' => $dateEnd,
-        ]);
-
-        // Update subscription
-        $subscription = $invoice->subscription;
-
-        $subscription->update([
-            'date_subscribed' => $planHistory->date_start,
-            'valid_to' => $planHistory->date_end,
-        ]);
-
-        // Unsubscribe previous active subscriptions
-        $previousSubscription = $subscription->customer->activeSubscription();
-
-        if ($previousSubscription && $previousSubscription->id != $subscription->id) {
-            $previousSubscription->update([
-                'date_unsubscribed' => now(),
+            // Create invoice payment
+            $invoicePayment = $invoice->invoicePayments()->create([
+                'payment_method_id' => $paymentMethodId,
+                'amount' => $amount,
+                'is_valid' => true,
+                'note' => $note,
             ]);
+
+            // Update invoice paid_at
+            $invoice->update([
+                'paid_at' => now(),
+            ]);
+
+            // Update plan history
+            $planHistory = $invoice->planHistory;
+            $plan = $planHistory->plan;
+            $quantity = $planHistory->quantity;
+
+            if ($plan->duration_type == 'days') {
+                $dateEnd = now()->addDays($plan->duration * $quantity);
+            } elseif ($plan->duration_type == 'weeks') {
+                $dateEnd = now()->addWeeks($plan->duration * $quantity);
+            } elseif ($plan->duration_type == 'months') {
+                $dateEnd = now()->addMonths($plan->duration * $quantity);
+            } elseif ($plan->duration_type == 'years') {
+                $dateEnd = now()->addYears($plan->duration * $quantity);
+            }
+
+            $planHistory->update([
+                'date_start' => now(),
+                'date_end' => $dateEnd,
+            ]);
+
+            // Update subscription
+            $subscription = $invoice->subscription;
+
+            $subscription->update([
+                'date_subscribed' => $planHistory->date_start,
+                'valid_to' => $planHistory->date_end,
+            ]);
+
+            DB::commit();
+
+            // Load invoice with relationship
+            $invoice->load('subscription.customer', 'planHistory.plan');
+
+            return ResponseFormatter::success([
+                'invoice' => $invoice,
+                'invoice_payment' => $invoicePayment,
+            ], 'Pembayaran tagihan berhasil');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return ResponseFormatter::error($e->getMessage(), 500);
         }
-
-        // Load invoice with relationship
-        $invoice->load('subscription.customer', 'planHistory.plan');
-
-        return ResponseFormatter::success([
-            'invoice' => $invoice,
-            'invoice_payment' => $invoicePayment,
-        ], 'Pembayaran tagihan berhasil');
     }
 
     /**

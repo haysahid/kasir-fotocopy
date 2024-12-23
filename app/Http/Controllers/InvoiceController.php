@@ -149,7 +149,7 @@ class InvoiceController extends Controller
             return ResponseFormatter::error('Invoice not found', 404);
         }
 
-        $invoice->load('subscription.customer', 'planHistory.plan', 'invoicePayments');
+        $invoice->load('subscription.customer', 'planHistory.plan', 'invoicePayments.paymentMethod');
 
         return ResponseFormatter::success($invoice, 'Invoice retrieved successfully');
     }

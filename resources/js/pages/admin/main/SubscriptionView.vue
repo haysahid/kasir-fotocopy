@@ -48,13 +48,13 @@ watch(
                             Hapus ({{ tableData.selectedItems.length }})
                         </CustomButton>
 
-                        <CustomButton
+                        <!-- <CustomButton
                             v-if="tableData && !tableData.selectionMode"
                             :isFull="false"
                             @click="tableData.showItemFormDialog(null)"
                         >
                             Tambah
-                        </CustomButton>
+                        </CustomButton> -->
                     </div>
                 </div>
             </PageSection>

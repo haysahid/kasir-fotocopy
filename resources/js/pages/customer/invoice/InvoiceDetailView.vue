@@ -63,12 +63,12 @@ async function showSnap(snapToken) {
         onSuccess: async function (result) {
             snapStatus.value = "success";
 
-            let paymentMethodId = 2;
+            let paymentMethodId = 1;
 
             if (result.payment_type === "bank_transfer") {
-                paymentMethodId = 2;
-            } else {
                 paymentMethodId = 1;
+            } else {
+                paymentMethodId = 2;
             }
 
             const amount = parseInt(result.gross_amount);
@@ -79,6 +79,8 @@ async function showSnap(snapToken) {
                 amount,
                 "Transfer melalui Midtrans"
             );
+
+            await subscribeStore.getInvoiceDetail(subscribeStore.invoice.id);
         },
         onPending: async function (result) {
             console.log("pending", result);
@@ -204,9 +206,24 @@ onMounted(() => {
                         class="flex flex-col w-full gap-4 px-5 py-6 rounded-2xl lg:w-1/2"
                     >
                         <div class="flex flex-col gap-1">
-                            <h3 class="text-lg font-semibold dark:text-gray-200">
+                            <h3
+                                class="text-lg font-semibold dark:text-gray-200"
+                            >
                                 Tagihan #{{ subscribeStore.invoice.id }}
                             </h3>
+
+                            <div
+                                class="flex justify-between gap-4 text-gray-500 dark:text-gray-400"
+                            >
+                                <p>Kepada</p>
+                                <p class="text-right">
+                                    {{
+                                        subscribeStore.invoice.subscription
+                                            ?.customer?.name
+                                    }}
+                                </p>
+                            </div>
+
                             <div
                                 class="flex justify-between gap-4 text-gray-500 dark:text-gray-400"
                             >
@@ -265,6 +282,34 @@ onMounted(() => {
                                     class="font-semibold text-right text-danger"
                                 >
                                     Kadaluarsa
+                                </p>
+                            </div>
+
+                            <div
+                                v-if="subscribeStore.invoice.status === 'Paid'"
+                                class="flex justify-between gap-4 text-gray-500 dark:text-gray-400"
+                            >
+                                <p>Dibayar pada</p>
+                                <p class="text-right">
+                                    {{
+                                        $formatDate.formatDate(
+                                            subscribeStore.invoice.paid_at
+                                        )
+                                    }}
+                                </p>
+                            </div>
+
+                            <div
+                                v-if="subscribeStore.invoice.status === 'Paid'"
+                                class="flex justify-between gap-4 text-gray-500 dark:text-gray-400"
+                            >
+                                <p>Metode Pembayaran</p>
+                                <p class="text-right">
+                                    {{
+                                        subscribeStore.invoice
+                                            .invoice_payments[0]?.payment_method
+                                            ?.name
+                                    }}
                                 </p>
                             </div>
                         </div>

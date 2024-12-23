@@ -92,7 +92,7 @@ const props = defineProps({
 
             <div
                 v-if="!props.isInCart"
-                class="self-start px-1 py-0 text-xs text-gray-400 duration-300 ease-linear bg-gray-100 rounded-md dark:bg-gray-600 dark:text-gray-400"
+                class="self-start px-1.5 py-0 text-xs text-gray-400 duration-300 ease-linear bg-gray-100 rounded-md dark:bg-gray-600 dark:text-gray-400"
                 :class="{
                     '!bg-white !bg-opacity-40 !text-slate-400 dark:!text-slate-400 dark:!bg-opacity-15':
                         props.inCartQuantity > 0,

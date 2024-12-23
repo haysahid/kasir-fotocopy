@@ -10,6 +10,7 @@ import { useSubscriptionStore } from "@/stores/subscription";
 import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import StatusLabel from "@/components/StatusLabel.vue";
 import SubscriptionForm from "./SubscriptionForm.vue";
+import { Link } from "@inertiajs/inertia-vue3";
 
 const props = defineProps({
     title: {
@@ -243,6 +244,15 @@ defineExpose({
                                 Aksi
                             </h5>
                         </th>
+
+                        <th class="w-0 max-sm:text-end">
+                            <h5
+                                v-if="!selectionMode"
+                                class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
+                            >
+                                Tagihan
+                            </h5>
+                        </th>
                     </tr>
                 </thead>
 
@@ -375,6 +385,35 @@ defineExpose({
                                 @update-item="showItemFormDialog(item)"
                                 @delete-item="showDeleteItemDialog(item)"
                             />
+                        </td>
+
+                        <!-- Invoice -->
+                        <td class="py-2.5 px-4">
+                            <Link
+                                :href="
+                                    route('invoice.detail', {
+                                        id: item.invoice_id,
+                                    })
+                                "
+                                class="flex items-center justify-center gap-1 text-sm text-right text-primary dark:text-secondary hover:text-primary/90 dark:hover:text-secondary/90 text-nowrap"
+                            >
+                                <p>Lihat Tagihan</p>
+
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    class="w-4 h-4 pt-[1.5px]"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 5l7 7-7 7"
+                                    />
+                                </svg>
+                            </Link>
                         </td>
                     </tr>
                 </tbody>
