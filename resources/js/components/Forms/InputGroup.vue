@@ -23,7 +23,7 @@ function enter() {
     emit("enter");
 }
 
-onMOunted(() => {
+onMounted(() => {
     if (props.type == "password") {
         obscure.value = true;
     } else {
@@ -47,7 +47,9 @@ onMOunted(() => {
                 @input="updateValue($event)"
                 @keyup.enter="enter"
                 :value="props.modelValue"
-                :type="props.type"
+                :type="
+                    props.type == 'password' && !obscure ? 'text' : props.type
+                "
                 :placeholder="props.placeholder"
                 :id="props.id"
                 class="w-full py-2 pl-3 pr-4 text-gray-900 duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400"
