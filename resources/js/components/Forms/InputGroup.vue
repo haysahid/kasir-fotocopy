@@ -13,7 +13,7 @@ const props = defineProps([
 ]);
 const emit = defineEmits(["update:modelValue", "enter"]);
 
-const obscure = ref(props.type === "password");
+const obscure = ref(false);
 
 function updateValue(event) {
     emit("update:modelValue", event.target.value);
@@ -23,17 +23,13 @@ function enter() {
     emit("enter");
 }
 
-// onMounted(() => {
-//     if (props.autoFocus) {
-//         document.getElementById(props.id).focus();
-//     }
-// });
-
-// onMounted(() => {
-//     if (props.autoFocus) {
-//         document.getElementById(props.id).focus();
-//     }
-// });
+onMOunted(() => {
+    if (props.type == "password") {
+        obscure.value = true;
+    } else {
+        obscure.value = false;
+    }
+});
 </script>
 
 <template>
