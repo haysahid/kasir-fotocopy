@@ -10,7 +10,7 @@ class SalesItem extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $appends = ['profit'];
+    protected $appends = ['sub_total', 'profit'];
 
     /**
      * The attributes that are mass assignable.
@@ -33,5 +33,10 @@ class SalesItem extends Model
     public function getProfitAttribute()
     {
         return ($this->item_price - $this->product->purchase_price) * $this->quantity;
+    }
+
+    public function getSubtotalAttribute()
+    {
+        return $this->item_price * $this->quantity;
     }
 }

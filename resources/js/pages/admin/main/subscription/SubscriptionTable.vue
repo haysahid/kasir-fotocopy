@@ -200,7 +200,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Tagihan
+                                Total
                             </h5>
                         </th>
 

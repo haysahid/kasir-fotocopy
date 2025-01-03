@@ -9,6 +9,7 @@ import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useSalesStore } from "@/stores/sales";
 import SalesForm from "../sales/SalesForm.vue";
 import DeleteSalesConfirmation from "./DeleteSalesConfirmation.vue";
+import PrintSalesReceipt from "../sales/PrintSalesReceipt.vue";
 
 const props = defineProps({
     title: {
@@ -23,6 +24,7 @@ const isAllItemsSelected = ref(false);
 
 const itemFormDialog = ref(null);
 const deleteItemDialog = ref(null);
+const printItemDialog = ref(null);
 
 function showItemFormDialog(item) {
     if (item) {
@@ -34,6 +36,13 @@ function showItemFormDialog(item) {
 
 function showDeleteItemDialog(item) {
     deleteItemDialog.value.showModal();
+    if (item) {
+        selectedItems.value = [item];
+    }
+}
+
+function showPrintItemDialog(item) {
+    printItemDialog.value.showModal();
     if (item) {
         selectedItems.value = [item];
     }
@@ -62,6 +71,11 @@ function onDeleteItemDialogClosed(value) {
         salesStore.query.page = salesStore.data.current_page;
         getData();
     }
+}
+
+function onPrintItemDialogClosed(value) {
+    printItemDialog.value.close(value);
+    selectedItems.value = [];
 }
 
 async function getData(params) {
@@ -110,6 +124,7 @@ onMounted(() => {
     getData();
     itemFormDialog.value = document.querySelector("#itemFormDialog");
     deleteItemDialog.value = document.querySelector("#deleteItemDialog");
+    printItemDialog.value = document.querySelector("#printItemDialog");
 });
 
 defineExpose({
@@ -312,6 +327,8 @@ defineExpose({
                                 v-if="!selectionMode"
                                 @update-item="showItemFormDialog(item)"
                                 @delete-item="showDeleteItemDialog(item)"
+                                :showPrintButton="true"
+                                @print-item="showPrintItemDialog(item)"
                             />
                         </td>
                     </tr>
@@ -352,6 +369,15 @@ defineExpose({
                 :items="selectedItems"
                 @close="onDeleteItemDialogClosed"
                 class="max-sm:w-full sm:min-w-[300px] max-w-[300px]"
+            />
+        </CustomDialog>
+
+        <CustomDialog id="printItemDialog" :show-cancel="true">
+            <PrintSalesReceipt
+                :show-close-button="true"
+                :sales="selectedItems[0] ?? null"
+                @close="onPrintItemDialogClosed"
+                class="max-w-lg sm:min-w-[600px] max-sm:w-full"
             />
         </CustomDialog>
     </DefaultCard>
