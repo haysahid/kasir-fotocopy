@@ -7,7 +7,7 @@ import SubscriptionPlanItem from "../public/SubscriptionPlanItem.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import { ref, computed } from "vue";
-import PageSection from "@/components/sections/PageSection.vue";
+import PageSection from "@/components/Sections/PageSection.vue";
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import BreadcrumbDefault from "@/components/BreadcrumbDefault.vue";
 import { useSubscribeStore } from "@/stores/subscribe";
