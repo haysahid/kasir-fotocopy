@@ -250,12 +250,4 @@ text-end {
     border-right-width: 0;
     border-bottom-width: 0;
 }
-
-.duration-100 {
-    transition-duration: 100ms;
-}
-
-.ease-in-out {
-    transition-timing-function: ease-in-out;
-}
 </style>
