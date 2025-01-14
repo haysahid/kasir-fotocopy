@@ -38,6 +38,9 @@ createInertiaApp({
 
         app.config.globalProperties.$formatCurrency = formatCurrency;
         app.config.globalProperties.$formatDate = formatDate;
+        app.config.globalProperties.$getImageUrl = (path) => {
+            return path ? `${window.location.origin}/storage/${path}` : null;
+        }
 
         app.mount(el)
     },

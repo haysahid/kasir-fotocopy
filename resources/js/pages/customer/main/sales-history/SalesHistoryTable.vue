@@ -2,8 +2,6 @@
 import { ref, onMounted, computed, watch } from "vue";
 import ItemActionButton from "@/components/ItemActionButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
-// import DeleteProductConfirmation from "./DeleteProductConfirmation.vue";
-// import ProductForm from "./ProductForm.vue";
 import CheckboxGroup from "@/components/Forms/CheckboxGroup.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useSalesStore } from "@/stores/sales";
@@ -357,7 +355,7 @@ defineExpose({
         <CustomDialog id="itemFormDialog" :show-cancel="true">
             <SalesForm
                 :show-close-button="true"
-                :item="selectedItems[0]"
+                :item="selectedItems ? selectedItems[0] : null"
                 @close="onItemFormDialogClosed"
                 class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
             />

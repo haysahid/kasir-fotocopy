@@ -33,6 +33,7 @@ const filteredItems = computed(() => {
 });
 
 function close(value) {
+    salesStore.deleteStatus = "";
     emit("close", value);
 }
 </script>

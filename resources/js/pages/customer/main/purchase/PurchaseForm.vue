@@ -5,6 +5,7 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { usePurchaseStore } from "@/stores/purchase";
+import formatCurrency from "@/plugins/currency_formatter";
 
 const props = defineProps({
     showCloseButton: {
@@ -14,7 +15,7 @@ const props = defineProps({
         type: Object,
         default: {
             note: "",
-            payment: 0,
+            payment: "",
             purchase_items: [],
         },
     },
@@ -29,7 +30,7 @@ const purchaseStore = usePurchaseStore();
 
 const form = ref({
     note: "",
-    payment: 0,
+    payment: "",
     purchase_items: [],
 });
 
@@ -43,6 +44,8 @@ function clearErrorMessage() {
 }
 
 async function saveItem() {
+    form.value.note = form.value.note || null;
+
     if (props.item.id) {
         updateItem();
     } else {
@@ -53,10 +56,9 @@ async function saveItem() {
 async function addItem() {
     if (!validateAddItem()) return;
 
-    form.value.note = form.value.note || null;
-
-    const updatedForm = {
+    const data = {
         ...form.value,
+        payment: currencyToNumber(form.value.payment),
         purchase_items: form.value.purchase_items.map((item) => ({
             product_id: item.id,
             quantity: item.quantity,
@@ -64,7 +66,7 @@ async function addItem() {
         })),
     };
 
-    const response = await purchaseStore.addItem(updatedForm);
+    const response = await purchaseStore.addItem(data);
 
     if (response.meta.code === 201) {
         close(true);
@@ -74,9 +76,12 @@ async function addItem() {
 async function updateItem() {
     if (!validateUpdateItem()) return;
 
-    form.value.note = form.value.note || null;
+    const data = {
+        ...form.value,
+        payment: currencyToNumber(form.value.payment),
+    };
 
-    const response = await purchaseStore.updateItem(props.item.id, form.value);
+    const response = await purchaseStore.updateItem(props.item.id, data);
 
     if (response.meta.code === 200) {
         close(true);
@@ -86,10 +91,10 @@ async function updateItem() {
 function validateAddItem() {
     let result = true;
 
-    // if (!form.value.payment.match(/^\d+$/)) {
-    //     formValidation.value.payment = "Pembayaran harus berupa angka";
-    //     result = false;
-    // }
+    if (form.value.payment.length < 1) {
+        formValidation.value.payment = "Harga beli tidak boleh kosong";
+        result = false;
+    }
 
     if (form.value.purchase_items.length < 1) {
         purchaseStore.errorMessage = "Produk / jasa tidak boleh kosong";
@@ -107,12 +112,7 @@ watch(
     () => form.value.payment,
     (newValue, oldValue) => {
         if (newValue && newValue.length > 0 && formValidation.value.payment) {
-            if (!form.value.payment.match(/^\d+$/)) {
-                formValidation.value.payment = "Pembayaran harus berupa angka";
-                result = false;
-            } else {
-                formValidation.value.payment = "";
-            }
+            formValidation.value.payment = "";
         }
     }
 );
@@ -124,42 +124,48 @@ const total = computed(() => {
 });
 
 const paymentReturn = computed(() => {
-    return form.value.payment - total.value;
+    return currencyToNumber(form.value.payment) - total.value;
 });
+
+function currencyToNumber(value) {
+    if (!value) return 0;
+
+    return value.replace(/[^0-9]/g, "");
+}
+
+function getForm() {
+    form.value.note = props.item.note;
+    form.value.payment = formatCurrency(props.item.payment);
+    form.value.purchase_items = props.item.purchase_items;
+}
+
+function clearForm() {
+    form.value = {
+        note: "",
+        payment: "",
+        purchase_items: [],
+    };
+}
 
 onUpdated(() => {
     if (props.item) {
-        form.value.note = props.item.note;
-        form.value.payment = props.item.payment;
-        form.value.purchase_items = props.item.purchase_items;
+        getForm();
     }
 });
 
 onMounted(() => {
     if (props.item) {
-        form.value.note = props.item.note;
-        form.value.payment = props.item.payment;
-        form.value.purchase_items = props.item.purchase_items;
+        getForm();
     }
 });
 
 function close(value) {
     if (props.autoClearData) {
-        form.value = {
-            note: "",
-            payment: 0,
-            purchase_items: [],
-        };
-    } else {
-        form.value = {
-            note: form.value.note,
-            payment: form.value.payment,
-            purchase_items: form.value.purchase_items,
-        };
+        clearForm();
     }
 
+    purchaseStore.saveStatus = "";
     emit("close", value);
-    purchaseStore.clearItemForm();
 }
 </script>
 
@@ -182,7 +188,7 @@ function close(value) {
                 @enter="saveItem"
                 id="payment"
                 label="Pembayaran"
-                type="number"
+                type="currency"
                 placeholder="Masukkan pembayaran"
                 :autoFocus="true"
                 :warning="formValidation.payment"
@@ -208,7 +214,7 @@ function close(value) {
             <div class="flex justify-between gap-4">
                 <p class="dark:text-gray-200">Pembayaran</p>
                 <p class="text-primary dark:text-secondary">
-                    Rp {{ $formatCurrency(form.payment) }}
+                    Rp {{ form.payment }}
                 </p>
             </div>
 

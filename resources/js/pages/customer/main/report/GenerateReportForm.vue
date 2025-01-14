@@ -380,6 +380,13 @@ onMounted(() => {
                         </div>
 
                         <PurchaseReportTable :data="reportStore.data" />
+
+                        <p class="mt-2 text-xs">
+                            Dicetak pada
+                            <span>{{
+                                $formatDate.formatDate(new Date())
+                            }}</span>
+                        </p>
                     </div>
                 </section>
             </div>

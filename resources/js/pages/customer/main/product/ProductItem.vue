@@ -1,6 +1,4 @@
 <script setup>
-import { useConfigStore } from "@/stores/config";
-
 const props = defineProps({
     product: {
         type: Object,
@@ -23,13 +21,11 @@ const props = defineProps({
         default: "selling_price",
     },
 });
-
-const configStore = useConfigStore();
 </script>
 
 <template>
     <div
-        class="flex items-center gap-4"
+        class="flex items-center gap-4 group"
         :class="{
             '!flex-col !gap-0': props.isInCart,
         }"
@@ -37,11 +33,7 @@ const configStore = useConfigStore();
         <div v-if="!props.isInCart" class="relative">
             <div v-if="props.product.product_images.length > 0" class="size-32">
                 <img
-                    :src="
-                        configStore.getImageUrl(
-                            props.product.product_images[0].image
-                        )
-                    "
+                    :src="$getImageUrl(props.product.product_images[0].image)"
                     alt="product"
                     class="object-cover w-full h-full rounded-lg"
                 />
@@ -49,7 +41,7 @@ const configStore = useConfigStore();
 
             <div
                 v-else
-                class="flex items-center justify-center duration-300 ease-linear bg-gray-100 rounded-lg dark:bg-slate-700 size-32"
+                class="flex items-center justify-center duration-300 ease-linear bg-gray-100 rounded-lg dark:bg-slate-700 size-32 dark:group-hover:bg-slate-600"
                 :class="{
                     'dark:!bg-slate-600': props.isSelected,
                 }"
@@ -60,7 +52,7 @@ const configStore = useConfigStore();
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    class="text-gray-500 size-6"
+                    class="text-gray-400 dark:text-gray-500 size-6"
                 >
                     <path
                         stroke-linecap="round"
@@ -105,7 +97,8 @@ const configStore = useConfigStore();
                     v-if="!props.isInCart"
                     class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 text-ellipsis"
                     :class="{
-                        '!text-slate-400': props.inCartQuantity > 0,
+                        '!text-slate-500 dark:!text-slate-400':
+                            props.inCartQuantity > 0,
                     }"
                 >
                     {{ props.product.description }}
@@ -115,7 +108,7 @@ const configStore = useConfigStore();
                     v-if="!props.isInCart"
                     class="self-start px-1.5 py-0 text-xs text-gray-400 duration-300 ease-linear bg-gray-100 rounded-md dark:bg-gray-600 dark:text-gray-400"
                     :class="{
-                        '!bg-white !bg-opacity-40 !text-slate-400 dark:!text-slate-400 dark:!bg-opacity-15':
+                        '!bg-white !bg-opacity-40 !text-slate-500 dark:!text-slate-400 dark:!bg-opacity-15':
                             props.inCartQuantity > 0,
                     }"
                 >
@@ -145,7 +138,8 @@ const configStore = useConfigStore();
                 <p
                     class="text-xs text-gray-500 dark:text-gray-400 text-nowrap"
                     :class="{
-                        '!text-slate-400': props.inCartQuantity > 0,
+                        '!text-slate-500 dark:!text-slate-400':
+                            props.inCartQuantity > 0,
                     }"
                 >
                     / {{ props.product.unit }}

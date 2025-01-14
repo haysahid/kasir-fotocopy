@@ -8,6 +8,7 @@ import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useProductStore } from "@/stores/product";
 import InputImageGroup from "@/components/Forms/InputImageGroup.vue";
 import { useConfigStore } from "@/stores/config";
+import formatCurrency from "@/plugins/currency_formatter";
 
 const props = defineProps({
     showCloseButton: {
@@ -52,6 +53,8 @@ const formValidation = ref({
     image: "",
 });
 
+const imageField = ref(null);
+
 function clearErrorMessage() {
     productStore.errorMessage = "";
 }
@@ -67,7 +70,13 @@ async function saveItem() {
 async function addItem() {
     if (!validateAddItem()) return;
 
-    const response = await productStore.addItem(form.value);
+    const data = {
+        ...form.value,
+        purchase_price: form.value.purchase_price.replace(/[^0-9]/g, ""),
+        selling_price: form.value.selling_price.replace(/[^0-9]/g, ""),
+    };
+
+    const response = await productStore.addItem(data);
 
     if (response.meta.code === 201) {
         close(true);
@@ -77,7 +86,13 @@ async function addItem() {
 async function updateItem() {
     if (!validateUpdateItem()) return;
 
-    const response = await productStore.updateItem(props.item.id, form.value);
+    const data = {
+        ...form.value,
+        purchase_price: form.value.purchase_price.replace(/[^0-9]/g, ""),
+        selling_price: form.value.selling_price.replace(/[^0-9]/g, ""),
+    };
+
+    const response = await productStore.updateItem(props.item.id, data);
 
     if (response.meta.code === 200) {
         close(true);
@@ -101,16 +116,10 @@ function validateAddItem() {
     if (form.value.purchase_price.length < 1) {
         formValidation.value.purchase_price = "Harga beli tidak boleh kosong";
         result = false;
-    } else if (!form.value.purchase_price.match(/^\d+$/)) {
-        formValidation.value.purchase_price = "Harga beli harus berupa angka";
-        result = false;
     }
 
     if (form.value.selling_price.length < 1) {
         formValidation.value.selling_price = "Harga jual tidak boleh kosong";
-        result = false;
-    } else if (!form.value.selling_price.match(/^\d+$/)) {
-        formValidation.value.selling_price = "Harga jual harus berupa angka";
         result = false;
     }
 
@@ -218,64 +227,70 @@ watch(
     }
 );
 
+function getForm() {
+    form.value.code = props.item.code;
+    form.value.name = props.item.name;
+    form.value.description = props.item.description;
+    form.value.purchase_price = formatCurrency(props.item.purchase_price);
+    form.value.selling_price = formatCurrency(props.item.selling_price);
+    form.value.initial_stock = props.item.initial_stock;
+    form.value.unit = props.item.unit;
+    form.value.category = props.item.category;
+    form.value.expired_at = props.item.expired_at;
+    const images = props.item.product_images;
+    form.value.image =
+        images.length > 0 ? configStore.getImageUrl(images[0].image) : "";
+
+    imageField.value?.clearImage();
+}
+
+function clearForm() {
+    form.value = {
+        code: "",
+        name: "",
+        description: "",
+        purchase_price: "",
+        selling_price: "",
+        initial_stock: "",
+        unit: "",
+        category: "",
+        expired_at: "",
+        image: "",
+    };
+
+    formValidation.value = {
+        code: "",
+        name: "",
+        description: "",
+        purchase_price: "",
+        selling_price: "",
+        initial_stock: "",
+        unit: "",
+        category: "",
+        expired_at: "",
+        image: "",
+    };
+
+    imageField.value?.clearImage();
+}
+
 onUpdated(() => {
     if (props.item) {
-        form.value.name = props.item.name;
-        form.value.description = props.item.description;
-        form.value.purchase_price = String(props.item.purchase_price);
-        form.value.selling_price = String(props.item.selling_price);
-        form.value.initial_stock = props.item.initial_stock;
-        form.value.unit = props.item.unit;
-        form.value.category = props.item.category;
-        form.value.expired_at = props.item.expired_at;
-        const images = props.item.product_images;
-        form.value.image =
-            images.length > 0 ? configStore.getImageUrl(images[0].image) : "";
+        getForm();
     }
 });
 
 onMounted(() => {
     if (props.item) {
-        form.value.name = props.item.name;
-        form.value.description = props.item.description;
-        form.value.purchase_price = String(props.item.purchase_price);
-        form.value.selling_price = String(props.item.selling_price);
-        form.value.initial_stock = props.item.initial_stock;
-        form.value.unit = props.item.unit;
-        form.value.category = props.item.category;
-        form.value.expired_at = props.item.expired_at;
-        const images = props.item.product_images;
-        form.value.image =
-            images.length > 0 ? configStore.getImageUrl(images[0].image) : "";
+        getForm();
     }
 });
 
 function close(value) {
     if (props.autoClearData) {
-        form.value = {
-            code: "",
-            name: "",
-            description: "",
-            purchase_price: 0,
-            selling_price: 0,
-            initial_stock: 0,
-            unit: "",
-            category: "",
-            expired_at: "",
-            image: "",
-        };
+        clearForm();
     } else {
-        form.value.name = props.item.name;
-        form.value.description = props.item.description;
-        form.value.purchase_price = String(props.item.purchase_price);
-        form.value.selling_price = String(props.item.selling_price);
-        form.value.initial_stock = props.item.initial_stock;
-        form.value.unit = props.item.unit;
-        form.value.category = props.item.category;
-        form.value.expired_at = props.item.expired_at;
-        const images = props.item.product_images;
-        form.value.image =
-            images.length > 0 ? configStore.getImageUrl(images[0].image) : "";
+        getForm();
     }
 
     emit("close", value);
@@ -299,6 +314,7 @@ function close(value) {
             />
 
             <InputImageGroup
+                ref="imageField"
                 v-model="form.image"
                 id="image"
                 label="Gambar"
@@ -306,6 +322,15 @@ function close(value) {
                 placeholder="Pilih gambar"
                 :warning="formValidation.image"
                 class="mb-4"
+            />
+
+            <InputGroup
+                v-model="form.code"
+                id="code"
+                label="Barcode"
+                type="text"
+                placeholder="Masukkan barcode"
+                :warning="formValidation.code"
             />
 
             <InputGroup
@@ -330,7 +355,7 @@ function close(value) {
                 v-model="form.purchase_price"
                 id="purchase_price"
                 label="Harga Beli"
-                type="text"
+                type="currency"
                 placeholder="Masukkan harga beli"
                 :warning="formValidation.purchase_price"
             />
@@ -339,7 +364,7 @@ function close(value) {
                 v-model="form.selling_price"
                 id="selling_price"
                 label="Harga Jual"
-                type="text"
+                type="currency"
                 placeholder="Masukkan harga jual"
                 :warning="formValidation.selling_price"
             />
@@ -348,7 +373,7 @@ function close(value) {
                 v-model="form.initial_stock"
                 id="initial_stock"
                 label="Stok Awal"
-                type="text"
+                type="currency"
                 placeholder="Masukkan stok awal"
                 :warning="formValidation.initial_stock"
             />
@@ -379,7 +404,7 @@ function close(value) {
                 :warning="formValidation.expired_at"
             />
 
-            <div class="flex flex-col-reverse gap-x-4 sm:flex-row">
+            <div class="flex flex-col-reverse mt-2 gap-x-4 sm:flex-row">
                 <CustomButton
                     @click="close(false)"
                     :enable="productStore.saveStatus !== 'loading'"

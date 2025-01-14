@@ -33,6 +33,7 @@ const filteredItems = computed(() => {
 });
 
 function close(value) {
+    purchaseStore.deleteStatus = "";
     emit("close", value);
 }
 </script>

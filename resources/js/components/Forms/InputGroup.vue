@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onUpdated } from "vue";
+import formatCurrency from "@/plugins/currency_formatter";
 
 const props = defineProps([
     "id",
@@ -16,6 +17,12 @@ const emit = defineEmits(["update:modelValue", "enter"]);
 const obscure = ref(false);
 
 function updateValue(event) {
+    if (props.type == "currency") {
+        const value = event.target.value.replace(/[^0-9]/g, "");
+        const formattedValue = formatCurrency(value);
+        event.target.value = formattedValue;
+    }
+
     emit("update:modelValue", event.target.value);
 }
 

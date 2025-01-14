@@ -73,20 +73,24 @@ onMounted(() => {
                         'Rp ' +
                         $formatCurrency(storeSummary.result.total_purchases)
                     "
+                    link="/purchase-history"
                 />
                 <SummaryCard
                     title="Penjualan"
                     :value="
                         'Rp ' + $formatCurrency(storeSummary.result.total_sales)
                     "
+                    link="/sales-history"
                 />
                 <SummaryCard
                     title="Total Pembelian"
                     :value="storeSummary.result.total_purchases_count"
+                    link="/purchase-history"
                 />
                 <SummaryCard
                     title="Total Penjualan"
                     :value="storeSummary.result.total_sales_count"
+                    link="/sales-history"
                 />
                 <SummaryCard
                     title="Rata-rata Pembelian"
@@ -94,16 +98,19 @@ onMounted(() => {
                         'Rp ' +
                         $formatCurrency(storeSummary.result.mean_purchases)
                     "
+                    link="/purchase-history"
                 />
                 <SummaryCard
                     title="Rata-rata Penjualan"
                     :value="
                         'Rp ' + $formatCurrency(storeSummary.result.mean_sales)
                     "
+                    link="/sales-history"
                 />
                 <SummaryCard
                     title="Produk Terjual"
                     :value="storeSummary.result.sold_products"
+                    link="/product"
                 />
             </div>
 

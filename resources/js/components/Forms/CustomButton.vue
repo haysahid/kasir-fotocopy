@@ -59,7 +59,7 @@ function click() {
     <button
         @click="click"
         :type="props.type"
-        class="flex items-center justify-center font-medium duration-300 ease-linear rounded-full hover:bg-opacity-90"
+        class="flex items-center justify-center font-medium duration-300 ease-linear rounded-lg hover:bg-opacity-90"
         :class="[
             props.color,
             props.textColor,
