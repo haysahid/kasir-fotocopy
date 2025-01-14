@@ -1,4 +1,6 @@
 <script setup>
+import { useConfigStore } from "@/stores/config";
+
 const props = defineProps({
     product: {
         type: Object,
@@ -21,25 +23,33 @@ const props = defineProps({
         default: "selling_price",
     },
 });
+
+const configStore = useConfigStore();
 </script>
 
 <template>
     <div
-        class="flex items-start gap-4"
+        class="flex items-center gap-4"
         :class="{
             '!flex-col !gap-0': props.isInCart,
         }"
     >
         <div v-if="!props.isInCart" class="relative">
-            <img
-                v-if="props.product.product_images.length > 0"
-                :src="props.product.product_images[0].image"
-                alt="product"
-                class="object-cover w-full rounded-lg size-16"
-            />
+            <div v-if="props.product.product_images.length > 0" class="size-32">
+                <img
+                    :src="
+                        configStore.getImageUrl(
+                            props.product.product_images[0].image
+                        )
+                    "
+                    alt="product"
+                    class="object-cover w-full h-full rounded-lg"
+                />
+            </div>
+
             <div
                 v-else
-                class="flex items-center justify-center duration-300 ease-linear bg-gray-100 rounded-lg dark:bg-slate-700 size-16"
+                class="flex items-center justify-center duration-300 ease-linear bg-gray-100 rounded-lg dark:bg-slate-700 size-32"
                 :class="{
                     'dark:!bg-slate-600': props.isSelected,
                 }"
@@ -61,7 +71,7 @@ const props = defineProps({
             </div>
 
             <p
-                class="absolute text-xs text-gray-200 dark:text-gray-200 text-nowrap bottom-0 left-0 bg-secondary dark:bg-secondary dark:bg-opacity-15 rounded-b-lg px-1.5 py-0.5 w-full text-center duration-300 ease-linear"
+                class="absolute text-xs text-gray-200 dark:text-gray-200 text-nowrap bottom-1 left-1 bg-gray-800/60 dark:bg-gray-800/60 dark:bg-opacity-15 rounded-md px-1.5 py-0.5 text-center duration-300 ease-linear"
                 :class="{
                     '!bg-primary dark:!bg-secondary dark:!text-slate-700':
                         props.inCartQuantity > 0,
@@ -75,57 +85,72 @@ const props = defineProps({
             </p>
         </div>
 
-        <div class="flex flex-col w-full gap-1">
-            <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-300">
-                {{ props.product.name }}
-            </h4>
-
-            <p
-                v-if="!props.isInCart"
-                class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 text-ellipsis"
-                :class="{
-                    '!text-slate-400': props.inCartQuantity > 0,
-                }"
-            >
-                {{ props.product.description }}
-            </p>
-
-            <div
-                v-if="!props.isInCart"
-                class="self-start px-1.5 py-0 text-xs text-gray-400 duration-300 ease-linear bg-gray-100 rounded-md dark:bg-gray-600 dark:text-gray-400"
-                :class="{
-                    '!bg-white !bg-opacity-40 !text-slate-400 dark:!text-slate-400 dark:!bg-opacity-15':
-                        props.inCartQuantity > 0,
-                }"
-            >
-                {{ props.product.category }}
-            </div>
-        </div>
-
         <div
-            class="flex flex-col items-end"
+            class="flex flex-col w-full gap-2"
             :class="{
-                '!flex-row gap-1 items-center': props.isInCart,
+                '!gap-0': props.isInCart,
             }"
         >
-            <p
-                class="text-sm font-semibold text-primary dark:text-secondary text-nowrap"
-            >
-                Rp
-                {{
-                    props.priceToShow == "purchase_price"
-                        ? $formatCurrency(props.product.purchase_price)
-                        : $formatCurrency(props.product.selling_price)
-                }}
-            </p>
-            <p
-                class="text-xs text-gray-500 dark:text-gray-400 text-nowrap"
+            <div class="flex flex-col w-full gap-1">
+                <h4
+                    class="font-semibold text-gray-900 text-md dark:text-gray-300"
+                    :class="{
+                        '!text-sm': props.isInCart,
+                    }"
+                >
+                    {{ props.product.name }}
+                </h4>
+
+                <p
+                    v-if="!props.isInCart"
+                    class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 text-ellipsis"
+                    :class="{
+                        '!text-slate-400': props.inCartQuantity > 0,
+                    }"
+                >
+                    {{ props.product.description }}
+                </p>
+
+                <div
+                    v-if="!props.isInCart"
+                    class="self-start px-1.5 py-0 text-xs text-gray-400 duration-300 ease-linear bg-gray-100 rounded-md dark:bg-gray-600 dark:text-gray-400"
+                    :class="{
+                        '!bg-white !bg-opacity-40 !text-slate-400 dark:!text-slate-400 dark:!bg-opacity-15':
+                            props.inCartQuantity > 0,
+                    }"
+                >
+                    {{ props.product.category }}
+                </div>
+            </div>
+
+            <div
+                class="flex flex-row items-center gap-1"
                 :class="{
-                    '!text-slate-400': props.inCartQuantity > 0,
+                    '!flex-row gap-1 items-center': props.isInCart,
                 }"
             >
-                / {{ props.product.unit }}
-            </p>
+                <p
+                    class="font-semibold text-md text-primary dark:text-secondary text-nowrap"
+                    :class="{
+                        '!text-sm': props.isInCart,
+                    }"
+                >
+                    Rp
+                    {{
+                        props.priceToShow == "purchase_price"
+                            ? $formatCurrency(props.product.purchase_price)
+                            : $formatCurrency(props.product.selling_price)
+                    }}
+                </p>
+                <p
+                    class="text-xs text-gray-500 dark:text-gray-400 text-nowrap"
+                    :class="{
+                        '!text-slate-400': props.inCartQuantity > 0,
+                    }"
+                >
+                    / {{ props.product.unit }}
+                </p>
+            </div>
         </div>
     </div>
 </template>

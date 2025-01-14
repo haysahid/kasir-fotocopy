@@ -9,10 +9,13 @@ use Illuminate\Validation\Rule;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\ProductDetail;
+use App\Models\ProductImage;
 use App\Models\User;
 use App\Models\UserStore;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -163,6 +166,8 @@ class ProductController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $product = Product::create([
                 'code' => $request->input('code'),
                 'name' => $request->input('name'),
@@ -181,8 +186,10 @@ class ProductController extends Controller
             if ($request->hasFile('product_images')) {
                 $files = $request->file('product_images');
 
-                ProductImageController::addProductImages($product->id, $files);
+                ProductImageController::addProductImages($product->id, $files, $store);
             }
+
+            DB::commit();
 
             $product = Product::with(['store', 'product_images'])->find($product->id);
 
@@ -190,6 +197,8 @@ class ProductController extends Controller
                 'product' => $product,
             ], 'Produk berhasil ditambahkan.', 201);
         } catch (Exception $error) {
+            DB::rollBack();
+
             return ResponseFormatter::error('Terjadi kesalahan. Produk gagal ditambahkan.' . $error, 500);
         }
     }
@@ -282,11 +291,35 @@ class ProductController extends Controller
             'unit' => 'nullable|string|max:30',
             'category' => 'nullable|string|max:255',
             'expired_at' => 'nullable|string|max:255',
+
+            // product_images
+            'product_images' => 'nullable|array',
+            'product_images.*' => 'nullable|file',
         ]);
 
         try {
+            DB::beginTransaction();
+
             // Update product
             $product->update($request->all());
+
+            // Product images
+            if ($request->hasFile('product_images')) {
+                $files = $request->file('product_images');
+
+                $productImages = $product->product_images;
+
+                if ($productImages->count() > 0) {
+                    foreach ($productImages as $productImage) {
+                        Storage::delete($productImage);
+                        $productImage->delete();
+                    }
+                }
+
+                ProductImageController::addProductImages($product->id, $files, $store);
+            }
+
+            DB::commit();
 
             $product = Product::with(['store', 'product_images'])->find($product->id);
 
@@ -294,6 +327,8 @@ class ProductController extends Controller
                 'product' => $product,
             ], 'Produk berhasil diubah.', 200);
         } catch (Exception $error) {
+            DB::rollBack();
+
             return ResponseFormatter::error('Terjadi kesalahan. Produk gagal diubah.' . $error, 500);
         }
     }

@@ -6,6 +6,8 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import { useProductStore } from "@/stores/product";
+import InputImageGroup from "@/components/Forms/InputImageGroup.vue";
+import { useConfigStore } from "@/stores/config";
 
 const props = defineProps({
     showCloseButton: {
@@ -22,6 +24,7 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const productStore = useProductStore();
+const configStore = useConfigStore();
 
 const form = ref({
     code: "",
@@ -33,6 +36,7 @@ const form = ref({
     unit: "",
     category: "",
     expired_at: "",
+    image: "",
 });
 
 const formValidation = ref({
@@ -45,6 +49,7 @@ const formValidation = ref({
     unit: "",
     category: "",
     expired_at: "",
+    image: "",
 });
 
 function clearErrorMessage() {
@@ -223,6 +228,9 @@ onUpdated(() => {
         form.value.unit = props.item.unit;
         form.value.category = props.item.category;
         form.value.expired_at = props.item.expired_at;
+        const images = props.item.product_images;
+        form.value.image =
+            images.length > 0 ? configStore.getImageUrl(images[0].image) : "";
     }
 });
 
@@ -236,6 +244,9 @@ onMounted(() => {
         form.value.unit = props.item.unit;
         form.value.category = props.item.category;
         form.value.expired_at = props.item.expired_at;
+        const images = props.item.product_images;
+        form.value.image =
+            images.length > 0 ? configStore.getImageUrl(images[0].image) : "";
     }
 });
 
@@ -251,6 +262,7 @@ function close(value) {
             unit: "",
             category: "",
             expired_at: "",
+            image: "",
         };
     } else {
         form.value.name = props.item.name;
@@ -261,6 +273,9 @@ function close(value) {
         form.value.unit = props.item.unit;
         form.value.category = props.item.category;
         form.value.expired_at = props.item.expired_at;
+        const images = props.item.product_images;
+        form.value.image =
+            images.length > 0 ? configStore.getImageUrl(images[0].image) : "";
     }
 
     emit("close", value);
@@ -281,6 +296,16 @@ function close(value) {
                 @close="clearErrorMessage"
                 :description="productStore.errorMessage"
                 class="mb-6"
+            />
+
+            <InputImageGroup
+                v-model="form.image"
+                id="image"
+                label="Gambar"
+                type="file"
+                placeholder="Pilih gambar"
+                :warning="formValidation.image"
+                class="mb-4"
             />
 
             <InputGroup

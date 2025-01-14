@@ -6,6 +6,9 @@ export const useConfigStore = defineStore('config', () => {
     const copyrightYear = ref(import.meta.env.VITE_COPYRIGHT_YEAR || 2024)
     const copyrightName = ref(import.meta.env.VITE_COPYRIGHT_NAME || 'Sahid Anwar & Fadhil Fisnanda')
 
+    const imagePrefix = ref(`${import.meta.env.VITE_APP_URL}/storage/`)
+    const getImageUrl = (path) => `${imagePrefix.value}${path}`
+
     const months = ref([
         { value: 1, text: 'Januari' },
         { value: 2, text: 'Februari' },
@@ -23,5 +26,5 @@ export const useConfigStore = defineStore('config', () => {
 
     const getMonthText = (number) => months.value[number - 1]?.text || '-'
 
-    return { title, copyrightYear, copyrightName, months, getMonthText }
+    return { title, copyrightYear, copyrightName, months, getMonthText, imagePrefix, getImageUrl }
 })

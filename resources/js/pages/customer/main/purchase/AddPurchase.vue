@@ -228,7 +228,7 @@ defineExpose({
         <!-- Cart -->
         <div class="md:w-3/5 xl:w-2/5 min-h-[50%]">
             <DefaultCard
-                class="flex flex-col justify-between w-full h-full"
+                class="flex flex-col justify-between w-full"
                 cardTitle="Keranjang Pembelian"
                 :showShadow="false"
                 :showBorder="false"

@@ -38,6 +38,13 @@ class ProductImageController extends Controller
      */
     public function store(Request $request, String $productId)
     {
+        $user = Auth::user();
+        $store = Store::where('user_id', $user->id)->first();
+
+        if (!$store) {
+            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+        }
+
         $product = Product::find($productId);
 
         if (!$product) {
@@ -53,7 +60,7 @@ class ProductImageController extends Controller
             if ($request->hasFile('product_images')) {
                 $files = $request->file('product_images');
 
-                $productImages = self::addProductImages($productId, $files);
+                $productImages = self::addProductImages($productId, $files, $store);
             }
 
             return ResponseFormatter::success([
@@ -127,11 +134,8 @@ class ProductImageController extends Controller
         );
     }
 
-    public static function addProductImages($productId, $files)
+    public static function addProductImages($productId, $files, $store)
     {
-        $user = Auth::user();
-        $store = Store::where('user_id', $user->id)->first();
-
         foreach ($files as $file) {
             if (!$file) continue;
 
@@ -140,6 +144,7 @@ class ProductImageController extends Controller
             ProductImage::create([
                 'image' => $image_path,
                 'product_id' => $productId,
+                'store_id' => $store->id,
             ]);
         }
 

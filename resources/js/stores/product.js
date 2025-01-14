@@ -79,7 +79,18 @@ export const useProductStore = defineStore('product', () => {
         saveStatus.value = "loading";
 
         try {
-            const response = await axios.post("/api/product", item, {
+            let formData = new FormData();
+
+            for (const key in item) {
+                if (key === "image") {
+                    formData.append("product_images[0]", item[key]);
+                    continue;
+                }
+
+                formData.append(key, item[key]);
+            }
+
+            const response = await axios.post("/api/product", formData, {
                 headers: { Authorization: token },
             });
 
@@ -92,6 +103,8 @@ export const useProductStore = defineStore('product', () => {
 
             return response.data;
         } catch (error) {
+            console.log(error);
+
             const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
 
             Toast.fire({
@@ -110,7 +123,25 @@ export const useProductStore = defineStore('product', () => {
         saveStatus.value = "loading";
 
         try {
-            const response = await axios.put(`/api/product/${id}`, item, {
+            let formData = new FormData();
+
+            for (const key in item) {
+                if (key === "image") {
+                    // Check image type is string or File
+                    if (typeof item[key] === "string") {
+                        continue;
+                    }
+
+                    formData.append("product_images[0]", item[key]);
+                    continue;
+                }
+
+                formData.append(key, item[key]);
+            }
+
+            formData.append("_method", "PUT");
+
+            const response = await axios.post(`/api/product/${id}`, formData, {
                 headers: { Authorization: token },
             });
 
