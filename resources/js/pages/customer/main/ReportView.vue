@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import PageSection from "@/components/Sections/PageSection.vue";
+import GenerateReportForm from "./report/GenerateReportForm.vue";
 </script>
 
 <template>
@@ -9,9 +10,11 @@ import PageSection from "@/components/Sections/PageSection.vue";
             <PageSection
                 :page-title="'Laporan'"
                 id="pagetop"
-                class="col-span-12 text-sm xl:col-span-8"
+                class="col-span-12 mb-4 text-sm xl:col-span-8"
             >
             </PageSection>
+
+            <GenerateReportForm />
         </div>
     </DefaultLayout>
 </template>

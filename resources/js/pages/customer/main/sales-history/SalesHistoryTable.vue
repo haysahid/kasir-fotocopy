@@ -188,7 +188,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Jumlah Item
+                                Qty
                             </h5>
                         </th>
 
@@ -204,7 +204,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Pembayaran
+                                Bayar
                             </h5>
                         </th>
 
@@ -212,7 +212,7 @@ defineExpose({
                             <h5
                                 class="text-sm font-medium uppercase xsm:text-base dark:text-gray-400"
                             >
-                                Kembalian
+                                Kembali
                             </h5>
                         </th>
 
@@ -377,7 +377,7 @@ defineExpose({
                 :show-close-button="true"
                 :sales="selectedItems[0] ?? null"
                 @close="onPrintItemDialogClosed"
-                class="max-w-lg sm:min-w-[600px] max-sm:w-full"
+                class="w-full lg:w-[800px]"
             />
         </CustomDialog>
     </DefaultCard>

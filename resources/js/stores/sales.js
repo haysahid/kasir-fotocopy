@@ -177,6 +177,50 @@ export const useSalesStore = defineStore('sales', () => {
         }
     }
 
+    const generateReceiptStatus = ref("");
+
+
+    async function generateReceipt(content, size) {
+        try {
+            generateReceiptStatus.value = "loading";
+
+            let formData = new FormData();
+            formData.append("content", content);
+            formData.append("paper_size", size);
+
+            const response = await axios.post("/api/sales-receipt",
+                formData,
+                {
+                    headers: {
+                        Authorization: token,
+                        Accept: "application/pdf"
+                    },
+                }
+            );
+
+            Toast.fire({
+                icon: "success",
+                title: response.data.meta.message,
+            });
+
+            generateReceiptStatus.value = "success";
+
+            return response.data;
+        } catch (error) {
+            const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+
+            Toast.fire({
+                icon: "warning",
+                title: errorText,
+            });
+
+            generateReceiptStatus.value = "error";
+            errorMessage.value = errorText;
+
+            return {};
+        }
+    }
+
     function clearSalesStore() {
         data.value = {}
         query.value = {
@@ -201,12 +245,14 @@ export const useSalesStore = defineStore('sales', () => {
         saveStatus,
         deleteStatus,
         deleteProgress,
+        generateReceiptStatus,
         errorMessage,
         getAllItems,
         getItem,
         addItem,
         updateItem,
         deleteItems,
+        generateReceipt,
         clearSalesStore,
     }
 })

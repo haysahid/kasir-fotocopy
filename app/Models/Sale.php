@@ -32,11 +32,16 @@ class Sale extends Model
         return $this->hasMany(SalesItem::class, 'sales_id')->with('product');
     }
 
-    public function getTotalAttribute()
+    public function total()
     {
         return $this->sales_items->sum(function ($item) {
             return $item->quantity * $item->item_price;
         });
+    }
+
+    public function getTotalAttribute()
+    {
+        return $this->total();
     }
 
     public function getReturnAttribute()
@@ -46,11 +51,20 @@ class Sale extends Model
 
     public function getProfitAttribute()
     {
+        if ($this->return < 0) {
+            return $this->return;
+        }
+
         return $this->sales_items->sum('profit');
+    }
+
+    public function status()
+    {
+        return $this->return >= 0 ? 'Lunas' : 'Belum Lunas';
     }
 
     public function getStatusAttribute()
     {
-        return $this->return >= 0 ? 'Lunas' : 'Belum Lunas';
+        return $this->status();
     }
 }

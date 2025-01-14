@@ -12,9 +12,9 @@ const props = defineProps({
         type: String,
         default: "Transaksi berhasil",
     },
-    paymentReturn: {
-        type: Number,
-        default: 0,
+    sales: {
+        type: Object,
+        default: null,
     },
 });
 const emit = defineEmits(["close"]);
@@ -55,13 +55,16 @@ function close(value) {
                 {{ props.description }}
             </p>
 
-            <p class="mb-4 text-center text-gray-500 dark:text-gray-400">
-                Kembalian: Rp {{ $formatCurrency(props.paymentReturn) }}
-            </p>
+            <template v-if="props.sales">
+                <p class="mb-4 text-center text-gray-500 dark:text-gray-400">
+                    Kembali: Rp {{ $formatCurrency(props.sales.return) }}
+                </p>
+            </template>
 
             <div
                 class="flex flex-col-reverse w-full mt-4 gap-x-2 gap-y-2 sm:flex-row"
             >
+                <slot> </slot>
                 <CustomButton
                     @click="close(true)"
                     :is-full="true"

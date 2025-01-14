@@ -24,7 +24,7 @@ function updateValue(event) {
         <label
             v-if="props.label"
             :for="props.id"
-            class="mb-1.5 block text-gray-900 dark:text-gray-200"
+            class="mb-1.5 block text-gray-900 dark:text-gray-200 text-sm"
         >
             {{ props.label }}
         </label>

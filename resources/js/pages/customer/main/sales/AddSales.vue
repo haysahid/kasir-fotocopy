@@ -10,6 +10,7 @@ import EmptyCart from "./EmptyCart.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import CustomDialog from "@/components/Dialogs/CustomDialog.vue";
 import SalesForm from "./SalesForm.vue";
+import PrintSalesReceipt from "./PrintSalesReceipt.vue";
 
 const props = defineProps({
     title: {
@@ -22,6 +23,8 @@ const productStore = useProductStore();
 const selectedItems = ref([]);
 const isAllItemsSelected = ref(false);
 
+const sales = ref(null);
+
 const query = ref({
     limit: null,
     page: 1,
@@ -29,6 +32,7 @@ const query = ref({
 });
 
 const itemFormDialog = ref(null);
+const printItemDialog = ref(null);
 
 function showItemFormDialog() {
     itemFormDialog.value.showModal();
@@ -42,6 +46,16 @@ function onItemFormDialogClosed(value) {
         isAllItemsSelected.value = false;
         getData();
     }
+}
+
+function showPrintItemDialog(item) {
+    sales.value = item;
+    printItemDialog.value.showModal();
+}
+
+function onPrintItemDialogClosed(value) {
+    sales.value = null;
+    printItemDialog.value.close(value);
 }
 
 function showSuccessDialog() {
@@ -136,6 +150,7 @@ const total = computed(() =>
 onMounted(() => {
     getData();
     itemFormDialog.value = document.querySelector("#itemFormDialog");
+    printItemDialog.value = document.querySelector("#printItemDialog");
 });
 
 defineExpose({
@@ -247,7 +262,6 @@ defineExpose({
                         :cartItem="cartItem"
                         @removeItem="selectItem"
                         @updateItem="updateItem"
-                        data-aos="fade-up"
                     />
                 </div>
 
@@ -285,7 +299,18 @@ defineExpose({
                     sales_items: selectedItems,
                 }"
                 @close="onItemFormDialogClosed"
-                class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
+                @print="showPrintItemDialog"
+                class="w-full sm:w-[400px]"
+            />
+        </CustomDialog>
+
+        <CustomDialog id="printItemDialog" :show-cancel="true">
+            <PrintSalesReceipt
+                v-if="sales"
+                :show-close-button="true"
+                :sales="sales"
+                @close="onPrintItemDialogClosed"
+                class="w-full lg:w-[800px]"
             />
         </CustomDialog>
     </div>

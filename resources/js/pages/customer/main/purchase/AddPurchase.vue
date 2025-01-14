@@ -244,7 +244,6 @@ defineExpose({
                         :cartItem="cartItem"
                         @removeItem="selectItem"
                         @updateItem="updateItem"
-                        data-aos="fade-up"
                     />
                 </div>
 

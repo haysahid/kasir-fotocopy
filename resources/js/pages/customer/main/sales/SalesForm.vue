@@ -24,7 +24,7 @@ const props = defineProps({
         default: true,
     },
 });
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "print"]);
 
 const salesStore = useSalesStore();
 
@@ -39,14 +39,14 @@ const formValidation = ref({
     payment: "",
 });
 
-const finalPaymentReturn = ref(0);
+const sales = ref(0);
 
 function clearErrorMessage() {
     salesStore.errorMessage = "";
 }
 
 async function saveItem() {
-    finalPaymentReturn.value = 0;
+    sales.value = 0;
 
     if (props.item.id) {
         updateItem();
@@ -73,7 +73,7 @@ async function addItem() {
 
     const response = await salesStore.addItem(updatedForm);
 
-    finalPaymentReturn.value = response.result.return;
+    sales.value = response.result;
 }
 
 async function updateItem() {
@@ -164,17 +164,31 @@ function close(value) {
     emit("close", value);
     salesStore.clearSalesStore();
 }
+
+function print() {
+    emit("print", sales.value);
+    close(true);
+}
 </script>
 
 <template>
     <SuccessDialog
-        v-if="salesStore.saveStatus === 'success'"
+        v-if="salesStore.saveStatus === 'success' && sales"
         title="Berhasil!"
         description="Penjualan berhasil ditambahkan"
-        :paymentReturn="finalPaymentReturn"
+        :sales="sales"
         class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
         @close="onSuccesDialogClose"
-    />
+    >
+        <CustomButton
+            color="bg-green-600"
+            :is-full="true"
+            padding="py-2.5 px-6"
+            @click="print"
+        >
+            Cetak Struk
+        </CustomButton>
+    </SuccessDialog>
 
     <DefaultCard
         v-else

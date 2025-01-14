@@ -10,9 +10,11 @@ use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\OptionController;
 use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\PlanController;
+use App\Http\Controllers\API\ProductImageController;
 use App\Http\Controllers\API\PurchaseController;
 use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\SubscribeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoicePaymentController;
@@ -29,7 +31,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('auth/register', [UserController::class, 'register']);
 Route::post('auth/login', [UserController::class, 'login']);
 
-Route::apiResource('setting', 'SettingController')->middleware('auth:sanctum', ['only' => ['store', 'update', 'destroy']]);
+Route::apiResource('setting', SettingController::class)->middleware('auth:sanctum', ['only' => ['store', 'update', 'destroy']]);
+
+Route::post('report-pdf', [ReportController::class, 'generatePdf']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [UserController::class, 'fetch']);
@@ -58,10 +62,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('product/{id}/enable', [ProductController::class, 'enable']);
     Route::get('product-community', [ProductController::class, 'getCommunityProducts']);
 
-    Route::apiResource('product/{product_id}/image', 'ProductImageController');
+    Route::apiResource('product/{product_id}/image', ProductImageController::class);
 
     Route::apiResource('purchase', PurchaseController::class);
     Route::apiResource('sales', SalesController::class);
+    Route::post('sales-receipt', [SalesController::class, 'generateReceipt']);
 
     Route::post('add-expired-product', [SalesController::class, 'addExpiredProduct']);
 

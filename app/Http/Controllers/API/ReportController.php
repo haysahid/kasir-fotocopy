@@ -11,6 +11,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Dompdf\Dompdf;
 
 class ReportController extends Controller
 {
@@ -78,5 +79,22 @@ class ReportController extends Controller
             'total_profit' => $totalProfit,
             'sales' => $sales,
         ], 'Data laporan penjualan berhasil diambil.');
+    }
+
+    // Generate PDF
+    public function generatePdf(Request $request)
+    {
+        $content = $request->input('content');
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($content);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $pdf = base64_encode($dompdf->output());
+
+        return ResponseFormatter::success([
+            'pdf' => $pdf,
+        ], 'PDF berhasil di-generate.');
     }
 }

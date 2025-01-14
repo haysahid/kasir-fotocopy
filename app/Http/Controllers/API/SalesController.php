@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Dompdf\Dompdf;
 
 class SalesController extends Controller
 {
@@ -373,5 +374,86 @@ class SalesController extends Controller
         } catch (Exception $error) {
             return ResponseFormatter::error('Terjadi kesalahan. Produk kadaluarsa gagal ditambahkan.' . $error, 500);
         }
+    }
+
+    public function generateReceipt(Request $request)
+    {
+        $user = Auth::user();
+        $user = User::with('store')->find($user->id);
+        $store = $user->store[0];
+
+        // Store availability check
+        if (!$store) {
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        // Authorization check
+        $allowedRoles = [1, 2];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
+        }
+
+        // Get content
+        $content = $request->input('content');
+        $paperSize = $request->input('paper_size');
+
+        // Milimeter to point conversion
+        if ($paperSize) {
+            $paperSize = str_replace('mm', '', $paperSize);
+            $docWidth = $paperSize * 2.83465;
+        }
+
+        $dompdf = new Dompdf();
+
+        $options = $dompdf->getOptions();
+        // $dompdf->setPaper(array(0, 0, 164.44, 842.07), 'portrait');
+
+        $options->set(array(
+            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true
+        ));
+        $dompdf->setOptions($options);
+
+        $dompdf->loadHtml($content);
+
+
+        /*
+        * Workaround to get the body height
+        */
+        $GLOBALS['bodyHeight'] = 0;
+
+        $dompdf->setCallbacks([
+            'myCallbacks' => [
+                'event' => 'end_frame',
+                'f' => function ($frame) {
+                    $node = $frame->get_node();
+
+                    if (strtolower($node->nodeName) === "body") {
+                        $padding_box = $frame->get_padding_box();
+                        $GLOBALS['bodyHeight'] += $padding_box['h'];
+                    }
+                }
+            ]
+        ]);
+
+        $dompdf->render();
+        unset($dompdf);
+        $docHeight = $GLOBALS['bodyHeight'] + 50;
+
+        $dompdf = new Dompdf();
+        $options = $dompdf->getOptions();
+
+        $dompdf->setPaper([0, 0, $docWidth, $docHeight]);
+
+        $dompdf->loadHtml($content);
+        $dompdf->render();
+
+        $pdf = base64_encode($dompdf->output());
+
+        return ResponseFormatter::success([
+            'pdf' => $pdf,
+        ], 'PDF berhasil di-generate.');
     }
 }
