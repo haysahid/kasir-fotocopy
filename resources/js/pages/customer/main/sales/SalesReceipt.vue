@@ -8,6 +8,7 @@ const props = defineProps<{
 
 <template>
     <div
+        :key="props.paperSize"
         class="px-4 py-6 duration-100 ease-in-out bg-white border border-gray-300 rounded-sm dark:bg-white"
         :class="[`w-[${props.paperSize}]`]"
     >
