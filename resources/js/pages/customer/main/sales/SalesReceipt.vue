@@ -8,9 +8,8 @@ const props = defineProps<{
 
 <template>
     <div
-        :key="props.paperSize"
         class="px-4 py-6 duration-100 ease-in-out bg-white border border-gray-300 rounded-sm dark:bg-white"
-        :class="[`w-${props.paperSize}`]"
+        :class="`w-[${props.paperSize}]`"
     >
         <!-- Header -->
         <div class="mb-4 text-center">
@@ -214,18 +213,6 @@ text-end {
 
 .bg-white {
     background-color: #fff;
-}
-
-.w-57mm {
-    width: 57mm;
-}
-
-.w-58mm {
-    width: 58mm;
-}
-
-.w-80mm {
-    width: 80mm;
 }
 
 .w-full {

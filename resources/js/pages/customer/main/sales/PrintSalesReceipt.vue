@@ -49,19 +49,11 @@ async function print() {
                 <style>
                     @media print {
                         @page {
-                            size: ${form.paperSize};
-                            size: portrait;
                             margin: 0 0;
                         }
                     }
 
-                    @page {
-                        // size: ${form.paperSize};
-                        // size: portrait;
-                        margin: 0 0;
-                    }
-
-                    body {
+                    html, body {
                         font-family: "Arial", sans-serif;
                         margin: 0 0,
                     }
@@ -146,18 +138,6 @@ async function print() {
 
                     .bg-white {
                         background-color: #fff;
-                    }
-
-                    .w-57mm {
-                        width: 57mm;
-                    }
-
-                    .w-58mm {
-                        width: 58mm;
-                    }
-
-                    .w-80mm {
-                        width: 80mm;
                     }
 
                     .w-full {
