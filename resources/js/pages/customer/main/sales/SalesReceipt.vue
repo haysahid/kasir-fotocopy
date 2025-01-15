@@ -9,7 +9,11 @@ const props = defineProps<{
 <template>
     <div
         class="px-4 py-6 duration-100 ease-in-out bg-white border border-gray-300 rounded-sm dark:bg-white"
-        :class="`w-[${props.paperSize}]`"
+        :class="{
+            'w-[57mm]': props.paperSize === '57mm',
+            'w-[58mm]': props.paperSize === '58mm',
+            'w-[80mm]': props.paperSize === '80mm',
+        }"
     >
         <!-- Header -->
         <div class="mb-4 text-center">
