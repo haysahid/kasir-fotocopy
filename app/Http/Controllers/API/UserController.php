@@ -295,9 +295,13 @@ class UserController extends Controller
                 new Password(8),
                 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
             ],
-            'avatar' => 'nullable|file',
+            'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
             'role_id' => 'nullable|integer',
             'disabled_at' => 'nullable|date',
+        ], [
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.regex' => 'Password harus mengandung huruf, angka, dan karakter spesial.',
+            'avatar.uploaded' => 'Avatar harus berupa file gambar.',
         ]);
 
         $user = User::query()->find($id);
