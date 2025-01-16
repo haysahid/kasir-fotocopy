@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
@@ -17,6 +18,17 @@ class UserController extends Controller
 {
     public function register(Request $request)
     {
+        // Rate limiter
+        $rateLimiter = RateLimiter::attempt(
+            'register:' . $request->ip(),
+            $perMinute = 10,
+            function () {}
+        );
+
+        if (!$rateLimiter) {
+            return ResponseFormatter::error('Terlalu banyak percobaan register. Coba lagi nanti.', 429);
+        }
+
         // Check email unique
         if (User::where('email', $request->input('email'))->first()) {
             return ResponseFormatter::error('Email sudah terdaftar.', 400);
@@ -69,6 +81,17 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+        // Rate limiter
+        $rateLimiter = RateLimiter::attempt(
+            'login:' . $request->input('email') ?: $request->ip(),
+            $perMinute = 20,
+            function () {}
+        );
+
+        if (!$rateLimiter) {
+            return ResponseFormatter::error('Terlalu banyak percobaan login. Coba lagi nanti.', 429);
+        }
+
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required',
