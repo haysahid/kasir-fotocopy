@@ -103,8 +103,9 @@ class UserController extends Controller
             'name' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:255',
-            'avatar' => 'nullable|file',
-
+            'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+        ], [
+            'avatar.uploaded' => 'Avatar harus berupa file gambar.',
         ]);
 
         $user = user::query()->find(Auth::user()->id);

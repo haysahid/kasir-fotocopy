@@ -154,7 +154,14 @@ class ProductController extends Controller
 
             // product_images
             'product_images' => 'nullable|array',
-            'product_images.*' => 'nullable|file',
+            'product_images.*' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+        ], [
+            'name.required' => 'Nama produk wajib diisi.',
+            'purchase_price.required' => 'Harga beli wajib diisi.',
+            'selling_price.required' => 'Harga jual wajib diisi.',
+            'initial_stock.required' => 'Stok awal wajib diisi.',
+            'unit.required' => 'Satuan wajib diisi.',
+            'product_images.*.uploaded' => 'Gambar produk harus berupa file gambar.',
         ]);
 
         // Check code uniqueness
@@ -295,6 +302,8 @@ class ProductController extends Controller
             // product_images
             'product_images' => 'nullable|array',
             'product_images.*' => 'nullable|file',
+        ], [
+            'product_images.*.uploaded' => 'Gambar produk harus berupa file gambar.',
         ]);
 
         try {

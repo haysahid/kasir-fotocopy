@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Store;
+use App\Models\User;
+use App\Models\UserStore;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,10 +41,31 @@ class ProductImageController extends Controller
     public function store(Request $request, String $productId)
     {
         $user = Auth::user();
-        $store = Store::where('user_id', $user->id)->first();
+        $user = User::with('store')->find($user->id);
 
+        // Check if user is community
+        if ($user->role_id == 3) {
+            $store = Store::where('is_community', 1)->first();
+        } else {
+            $store = $user->store[0];
+        }
+
+        // Store availability check
         if (!$store) {
-            return ResponseFormatter::error('Toko tidak ditemukan.', 404);
+            return ResponseFormatter::error('Anda belum memiliki toko.', 404);
+        }
+
+        // Check store activation
+        if (!$store->activated_at) {
+            return ResponseFormatter::error('Toko belum diaktifkan.', 403);
+        }
+
+        // Authorization check
+        $allowedRoles = [1, 2, 3];
+        $isOwner = UserStore::where('store_id', $store->id)->where('user_id', $user->id)->first();
+
+        if (!in_array($user->role_id, $allowedRoles) && (!$isOwner && (!in_array($user->role_id, [4, 5])))) {
+            return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
         }
 
         $product = Product::find($productId);
@@ -53,7 +76,9 @@ class ProductImageController extends Controller
 
         $request->validate([
             'product_images' => 'nullable|array',
-            'product_images.*' => 'nullable|file',
+            'product_images.*' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+        ], [
+            'product_images.*.uploaded' => 'Gambar produk harus berupa file gambar.',
         ]);
 
         try {

@@ -74,8 +74,21 @@ class StoreController extends Controller
             'description' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',
             'phone' => 'nullable|string|max:255',
-            'logo' => 'nullable|file',
-            'banner' => 'nullable|file',
+            'logo' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            'banner' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+        ], [
+            'name.required' => 'Nama toko wajib diisi.',
+            'name.string' => 'Nama toko harus berupa teks.',
+            'name.max' => 'Nama toko maksimal 255 karakter.',
+            'description.string' => 'Deskripsi harus berupa teks.',
+            'description.max' => 'Deskripsi maksimal 255 karakter.',
+            'address.required' => 'Alamat wajib diisi.',
+            'address.string' => 'Alamat harus berupa teks.',
+            'address.max' => 'Alamat maksimal 255 karakter.',
+            'phone.string' => 'Nomor telepon harus berupa teks.',
+            'phone.max' => 'Nomor telepon maksimal 255 karakter.',
+            'logo.uploaded' => 'Logo harus berupa file gambar.',
+            'banner.uploaded' => 'Banner harus berupa file gambar.',
         ]);
 
         $user = Auth::user();
@@ -179,8 +192,21 @@ class StoreController extends Controller
             'description' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',
             'phone' => 'nullable|string|max:255',
-            'logo' => 'nullable|file',
-            'banner' => 'nullable|file',
+            'logo' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+            'banner' => 'nullable|file|mimes:jpg,jpeg,png,webp',
+        ], [
+            'name.required' => 'Nama toko wajib diisi.',
+            'name.string' => 'Nama toko harus berupa teks.',
+            'name.max' => 'Nama toko maksimal 255 karakter.',
+            'description.string' => 'Deskripsi harus berupa teks.',
+            'description.max' => 'Deskripsi maksimal 255 karakter.',
+            'address.required' => 'Alamat wajib diisi.',
+            'address.string' => 'Alamat harus berupa teks.',
+            'address.max' => 'Alamat maksimal 255 karakter.',
+            'phone.string' => 'Nomor telepon harus berupa teks.',
+            'phone.max' => 'Nomor telepon maksimal 255 karakter.',
+            'logo.uploaded' => 'Logo harus berupa file gambar.',
+            'banner.uploaded' => 'Banner harus berupa file gambar.',
         ]);
 
         $store = Store::find($id);
