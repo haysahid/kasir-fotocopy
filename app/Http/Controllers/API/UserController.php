@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
@@ -26,7 +27,21 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'address' => 'nullable|string|max:255',
             'phone' => 'required|string',
-            'password' => ['required', 'string', new Password(8)],
+            'password' => [
+                'required',
+                'string',
+                new Password(8),
+                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
+            ],
+            [
+                'name.required' => 'Nama wajib diisi.',
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Email tidak valid.',
+                'phone.required' => 'Nomor telepon wajib diisi.',
+                'password.required' => 'Password wajib diisi.',
+                'password.min' => 'Password minimal 8 karakter.',
+                'password.regex' => 'Password harus mengandung huruf, angka, dan karakter spesial.',
+            ],
         ]);
 
         try {
@@ -117,6 +132,8 @@ class UserController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $user->update($request->all());
 
             if ($request->hasFile('avatar')) {
@@ -136,12 +153,15 @@ class UserController extends Controller
                 ]);
             }
 
+            DB::commit();
+
             $user = User::with(['store', 'role'])->find($user->id);
 
             return ResponseFormatter::success([
                 'user' => $user,
             ], 'Data pengguna berhasil diubah.', 200);
         } catch (Exception $error) {
+            DB::rollBack();
             return ResponseFormatter::error('Ada yang salah. Autentikasi gagal.', 500);
         }
     }
@@ -199,12 +219,28 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'address' => 'nullable|string|max:255',
             'phone' => 'required|string',
-            'avatar' => 'nullable|file',
+            'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
             'role_id' => 'required|integer',
-            'password' => ['required', 'string', new Password(8)],
+            'password' => [
+                'required',
+                'string',
+                new Password(8),
+                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
+            ],
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Email tidak valid.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'role_id.required' => 'Role wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.regex' => 'Password harus mengandung huruf, angka, dan karakter spesial.',
         ]);
 
         try {
+            DB::beginTransaction();
+
             $user = User::create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
@@ -226,10 +262,13 @@ class UserController extends Controller
                 ]);
             }
 
+            DB::commit();
+
             $user = User::with(['store', 'role'])->find($user->id);
 
             return ResponseFormatter::success($user, 'Data pengguna berhasil ditambahkan.', 201);
         } catch (Exception $error) {
+            DB::rollBack();
             return ResponseFormatter::error('Ada yang salah. Autentikasi gagal.', 500);
         }
     }
@@ -250,6 +289,12 @@ class UserController extends Controller
             'email' => 'nullable|string|email|max:255',
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:255',
+            'password' => [
+                'nullable',
+                'string',
+                new Password(8),
+                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
+            ],
             'avatar' => 'nullable|file',
             'role_id' => 'nullable|integer',
             'disabled_at' => 'nullable|date',
@@ -264,6 +309,8 @@ class UserController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $user->update($request->all());
 
             if ($request->hasFile('avatar')) {
@@ -283,10 +330,13 @@ class UserController extends Controller
                 ]);
             }
 
+            DB::commit();
+
             $user = User::with(['store', 'role'])->find($user->id);
 
             return ResponseFormatter::success($user, 'Data pengguna berhasil diubah.', 200);
         } catch (Exception $error) {
+            DB::rollBack();
             return ResponseFormatter::error('Ada yang salah. Autentikasi gagal.', 500);
         }
     }
@@ -306,12 +356,16 @@ class UserController extends Controller
             return ResponseFormatter::error('Anda tidak memiliki hak akses.', 401);
         }
 
+        DB::beginTransaction();
+
         // Delete user avatar
         if ($user->avatar) {
             Storage::delete($user->avatar);
         }
 
         $user->delete();
+
+        DB::commit();
 
         return ResponseFormatter::success(null, 'Data pengguna berhasil dihapus.', 200);
     }
