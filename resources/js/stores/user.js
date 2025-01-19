@@ -37,10 +37,12 @@ export const useUserStore = defineStore('user', () => {
         } catch (error) {
             const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
 
-            Toast.fire({
-                icon: "warning",
-                title: errorText,
-            });
+            if (error.response?.data?.meta?.code === 401) {
+                Toast.fire({
+                    icon: "warning",
+                    title: errorText,
+                });
+            }
 
             user.value = false
 
