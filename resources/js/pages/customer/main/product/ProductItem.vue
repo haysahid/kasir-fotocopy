@@ -84,14 +84,27 @@ const props = defineProps({
             }"
         >
             <div class="flex flex-col w-full gap-1">
-                <h4
-                    class="font-semibold text-gray-900 text-md dark:text-gray-300"
-                    :class="{
-                        '!text-sm': props.isInCart,
-                    }"
-                >
-                    {{ props.product.name }}
-                </h4>
+                <div>
+                    <h4
+                        class="font-semibold text-gray-900 text-md dark:text-gray-300"
+                        :class="{
+                            '!text-sm': props.isInCart,
+                        }"
+                    >
+                        {{ props.product.name }}
+                    </h4>
+
+                    <p
+                        v-if="props.product.code"
+                        class="text-xs text-gray-400 dark:text-gray-500"
+                        :class="{
+                            '!text-slate-400 dark:!text-slate-500':
+                                props.inCartQuantity > 0,
+                        }"
+                    >
+                        {{ props.product.code }}
+                    </p>
+                </div>
 
                 <p
                     v-if="!props.isInCart"

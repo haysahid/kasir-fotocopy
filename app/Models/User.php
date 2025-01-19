@@ -90,11 +90,19 @@ class User extends Authenticatable
 
     public function subscriptions()
     {
+
+
         return $this->hasMany(Subscription::class);
     }
 
     public function activeSubscriptions()
     {
+        if ($this->role_id === 5) {
+            // Get owner
+            $store = $this->store()->first();
+            return $store->activeSubscription();
+        }
+
         return $this->subscriptions()
             ->where('date_subscribed', '<', now())
             ->where('valid_to', '>', now())
@@ -106,6 +114,7 @@ class User extends Authenticatable
     public function activeSubscription()
     {
         $subscriptions = $this->activeSubscriptions();
+        $subscriptions = $subscriptions->all();
 
         // Return the first active subscription
         foreach ($subscriptions as $subscription) {

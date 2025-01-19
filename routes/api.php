@@ -19,8 +19,9 @@ use App\Http\Controllers\API\SubscribeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Controllers\SubscriptionController;
-use App\Http\Middleware\CheckAdminRole;
-use App\Http\Middleware\CheckUserRoleAndStore;
+use App\Http\Middleware\API\CheckActiveUser;
+use App\Http\Middleware\API\CheckAdminRole;
+use App\Http\Middleware\API\CheckUserRoleAndStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +36,7 @@ Route::apiResource('setting', SettingController::class)->middleware('auth:sanctu
 
 Route::post('report-pdf', [ReportController::class, 'generatePdf']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', CheckActiveUser::class])->group(function () {
     Route::get('/profile', [UserController::class, 'fetch']);
     Route::post('/profile', [UserController::class, 'updateProfile']);
     Route::post('/auth/logout', [UserController::class, 'logout']);

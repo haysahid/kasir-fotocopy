@@ -54,7 +54,7 @@ class Subscription extends Model
         return $planHistory ? $planHistory->plan : null;
     }
 
-    public function getStatusAttribute()
+    public function status()
     {
         $latestInvoice = $this->invoices()->latest()->first();
 
@@ -75,6 +75,11 @@ class Subscription extends Model
         }
 
         return 'Active';
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->status();
     }
 
     public function getInvoiceIdAttribute()

@@ -299,6 +299,7 @@ onMounted(() => {
 
                         <!-- Subscription -->
                         <DefaultCard
+                            v-if="userStore.user.role_id != 5"
                             :showShadow="false"
                             :showBorder="false"
                             cardTitle="Langganan Aktif"

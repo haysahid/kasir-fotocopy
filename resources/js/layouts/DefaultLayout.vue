@@ -32,23 +32,27 @@ const currentRoute = computed(() => route().current());
             <HeaderArea />
             <main>
                 <div class="p-4 mx-auto max-w-screen-2xl md:p-6 2xl:p-10">
-                    <slot v-if="allowedRoutes.includes(currentRoute)"></slot>
+                    <template v-if="userStore.user">
+                        <slot
+                            v-if="allowedRoutes.includes(currentRoute)"
+                        ></slot>
 
-                    <ActiveSubscriptionNotFoundAlert
-                        v-else-if="!hasActiveSubscription"
-                        data-aos="fade-up"
-                        data-aos-once="true"
-                        class="mt-24"
-                    />
+                        <ActiveSubscriptionNotFoundAlert
+                            v-else-if="!hasActiveSubscription"
+                            data-aos="fade-up"
+                            data-aos-once="true"
+                            class="mt-24"
+                        />
 
-                    <StoreNotFoundAlert
-                        v-else-if="!hasStore"
-                        data-aos="fade-up"
-                        data-aos-once="true"
-                        class="mt-24"
-                    />
+                        <StoreNotFoundAlert
+                            v-else-if="!hasStore"
+                            data-aos="fade-up"
+                            data-aos-once="true"
+                            class="mt-24"
+                        />
 
-                    <slot v-else></slot>
+                        <slot v-else></slot>
+                    </template>
                 </div>
             </main>
         </div>

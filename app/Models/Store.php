@@ -261,4 +261,14 @@ class Store extends Model
             'revenue' => $revenue,
         ];
     }
+
+    public function subscriptions()
+    {
+        return $this->owners()->first()->subscriptions();
+    }
+
+    public function activeSubscription()
+    {
+        return $this->owners()->first()->activeSubscription();
+    }
 }

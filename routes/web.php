@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckActiveUser;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,6 +21,8 @@ use Inertia\Inertia;
 Route::get('/', fn() => Inertia::render('HomeView'))->name('home');
 Route::get('/login', fn()  => Inertia::render('LoginView'))->name('login');
 Route::get('/register', fn()  => Inertia::render('RegisterView'))->name('register');
+
+
 Route::get('/profile', fn()  => Inertia::render('ProfileView'))->name('profile');
 Route::get('/create-store', fn()  => Inertia::render('customer/store/CreateStoreView'))->name('create-store');
 Route::get('/subscription/{id}', fn()  => Inertia::render('customer/public/SubscriptionPlanDetailView'))->name('subscription.detail');
@@ -32,6 +35,7 @@ Route::get('/sales', fn()  => Inertia::render('customer/main/SalesView'))->name(
 Route::get('/purchase-history', fn()  => Inertia::render('customer/main/PurchaseHistoryView'))->name('purchase-history');
 Route::get('/sales-history', fn()  => Inertia::render('customer/main/SalesHistoryView'))->name('sales-history');
 Route::get('/report', fn()  => Inertia::render('customer/main/ReportView'))->name('report');
+Route::get('/employee', fn()  => Inertia::render('customer/main/EmployeeView'))->name('employee');
 Route::get('/setting', fn()  => Inertia::render('customer/main/SettingView'))->name('setting');
 
 Route::get('subscription-history', fn()  => Inertia::render('customer/main/subscription-history/SubscriptionHistoryView'))->name('subscription-history');
