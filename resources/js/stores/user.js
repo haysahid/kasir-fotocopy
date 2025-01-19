@@ -20,6 +20,11 @@ export const useUserStore = defineStore('user', () => {
     });
 
     async function fetchUser() {
+        if (!localStorage.getItem("access_token")) {
+            user.value = false
+            return false
+        }
+
         try {
             const { data } = await axios.get("/api/profile", {
                 headers: {
