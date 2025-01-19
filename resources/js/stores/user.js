@@ -42,6 +42,8 @@ export const useUserStore = defineStore('user', () => {
                     icon: "warning",
                     title: errorText,
                 });
+
+                localStorage.removeItem("access_token");
             }
 
             user.value = false

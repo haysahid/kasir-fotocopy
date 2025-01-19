@@ -5,15 +5,8 @@ import EmployeeTable from "@/pages/customer/main/employee/EmployeeTable.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import { onMounted, ref, watch, computed } from "vue";
 import CustomSearchBar from "@/components/Forms/CustomSearchBar.vue";
-import SelectGroup from "@/components/Forms/SelectGroup.vue";
-import SearchSelectGroup from "@/components/Forms/SearchSelectGroup.vue";
-import { useRoleStore } from "@/stores/admin/role";
 
 const tableData = ref(null);
-
-const roleStore = useRoleStore();
-
-const roleDropdown = ref([]);
 
 const query = ref({
     limit: null,
@@ -22,37 +15,12 @@ const query = ref({
     role_id: null,
 });
 
-async function getRoleDropdown(search = null) {
-    const response = await roleStore.getDropdown(search);
-    roleDropdown.value = response.result;
-}
-
-const getRoleOptions = computed(() => {
-    const options = roleDropdown.value.map((item) => {
-        return {
-            value: item.id,
-            text: item.name,
-        };
-    });
-
-    return options;
-});
-
 watch(
     () => query.value.search,
     () => {
         tableData.value?.getData(query.value);
     }
 );
-
-watch(
-    () => query.value.role_id,
-    () => {
-        tableData.value?.getData(query.value);
-    }
-);
-
-getRoleDropdown();
 </script>
 
 <template>
@@ -64,22 +32,6 @@ getRoleDropdown();
                 class="col-span-12 mb-4 text-sm xl:col-span-8"
             >
                 <div class="flex items-center justify-center w-full gap-4">
-                    <!-- <SelectGroup
-                        v-model="query.role_id"
-                        id="role_id"
-                        :options="getRoleOptions"
-                    /> -->
-
-                    <SearchSelectGroup
-                        id="role"
-                        type="single"
-                        placeholder="Pilih role"
-                        :options="getRoleOptions"
-                        @search="getRoleDropdown"
-                        @select="query.role_id = $event"
-                        @clear="query.role_id = null"
-                    />
-
                     <CustomSearchBar
                         v-model="query.search"
                         id="search"
