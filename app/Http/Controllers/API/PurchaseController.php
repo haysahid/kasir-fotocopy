@@ -40,10 +40,21 @@ class PurchaseController extends Controller
         }
 
         $limit = $request->input('limit', 10);
+        $search = $request->input('search');
 
         $purchases = Purchase::query();
 
-        $purchases->where('store_id', $store->id)->with(['purchase_items'])->latest();
+        $purchases->where('store_id', $store->id);
+
+        if ($search) {
+            $purchases->where(function ($query) use ($search) {
+                $query->where('code', 'like', '%' . $search . '%')
+                    ->orWhere('address', 'like', '%' . $search . '%')
+                    ->orWhere('note', 'like', '%' . $search . '%');
+            });
+        }
+
+        $purchases->with(['purchase_items'])->latest();
 
         return ResponseFormatter::success(
             $purchases->paginate($limit),

@@ -40,10 +40,21 @@ class SalesController extends Controller
         }
 
         $limit = $request->input('limit', 10);
+        $search = $request->input('search');
 
         $sales = Sale::query();
 
-        $sales->where('store_id', $store->id)->where('type', 'sales')->with(['sales_items'])->latest();
+        $sales->where('store_id', $store->id)->where('type', 'sales');
+
+        if ($search) {
+            $sales->where(function ($query) use ($search) {
+                $query->where('code', 'like', '%' . $search . '%')
+                    ->orWhere('address', 'like', '%' . $search . '%')
+                    ->orWhere('note', 'like', '%' . $search . '%');
+            });
+        }
+
+        $sales->with(['sales_items'])->latest();
 
         return ResponseFormatter::success(
             $sales->paginate($limit),
