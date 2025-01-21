@@ -136,7 +136,7 @@ export const useProductStore = defineStore('product', () => {
                     continue;
                 }
 
-                if (form.value[key] == "") {
+                if (item[key] === null) {
                     continue;
                 }
 
