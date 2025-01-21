@@ -235,7 +235,7 @@ function getForm() {
     form.value.description = props.item.description;
     form.value.purchase_price = formatCurrency(props.item.purchase_price);
     form.value.selling_price = formatCurrency(props.item.selling_price);
-    form.value.initial_stock = props.item.initial_stock;
+    form.value.initial_stock = formatCurrency(props.item.initial_stock);
     form.value.unit = props.item.unit;
     form.value.category = props.item.category;
     form.value.expired_at = props.item.expired_at;
