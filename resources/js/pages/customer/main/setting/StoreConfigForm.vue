@@ -162,7 +162,9 @@ onMounted(() => {
             />
 
             <table class="w-full table-fixed">
-                <tr class="[&>th]:pb-1.5 [&>th]:text-sm">
+                <tr
+                    class="[&>th]:pb-1.5 [&>th]:font-normal [&>th]:text-sm [&>th]:text-gray-900 dark:[&>th]:text-gray-200"
+                >
                     <th class="text-start">Key</th>
                     <th class="w-4"></th>
                     <th class="text-start">Value</th>
@@ -178,6 +180,7 @@ onMounted(() => {
                                 v-model="item.key"
                                 class="mb-0"
                                 :warning="formValidation[index].key"
+                                :disabled="item.required"
                             />
                         </td>
                         <td></td>
@@ -222,14 +225,22 @@ onMounted(() => {
             </table>
 
             <!-- Add Config Button -->
-            <div class="flex justify-end mt-2 gap-x-4">
+            <div class="flex justify-between mt-2 gap-x-4">
+                <p class="text-xs text-gray-500 dark:text-gray-300">
+                    <span class="font-semibold text-gray-900 dark:text-gray-200"
+                        >Petunjuk:</span
+                    >
+                    <br />
+                    store_acronym: Singkatan Toko (Contoh: ABC)
+                </p>
+
                 <CustomButton
                     @click="addConfig"
                     :loading="storeConfigStore.saveStatus === 'loading'"
-                    color="bg-secondary"
+                    color="bg-slate-200 dark:bg-slate-700"
                     :is-full="false"
                     padding="py-2 px-4"
-                    class="text-sm"
+                    class="text-sm text-gray-500 dark:text-gray-200"
                 >
                     + Tambah
                 </CustomButton>
@@ -237,12 +248,11 @@ onMounted(() => {
 
             <div class="flex flex-col-reverse gap-x-4 sm:flex-row">
                 <CustomButton
-                    @click="saveItem"
+                    @click="formChanged ? saveItem : null"
                     :loading="storeConfigStore.saveStatus === 'loading'"
-                    :enable="formChanged"
                     color="bg-primary"
-                    :is-full="true"
-                    padding="p-3"
+                    :is-full="false"
+                    padding="py-3 px-8"
                     margin="mt-4"
                 >
                     Simpan

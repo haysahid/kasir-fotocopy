@@ -205,7 +205,11 @@ class StoreController extends Controller
             'address.max' => 'Alamat maksimal 255 karakter.',
             'phone.string' => 'Nomor telepon harus berupa teks.',
             'phone.max' => 'Nomor telepon maksimal 255 karakter.',
+            'logo.file' => 'Logo harus berupa file gambar.',
+            'logo.mimes' => 'Logo harus berupa file gambar.',
             'logo.uploaded' => 'Logo harus berupa file gambar.',
+            'banner.file' => 'Banner harus berupa file gambar.',
+            'banner.mimes' => 'Banner harus berupa file gambar.',
             'banner.uploaded' => 'Banner harus berupa file gambar.',
         ]);
 

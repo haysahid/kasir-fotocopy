@@ -369,7 +369,7 @@ defineExpose({
                 :show-close-button="true"
                 :item="selectedItems[0]"
                 @close="onItemFormDialogClosed"
-                class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
+                class="max-sm:w-full sm:min-w-[800px] max-w-[800px]"
             />
         </CustomDialog>
 

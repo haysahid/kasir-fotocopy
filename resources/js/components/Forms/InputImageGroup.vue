@@ -10,6 +10,9 @@ const props = defineProps([
     "warning",
     "disabled",
     "autoFocus",
+    "width",
+    "height",
+    "objectFit",
 ]);
 
 const emit = defineEmits(["update:modelValue", "enter"]);
@@ -36,16 +39,29 @@ defineExpose({ clearImage });
 </script>
 
 <template>
-    <div class="flex flex-col items-center w-full space-x-6">
-        <label :for="props.id" class="block w-full cursor-pointer">
-            <div class="shrink-0">
+    <div class="w-full">
+        <p
+            v-if="props.label"
+            class="block mb-1.5 text-sm font-normal text-gray-900 dark:text-gray-200 cursor-default"
+        >
+            {{ props.label }}
+        </p>
+
+        <label
+            :for="props.id"
+            class="block w-full group"
+            :class="[props.width]"
+        >
+            <div class="cursor-pointer shrink-0">
                 <div
                     v-if="imagePath || props.modelValue"
-                    class="relative w-full group"
+                    class="relative w-full"
+                    :class="[props.height, props.width]"
                 >
                     <img
                         id="preview_img"
                         class="object-cover w-full rounded-2xl aspect-square"
+                        :class="[props.height, props.objectFit, props.width]"
                         :src="imagePath || props.modelValue"
                         alt="Current image"
                     />
@@ -77,7 +93,7 @@ defineExpose({ clearImage });
 
                 <div
                     v-else
-                    class="flex items-center justify-center w-full h-32 text-gray-400 duration-300 border border-gray-200 bg-gray-50 rounded-2xl hover:bg-gray-100 dark:border-gray-700 dark:bg-form-input dark:hover:bg-form-input/50 dark:hover:border-gray-600"
+                    class="flex items-center justify-center w-full h-32 text-gray-400 duration-300 border border-gray-200 bg-gray-50 rounded-2xl group-hover:bg-gray-300/50 dark:border-gray-700 dark:bg-form-input dark:group-hover:bg-form-input/10 dark:group-hover:border-gray-600"
                 >
                     <div class="flex flex-col items-center">
                         <svg

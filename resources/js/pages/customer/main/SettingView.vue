@@ -22,16 +22,14 @@ function refresh() {
             >
             </PageSection>
 
-            <div class="flex gap-8">
+            <div class="flex flex-col gap-8 lg:flex-row">
                 <StoreForm
-                    class="max-sm:w-full sm:min-w-[400px] max-w-[400px]"
+                    class="w-full"
                     :item="userStore.user.store[0]"
                     :showCloseButton="false"
                     @close="refresh"
                 />
-                <StoreConfigForm
-                    class="max-sm:w-full sm:min-w-[500px] max-w-[500px]"
-                />
+                <StoreConfigForm class="w-full" />
             </div>
         </div>
     </DefaultLayout>

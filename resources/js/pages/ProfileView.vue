@@ -232,9 +232,13 @@ onMounted(() => {
                                 >
                                     <img
                                         v-if="userStore.user.store[0]?.logo"
-                                        :src="userStore.user.store[0]?.logo"
+                                        :src="
+                                            $getImageUrl(
+                                                userStore.user.store[0]?.logo
+                                            )
+                                        "
                                         alt="Brand"
-                                        class="opacity-50 size-24"
+                                        class="object-contain h-24"
                                     />
 
                                     <svg
@@ -286,6 +290,22 @@ onMounted(() => {
                                                 )
                                             }}
                                         </DetailRow>
+
+                                        <div
+                                            v-if="userStore.user.role_id == 4"
+                                            class="flex flex-col-reverse mt-8 gap-x-4 gap-y-4 sm:flex-row"
+                                        >
+                                            <Link :href="route('setting')">
+                                                <CustomButton
+                                                    color="bg-primary"
+                                                    :is-full="false"
+                                                    padding="py-3 px-8"
+                                                    margin="mt-4"
+                                                >
+                                                    Ubah
+                                                </CustomButton>
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
 

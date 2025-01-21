@@ -117,7 +117,29 @@ export const useStoreStore = defineStore('store', () => {
         saveStatus.value = "loading";
 
         try {
-            const response = await axios.put(`/api/store/${id}`, item, {
+            let formData = new FormData();
+
+            for (const key in item) {
+                if (key === "logo" || key === "banner") {
+                    // Check image type is string or File
+                    if (typeof item[key] === "string" || item[key] === null) {
+                        continue;
+                    }
+
+                    formData.append(key, item[key]);
+                    continue;
+                }
+
+                if (item[key] === null) {
+                    continue;
+                }
+
+                formData.append(key, item[key]);
+            }
+
+            formData.append("_method", "PUT");
+
+            const response = await axios.post(`/api/store/${id}`, formData, {
                 headers: { Authorization: token },
             });
 

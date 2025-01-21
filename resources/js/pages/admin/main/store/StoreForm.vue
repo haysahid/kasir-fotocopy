@@ -6,6 +6,8 @@ import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import { useStoreStore } from "@/stores/store";
+import InputImageGroup from "@/components/Forms/InputImageGroup.vue";
+import { useConfigStore } from "@/stores/config";
 
 const props = defineProps({
     showCloseButton: {
@@ -21,13 +23,19 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
+const configStore = useConfigStore();
 const storeStore = useStoreStore();
+
+const logoField = ref(null);
+const bannerField = ref(null);
 
 const form = ref({
     name: "",
     description: "",
     address: "",
     phone: "",
+    logo: "",
+    banner: "",
 });
 
 const formValidation = ref({
@@ -35,6 +43,8 @@ const formValidation = ref({
     description: "",
     address: "",
     phone: "",
+    logo: "",
+    banner: "",
 });
 
 function clearErrorMessage() {
@@ -121,32 +131,56 @@ watch(
     }
 );
 
+function getForm() {
+    form.value = {
+        name: props.item.name,
+        description: props.item.description,
+        address: props.item.address,
+        phone: props.item.phone,
+        logo: props.item.logo ? configStore.getImageUrl(props.item.logo) : "",
+        banner: props.item.banner
+            ? configStore.getImageUrl(props.item.banner)
+            : "",
+    };
+
+    logoField.value.clearImage();
+    bannerField.value.clearImage();
+}
+
+function clearForm() {
+    form.value = {
+        name: "",
+        description: "",
+        address: "",
+        phone: "",
+        logo: "",
+        banner: "",
+    };
+
+    formValidation.value = {
+        name: "",
+        description: "",
+        address: "",
+        phone: "",
+        logo: "",
+        banner: "",
+    };
+
+    logoField.value.clearImage();
+    bannerField.value.clearImage();
+}
+
 onUpdated(() => {
     if (props.item) {
-        form.value = {
-            name: props.item.name,
-            description: props.item.description,
-            address: props.item.address,
-            phone: props.item.phone,
-        };
+        getForm();
     }
 });
 
 function close(value) {
     if (props.autoClearData) {
-        form.value = {
-            name: "",
-            description: "",
-            address: "",
-            phone: "",
-        };
+        clearForm();
     } else {
-        form.value = {
-            name: props.item.name,
-            description: props.item.description,
-            address: props.item.address,
-            phone: props.item.phone,
-        };
+        getForm();
     }
 
     emit("close", value);
@@ -169,51 +203,84 @@ function close(value) {
                 class="mb-6"
             />
 
-            <InputGroup
-                v-model="form.name"
-                id="name"
-                label="Nama Toko"
-                type="text"
-                placeholder="Masukkan Nama Toko"
-                :warning="formValidation.name"
-            />
+            <div class="flex flex-col gap-y-0 sm:flex-row sm:gap-x-6">
+                <div class="w-full">
+                    <InputGroup
+                        v-model="form.name"
+                        id="name"
+                        label="Nama Toko"
+                        type="text"
+                        placeholder="Masukkan Nama Toko"
+                        :warning="formValidation.name"
+                    />
 
-            <InputGroup
-                v-model="form.description"
-                id="description"
-                label="Deskripsi Toko"
-                type="text"
-                placeholder="Masukkan Deskripsi Toko"
-                :warning="formValidation.description"
-            />
+                    <InputGroup
+                        v-model="form.description"
+                        id="description"
+                        label="Deskripsi Toko"
+                        type="text"
+                        placeholder="Masukkan Deskripsi Toko"
+                        :warning="formValidation.description"
+                    />
 
-            <InputGroup
-                @enter="saveItem"
-                v-model="form.address"
-                id="address"
-                label="Alamat"
-                type="text"
-                placeholder="Alamat"
-                :warning="formValidation.address"
-            />
+                    <InputGroup
+                        @enter="saveItem"
+                        v-model="form.address"
+                        id="address"
+                        label="Alamat"
+                        type="text"
+                        placeholder="Alamat"
+                        :warning="formValidation.address"
+                    />
 
-            <InputGroup
-                @enter="saveItem"
-                v-model="form.phone"
-                id="phone"
-                label="Nomor Telepon"
-                type="text"
-                placeholder="Nomor Telepon"
-                :warning="formValidation.phone"
-            />
+                    <InputGroup
+                        @enter="saveItem"
+                        v-model="form.phone"
+                        id="phone"
+                        label="Nomor Telepon"
+                        type="text"
+                        placeholder="Nomor Telepon"
+                        :warning="formValidation.phone"
+                    />
+                </div>
 
-            <div class="flex flex-col-reverse mt-6 gap-x-4 sm:flex-row">
+                <div class="w-full">
+                    <InputImageGroup
+                        ref="bannerField"
+                        v-model="form.banner"
+                        id="banner"
+                        label="Banner Toko"
+                        type="file"
+                        placeholder="Pilih gambar"
+                        :warning="formValidation.banner"
+                        height="h-32"
+                        class="mb-4"
+                    />
+
+                    <InputImageGroup
+                        ref="logoField"
+                        v-model="form.logo"
+                        id="logo"
+                        label="Logo Toko"
+                        type="file"
+                        placeholder="Pilih gambar"
+                        :warning="formValidation.logo"
+                        width="!w-32"
+                        height="!h-32"
+                        class="mb-4"
+                    />
+                </div>
+            </div>
+
+            <div
+                class="flex flex-col-reverse mt-6 gap-x-4 sm:flex-row sm:justify-start"
+            >
                 <CustomButton
                     @click="close(false)"
                     :enable="storeStore.saveStatus !== 'loading'"
                     color="bg-danger"
-                    :is-full="true"
-                    padding="p-3"
+                    :is-full="false"
+                    padding="py-3 px-8"
                     margin="mt-4"
                 >
                     Batal
@@ -223,8 +290,8 @@ function close(value) {
                     @click="saveItem"
                     :loading="storeStore.saveStatus === 'loading'"
                     color="bg-primary"
-                    :is-full="true"
-                    padding="p-3"
+                    :is-full="false"
+                    padding="py-3 px-8"
                     margin="mt-4"
                 >
                     Simpan
