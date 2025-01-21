@@ -137,7 +137,6 @@ export const useProductStore = defineStore('product', () => {
                 }
 
                 if (form.value[key] == "") {
-                    formData.append(key, null);
                     continue;
                 }
 
