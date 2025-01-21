@@ -11,6 +11,8 @@ export const useStoreConfigStore = defineStore('store-config', () => {
     const getConfigStatus = ref("");
     const saveStatus = ref("");
 
+    const deleteStatus = ref("");
+
     const errorMessage = ref("");
 
     async function getConfig() {
@@ -33,18 +35,15 @@ export const useStoreConfigStore = defineStore('store-config', () => {
         }
     }
 
-    async function saveItem(item) {
+    async function saveItem(items) {
         saveStatus.value = "loading";
 
         try {
-            for (const key in item) {
-                const value = item[key];
+            for (const index in items) {
+                const data = items[index];
 
                 const response = await axios.post("/api/store-config",
-                    {
-                        key: key,
-                        value: value,
-                    },
+                    data,
                     {
                         headers: { Authorization: token },
                     });
@@ -52,12 +51,12 @@ export const useStoreConfigStore = defineStore('store-config', () => {
 
             Toast.fire({
                 icon: "success",
-                title: response.data.meta.message,
+                title: "Data berhasil disimpan",
             });
 
             saveStatus.value = "success";
 
-            return response.data;
+            return true;
         } catch (error) {
             const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
 
@@ -73,25 +72,19 @@ export const useStoreConfigStore = defineStore('store-config', () => {
         }
     }
 
-
-
-    async function deleteItems(items) {
+    async function deleteItem(item) {
         try {
             deleteStatus.value = "loading";
 
-            for (let i = 0; i < items.length; i++) {
-                const response = await axios.delete(
-                    `/api/sales/${items[i].id}`,
-                    {
-                        headers: {
-                            Accept: "application/json",
-                            Authorization: token,
-                        },
-                    }
-                );
-
-                deleteProgress.value++;
-            }
+            const response = await axios.delete(
+                `/api/store-config/${item.key}`,
+                {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: token,
+                    },
+                }
+            );
 
             Toast.fire({
                 icon: "success",
@@ -99,7 +92,6 @@ export const useStoreConfigStore = defineStore('store-config', () => {
             });
 
             deleteStatus.value = "success";
-            deleteProgress.value = 0;
 
             return true;
         } catch (error) {
@@ -119,9 +111,10 @@ export const useStoreConfigStore = defineStore('store-config', () => {
         data,
         getConfig,
         saveItem,
-        deleteItems,
+        deleteItem,
         getConfigStatus,
         saveStatus,
+        deleteStatus,
         errorMessage,
     };
 })

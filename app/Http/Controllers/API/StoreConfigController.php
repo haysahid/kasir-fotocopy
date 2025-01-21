@@ -63,7 +63,7 @@ class StoreConfigController extends Controller
         }
 
         $request->validate([
-            'key' => 'required|string|unique:settings,key',
+            'key' => 'required|string',
             'value' => 'required',
         ]);
 
@@ -75,21 +75,32 @@ class StoreConfigController extends Controller
             $config = StoreConfig::where('key', $key)->where('store_id', $store->id)->first();
 
             if ($config) {
-                return ResponseFormatter::error('Konfigurasi sudah ada.', 409);
+                $config = StoreConfig::where('key', $key)->where('store_id', $store->id);
+
+                $image_path = '';
+
+                if ($request->hasFile('value')) {
+                    $image_path = $request->file('value')->store('public');
+                    $value = $image_path;
+                }
+
+                $config->update([
+                    'value' => $value,
+                ]);
+            } else {
+                $image_path = '';
+
+                if ($request->hasFile('value')) {
+                    $image_path = $request->file('value')->store('public');
+                    $value = $image_path;
+                }
+
+                $config = StoreConfig::create([
+                    'key' => $key,
+                    'value' => $value,
+                    'store_id' => $store->id,
+                ]);
             }
-
-            $image_path = '';
-
-            if ($request->hasFile('value')) {
-                $image_path = $request->file('value')->store('public');
-                $value = $image_path;
-            }
-
-            $config = StoreConfig::create([
-                'key' => $key,
-                'value' => $value,
-                'store_id' => $store->id,
-            ]);
 
             // Get all configs
             $data = StoreConfig::query()->where('store_id', $store->id)->get();
@@ -200,13 +211,13 @@ class StoreConfigController extends Controller
             return ResponseFormatter::error("Anda tidak memiliki hak akses. $isOwner", 401);
         }
 
-        $config = StoreConfig::where('store_id', $store->id)->where('key', $request->input('key'));
+        $config = StoreConfig::where('store_id', $store->id)->where('key', $id);
 
         if (!$config) {
             return ResponseFormatter::error('Konfigurasi tidak ditemukan.', 404);
         }
 
-        $config->forceDelete();
+        $config->delete();
 
         return ResponseFormatter::success(
             null,
