@@ -303,7 +303,7 @@ defineExpose({
                         <!-- Stock -->
                         <td>
                             <p class="text-gray-900 dark:text-gray-200">
-                                {{ item.stock }}
+                                {{ $formatCurrency(item.stock) }}
                             </p>
                         </td>
 
