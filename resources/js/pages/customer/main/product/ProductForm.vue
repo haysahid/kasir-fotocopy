@@ -74,6 +74,7 @@ async function addItem() {
         ...form.value,
         purchase_price: form.value.purchase_price.replace(/[^0-9]/g, ""),
         selling_price: form.value.selling_price.replace(/[^0-9]/g, ""),
+        initial_stock: form.value.initial_stock.replace(/[^0-9]/g, ""),
     };
 
     const response = await productStore.addItem(data);
@@ -90,6 +91,7 @@ async function updateItem() {
         ...form.value,
         purchase_price: form.value.purchase_price.replace(/[^0-9]/g, ""),
         selling_price: form.value.selling_price.replace(/[^0-9]/g, ""),
+        initial_stock: form.value.initial_stock.replace(/[^0-9]/g, ""),
     };
 
     const response = await productStore.updateItem(props.item.id, data);
