@@ -215,8 +215,11 @@ defineExpose({
                                     .includes(product.id)
                             "
                             :inCartQuantity="
-                                selectedItems.find((e) => e.id === product.id)
-                                    ?.quantity
+                                parseInt(
+                                    selectedItems.find(
+                                        (e) => e.id === product.id
+                                    )?.quantity
+                                ) || 0
                             "
                         />
                     </DefaultCard>
