@@ -44,16 +44,15 @@ class UserController extends Controller
                 'string',
                 new Password(8),
                 'regex:/^(?!.*\s)(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W_]).*$/'
-            ],
-            [
-                'name.required' => 'Nama wajib diisi.',
-                'email.required' => 'Email wajib diisi.',
-                'email.email' => 'Email tidak valid.',
-                'phone.required' => 'Nomor telepon wajib diisi.',
-                'password.required' => 'Password wajib diisi.',
-                'password.min' => 'Password minimal 8 karakter.',
-                'password.regex' => 'Password harus mengandung huruf, angka, dan karakter spesial.',
-            ],
+            ]
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Email tidak valid.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.regex' => 'Password harus mengandung huruf, angka, dan karakter spesial.',
         ]);
 
         try {

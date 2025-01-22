@@ -54,8 +54,33 @@ async function register() {
 
         window.location = route("create-store");
     } catch (error) {
-        errorMessage.value =
-            error.response.data?.meta?.message ?? "Terjadi kesalahan";
+        if (error.response.status == 422) {
+            const errors = error.response.data.errors;
+
+            if (errors.name) {
+                formValidation.value.name = errors.name[0];
+            }
+
+            if (errors.email) {
+                formValidation.value.email = errors.email[0];
+            }
+
+            if (errors.password) {
+                formValidation.value.password = errors.password[0];
+            }
+
+            if (errors.phone) {
+                formValidation.value.phone = errors.phone[0];
+            }
+
+            if (errors.address) {
+                formValidation.value.address = errors.address[0];
+            }
+        } else {
+            errorMessage.value =
+                error.response.data?.meta?.message ?? "Terjadi kesalahan";
+        }
+
         registerStatus.value = "error";
     }
 }
