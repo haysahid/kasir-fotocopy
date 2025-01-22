@@ -22,9 +22,7 @@ function removeItem(item) {
 }
 
 const canSubtract = computed(() => props.cartItem.quantity > 1);
-const canAdd = computed(
-    () => props.cartItem.quantity < props.cartItem.product.stock
-);
+const canAdd = computed(() => true);
 </script>
 
 <template>
@@ -137,7 +135,9 @@ const canAdd = computed(
 
             <div class="flex flex-col items-end justify-between">
                 <p class="text-xs text-gray-500 dark:text-gray-300">Subtotal</p>
-                <p class="text-sm font-semibold text-gray-900 dark:text-gray-300">
+                <p
+                    class="text-sm font-semibold text-gray-900 dark:text-gray-300"
+                >
                     Rp
                     {{
                         $formatCurrency(
