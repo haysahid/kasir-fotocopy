@@ -55,7 +55,7 @@ async function register() {
         window.location = route("create-store");
     } catch (error) {
         errorMessage.value =
-            error.response.data?.message ?? "Terjadi kesalahan";
+            error.response.data?.meta?.message ?? "Terjadi kesalahan";
         registerStatus.value = "error";
     }
 }
