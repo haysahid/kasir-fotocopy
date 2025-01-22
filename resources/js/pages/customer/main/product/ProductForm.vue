@@ -79,8 +79,11 @@ async function addItem() {
 
     const response = await productStore.addItem(data);
 
-    if (response.meta.code === 201) {
+    if (response.status === 201) {
         close(true);
+    } else if (response.status === 422) {
+        const errors = response.data.errors;
+        getFormValidationErrors(errors);
     }
 }
 
@@ -98,6 +101,9 @@ async function updateItem() {
 
     if (response.meta.code === 200) {
         close(true);
+    } else if (response.meta.code === 422) {
+        const errors = response.data.errors;
+        getFormValidationErrors(errors);
     }
 }
 
@@ -145,6 +151,48 @@ function validateAddItem() {
 
 function validateUpdateItem() {
     return validateAddItem();
+}
+
+function getFormValidationErrors(errors) {
+    if (errors.code) {
+        formValidation.value.code = errors.code[0];
+    }
+
+    if (errors.name) {
+        formValidation.value.name = errors.name[0];
+    }
+
+    if (errors.description) {
+        formValidation.value.description = errors.description[0];
+    }
+
+    if (errors.purchase_price) {
+        formValidation.value.purchase_price = errors.purchase_price[0];
+    }
+
+    if (errors.selling_price) {
+        formValidation.value.selling_price = errors.selling_price[0];
+    }
+
+    if (errors.initial_stock) {
+        formValidation.value.initial_stock = errors.initial_stock[0];
+    }
+
+    if (errors.unit) {
+        formValidation.value.unit = errors.unit[0];
+    }
+
+    if (errors.category) {
+        formValidation.value.category = errors.category[0];
+    }
+
+    if (errors.expired_at) {
+        formValidation.value.expired_at = errors.expired_at[0];
+    }
+
+    if (errors.product_images) {
+        formValidation.value.image = errors.product_images[0];
+    }
 }
 
 watch(

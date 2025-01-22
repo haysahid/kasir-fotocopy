@@ -101,11 +101,15 @@ export const useProductStore = defineStore('product', () => {
 
             saveStatus.value = "success";
 
-            return response.data;
+            return response;
         } catch (error) {
-            console.log(error);
+            let errorText = "Terjadi kesalahan";
 
-            const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+            if (error.response?.status === 422) {
+                errorText = error.response?.data?.message || "Terjadi kesalahan";
+            } else {
+                errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+            }
 
             Toast.fire({
                 icon: "warning",
@@ -156,9 +160,15 @@ export const useProductStore = defineStore('product', () => {
 
             saveStatus.value = "success";
 
-            return response.data;
+            return response;
         } catch (error) {
-            const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+            let errorText = "Terjadi kesalahan";
+
+            if (error.response?.status === 422) {
+                errorText = error.response?.data?.message || "Terjadi kesalahan";
+            } else {
+                errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+            }
 
             Toast.fire({
                 icon: "warning",
