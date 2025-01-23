@@ -99,9 +99,9 @@ async function updateItem() {
 
     const response = await productStore.updateItem(props.item.id, data);
 
-    if (response.meta.code === 200) {
+    if (response.status === 200) {
         close(true);
-    } else if (response.meta.code === 422) {
+    } else if (response.status === 422) {
         const errors = response.data.errors;
         getFormValidationErrors(errors);
     }
