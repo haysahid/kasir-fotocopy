@@ -43,7 +43,7 @@ class UserController extends Controller
                 'required',
                 'string',
                 new Password(8),
-                'regex:/^(?!.*\s)(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W_]).*$/'
+                'regex:/^(?!.*\s)(?=.{3,})(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).*$/'
             ]
         ], [
             'name.required' => 'Nama wajib diisi.',
@@ -247,7 +247,7 @@ class UserController extends Controller
                 'required',
                 'string',
                 new Password(8),
-                'regex:/^(?!.*\s)(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W_]).*$/'
+                'regex:/^(?!.*\s)(?=.{3,})(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).*$/'
             ],
         ], [
             'name.required' => 'Nama wajib diisi.',
@@ -315,7 +315,7 @@ class UserController extends Controller
                 'nullable',
                 'string',
                 new Password(8),
-                'regex:/^(?!.*\s)(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W_]).*$/'
+                'regex:/^(?!.*\s)(?=.{3,})(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).*$/'
             ],
             'avatar' => 'nullable|file|mimes:jpg,jpeg,png,webp',
             'role_id' => 'nullable|integer',
