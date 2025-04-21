@@ -2,9 +2,12 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useConfigStore = defineStore('config', () => {
-    const title = ref(import.meta.env.VITE_APP_NAME || 'Kasir Fotocopy')
+    const title = ref(import.meta.env.VITE_APP_NAME || 'Mari Kasir')
     const copyrightYear = ref(import.meta.env.VITE_COPYRIGHT_YEAR || 2024)
-    const copyrightName = ref(import.meta.env.VITE_COPYRIGHT_NAME || 'Sahid Anwar & Fadhil Fisnanda')
+    const copyrightName = ref(import.meta.env.VITE_COPYRIGHT_NAME || 'ISOKODING')
+    const copyrightUrl = ref(import.meta.env.VITE_COPYRIGHT_URL)
+    const supportedBy = ref(import.meta.env.VITE_SUPPORTED_BY)
+    const supportedByUrl = ref(import.meta.env.VITE_SUPPORTED_BY_URL)
 
     const imagePrefix = ref(`${import.meta.env.VITE_APP_URL}/storage/`)
     const getImageUrl = (path) => `${imagePrefix.value}${path}`
@@ -26,5 +29,16 @@ export const useConfigStore = defineStore('config', () => {
 
     const getMonthText = (number) => months.value[number - 1]?.text || '-'
 
-    return { title, copyrightYear, copyrightName, months, getMonthText, imagePrefix, getImageUrl }
+    return {
+        title,
+        copyrightYear,
+        copyrightName,
+        copyrightUrl,
+        supportedBy,
+        supportedByUrl,
+        months,
+        getMonthText,
+        imagePrefix,
+        getImageUrl,
+    }
 })

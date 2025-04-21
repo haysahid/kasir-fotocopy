@@ -15,10 +15,26 @@ const configStore = useConfigStore();
             class="w-full border-gray-100 dark:border-gray-800 border-y-[1px] duration-300 ease-linear"
         ></div>
         <div
-            class="py-8 text-sm text-center text-gray-500 dark:text-gray-600 sm:py-4 hover:text-gray-900"
+            class="py-8 text-sm text-center text-gray-500 dark:text-gray-600 sm:py-4"
         >
-            &copy; Copyright {{ configStore.copyrightYear }}
-            {{ configStore.copyrightName }}. All rights reserved
+            <span>
+                &copy; Copyright {{ configStore.copyrightYear }}
+                <a :href="configStore.copyrightUrl" class="hover:text-primary dark:hover:text-secondary">
+                    {{ configStore.copyrightName }} </a
+                >.
+            </span>
+            <span
+                v-if="configStore.supportedBy"
+                :href="configStore.supportedByUrl"
+            >
+                Supported By
+                <a
+                    :href="configStore.supportedByUrl"
+                    class="hover:text-primary dark:hover:text-secondary"
+                >
+                    {{ configStore.supportedBy }}
+                </a>
+            </span>
         </div>
     </footer>
 </template>
