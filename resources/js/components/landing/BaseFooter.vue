@@ -23,8 +23,8 @@ const configStore = useConfigStore();
                     :href="configStore.copyrightUrl"
                     class="hover:text-primary dark:hover:text-secondary"
                 >
-                    {{ configStore.copyrightName }} </a
-                >.
+                    {{ configStore.copyrightName }}
+                </a>
             </div>
             <div
                 v-if="configStore.supportedBy"
