@@ -20,15 +20,30 @@ const props = defineProps({
 const configStore = useConfigStore();
 const userStore = useUserStore();
 
+const scrolled = ref(false);
+const scrollThreshold = 50;
+
+const handleScroll = () => {
+    scrolled.value = window.scrollY > scrollThreshold;
+};
+
 onMounted(() => {
+    window.addEventListener("scroll", handleScroll);
     userStore.fetchUser();
 });
 </script>
 
 <template>
-    <nav id="navbar" class="relative z-10 w-full">
+    <nav
+        id="navbar"
+        class="sticky top-0 z-10 w-full transition-all duration-300 bg-blue-50 dark:bg-gray-900"
+        :class="{
+            'bg-transparent py-4': !scrolled,
+            'bg-white dark:!bg-boxdark shadow-md py-0': scrolled,
+        }"
+    >
         <div
-            class="flex flex-col max-w-screen-xl px-8 py-4 mx-auto lg:items-center lg:justify-between lg:flex-row"
+            class="flex flex-col max-w-screen-xl px-8 mx-auto lg:items-center lg:justify-between lg:flex-row"
         >
             <div
                 class="flex flex-col items-center space-x-4 lg:flex-row xl:space-x-8"
@@ -117,7 +132,7 @@ onMounted(() => {
             <div
                 class="flex items-center gap-8 2xsm:gap-7"
                 :class="{
-                    'justify-between': open,
+                    'justify-between py-4': open,
                 }"
             >
                 <ul

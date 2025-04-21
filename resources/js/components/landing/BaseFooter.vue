@@ -15,26 +15,29 @@ const configStore = useConfigStore();
             class="w-full border-gray-100 dark:border-gray-800 border-y-[1px] duration-300 ease-linear"
         ></div>
         <div
-            class="py-8 text-sm text-center text-gray-500 dark:text-gray-600 sm:py-4"
+            class="flex-wrap justify-center gap-4 py-8 text-sm text-center text-gray-500 dark:text-gray-600 sm:py-4"
         >
-            <span>
+            <div>
                 &copy; Copyright {{ configStore.copyrightYear }}
-                <a :href="configStore.copyrightUrl" class="hover:text-primary dark:hover:text-secondary">
+                <a
+                    :href="configStore.copyrightUrl"
+                    class="hover:text-primary dark:hover:text-secondary"
+                >
                     {{ configStore.copyrightName }} </a
                 >.
-            </span>
-            <span
+            </div>
+            <div
                 v-if="configStore.supportedBy"
                 :href="configStore.supportedByUrl"
             >
-                Supported By
+                Supported by
                 <a
                     :href="configStore.supportedByUrl"
                     class="hover:text-primary dark:hover:text-secondary"
                 >
                     {{ configStore.supportedBy }}
                 </a>
-            </span>
+            </div>
         </div>
     </footer>
 </template>

@@ -61,7 +61,7 @@ function scrollToTop() {
                                 data-aos="fade-up"
                                 data-aos-once="true"
                                 data-aos-delay="700"
-                                class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4"
+                                class="flex flex-wrap justify-center gap-y-4 gap-x-4 sm:justify-start"
                             >
                                 <Link :href="route('login')">
                                     <BaseButton
