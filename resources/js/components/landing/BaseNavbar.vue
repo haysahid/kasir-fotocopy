@@ -186,7 +186,7 @@ onMounted(() => {
                     </Link>
                     <a href="https://wa.me/6285727320485" target="_blank">
                         <BaseButton
-                            class="flex items-center justify-center max-w-full gap-2 px-4 py-2 mt-2 text-green-600 border border-green-600 bg-inherit hover:shadow-green-600/50"
+                            class="flex items-center justify-center max-w-full gap-2 px-2 py-2 mt-2 text-green-600 border border-green-600 sm:px-4 bg-inherit hover:shadow-green-600/50"
                         >
                             <svg
                                 fill="#000000"
@@ -214,7 +214,7 @@ onMounted(() => {
                                     />
                                 </g>
                             </svg>
-                            <span> Hubungi Kami </span>
+                            <span class="hidden sm:block"> Hubungi Kami </span>
                         </BaseButton>
                     </a>
                 </div>
