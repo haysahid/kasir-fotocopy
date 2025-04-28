@@ -36,9 +36,9 @@ onMounted(() => {
 <template>
     <nav
         id="navbar"
-        class="sticky top-0 z-10 w-full transition-all duration-300 bg-blue-50 dark:bg-gray-900"
+        class="sticky top-0 z-10 w-full transition-all duration-300 ease-linear bg-blue-50 dark:bg-gray-900"
         :class="{
-            'bg-transparent py-4': !scrolled,
+            '!bg-transparent py-4': !scrolled,
             'bg-white dark:!bg-boxdark shadow-md py-0': scrolled,
         }"
     >

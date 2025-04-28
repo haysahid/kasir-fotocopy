@@ -314,7 +314,15 @@ defineExpose({
 
                         <!-- Payment Status -->
                         <td>
-                            <p class="text-gray-900 dark:text-gray-200">
+                            <p
+                                class="text-gray-900 dark:text-gray-200"
+                                :class="{
+                                    'text-red-600 dark:text-red-600':
+                                        item.status === 'Belum Lunas',
+                                    'text-green-600 dark:text-green-600':
+                                        item.status === 'Lunas',
+                                }"
+                            >
                                 {{ item.status }}
                             </p>
                         </td>
