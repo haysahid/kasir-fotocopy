@@ -98,9 +98,14 @@ class User extends Authenticatable
     public function activeSubscriptions()
     {
         if ($this->role_id === 5) {
-            // Get owner
-            $store = $this->store()->first();
-            return $store->activeSubscription();
+            $owner = $this->store()->first()->owners()->first();
+
+            return Subscription::where('user_id', $owner->id)
+                ->where('date_subscribed', '<', now())
+                ->where('valid_to', '>', now())
+                ->where('date_unsubscribed', null)
+                ->latest()
+                ->get();
         }
 
         return $this->subscriptions()
