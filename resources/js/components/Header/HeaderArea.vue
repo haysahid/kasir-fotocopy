@@ -6,6 +6,7 @@ import { useConfigStore } from "@/stores/config";
 import DarkModeSwitcher from "./DarkModeSwitcher.vue";
 import DropdownUser from "./DropdownUser.vue";
 import { Link } from "@inertiajs/inertia-vue3";
+import StatusLabel from "@/components/StatusLabel.vue";
 
 const { isSidebarOpen, toggleSidebar } = useSidebarStore();
 const userStore = useUserStore();
@@ -93,6 +94,12 @@ onMounted(() => {
                         </span>
                     </div>
                 </Link>
+
+                <StatusLabel
+                    v-if="userStore.user.active_subscription.plan.name"
+                    :name="userStore.user.active_subscription.plan.name"
+                    class="hidden sm:block"
+                />
             </div>
 
             <div class="flex items-center gap-8 2xsm:gap-7">

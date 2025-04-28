@@ -6,6 +6,7 @@ import { ref, onMounted } from "vue";
 import SidebarItem from "./SidebarItem.vue";
 import { useConfigStore } from "@/stores/config";
 import { Link } from "@inertiajs/inertia-vue3";
+import StatusLabel from "@/components/StatusLabel.vue";
 
 const target = ref(null);
 
@@ -149,6 +150,11 @@ const menuGroups = ref([
                     </span>
                 </div>
             </Link>
+
+            <StatusLabel
+                v-if="userStore.user.active_subscription.plan.name"
+                :name="userStore.user.active_subscription.plan.name"
+            />
 
             <button
                 class="block lg:hidden"

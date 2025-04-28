@@ -129,6 +129,7 @@ onMounted(() => {
                 </div>
             </div>
 
+            <!-- Opened -->
             <div
                 class="flex items-center gap-8 2xsm:gap-7"
                 :class="{
