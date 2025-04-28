@@ -114,6 +114,11 @@ class User extends Authenticatable
     public function activeSubscription()
     {
         $subscriptions = $this->activeSubscriptions();
+
+        if (!$subscriptions) {
+            return null;
+        }
+
         $subscriptions = $subscriptions->all();
 
         // Return the first active subscription
@@ -122,6 +127,7 @@ class User extends Authenticatable
                 return $subscription;
             }
         }
+
 
         return null;
     }
