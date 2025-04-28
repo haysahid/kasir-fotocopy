@@ -115,9 +115,11 @@ onMounted(() => {
 
                                     <img
                                         v-else-if="userStore.user.avatar"
-                                        :src="userStore.user.avatar"
+                                        :src="
+                                            $getImageUrl(userStore.user.avatar)
+                                        "
                                         alt="User"
-                                        class="opacity-50 size-24"
+                                        class="object-cover rounded-full size-24"
                                     />
 
                                     <img
@@ -237,8 +239,8 @@ onMounted(() => {
                                                 userStore.user.store[0]?.logo
                                             )
                                         "
-                                        alt="Brand"
-                                        class="object-contain h-24"
+                                        alt="Store Logo"
+                                        class="object-cover rounded-full size-24"
                                     />
 
                                     <svg

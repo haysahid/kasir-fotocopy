@@ -39,7 +39,17 @@ function logout() {
         >
             <div class="flex items-center gap-4">
                 <span class="w-10 h-10 rounded-full">
-                    <img src="@/assets/images/user/user-icon.png" alt="User" />
+                    <img
+                        v-if="props.user.avatar"
+                        :src="$getImageUrl(props.user.avatar)"
+                        alt="User"
+                        class="object-cover w-10 h-10 rounded-full"
+                    />
+                    <img
+                        v-else
+                        src="@/assets/images/user/user-icon.png"
+                        alt="User"
+                    />
                 </span>
 
                 <span class="">
