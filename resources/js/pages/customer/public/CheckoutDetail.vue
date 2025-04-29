@@ -37,7 +37,7 @@ const props = defineProps({
         </div>
 
         <div class="flex items-center justify-between">
-            <p class="text-gray-500 dark:text-gray-400">PPN (12%)</p>
+            <p class="text-gray-500 dark:text-gray-400">PPN (11%)</p>
             <p class="text-gray-500 dark:text-gray-400">
                 Rp {{ $formatCurrency(props.amount * 0.11) }}
             </p>

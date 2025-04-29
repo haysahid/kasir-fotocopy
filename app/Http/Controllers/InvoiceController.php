@@ -38,7 +38,7 @@ class InvoiceController extends Controller
             return ResponseFormatter::error('Plan not found', 404);
         }
 
-        $grossAmount = $plan->price * $quantity * 1.12;
+        $grossAmount = $plan->price * $quantity * 1.11;
 
         $customer = Auth::user();
         $customer = User::find($customer->id);

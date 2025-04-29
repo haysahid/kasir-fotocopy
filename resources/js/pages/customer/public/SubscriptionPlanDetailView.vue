@@ -64,7 +64,7 @@ const amount = computed(() => {
 });
 
 const total = computed(() => {
-    return amount.value * 1.12;
+    return amount.value * 1.11;
 });
 
 const getDateRange = computed(() => {
