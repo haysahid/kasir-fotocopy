@@ -55,9 +55,9 @@ class SubscribeController extends Controller
                 ],
                 [
                     'id' => 'PPN',
-                    'price' => $plan->price * $quantity * 0.12,
+                    'price' => $plan->price * $quantity * 0.11,
                     'quantity' => 1,
-                    'name' => 'PPN (12%)',
+                    'name' => 'PPN (11%)',
                 ]
             ],
             'transaction_details' => [
