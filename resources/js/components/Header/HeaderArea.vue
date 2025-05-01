@@ -96,8 +96,8 @@ onMounted(() => {
                 </Link>
 
                 <StatusLabel
-                    v-if="userStore.user.active_subscription.plan.name"
-                    :name="userStore.user.active_subscription.plan.name"
+                    v-if="userStore.user?.active_subscription?.plan?.name"
+                    :name="userStore.user?.active_subscription?.plan?.name"
                     class="hidden sm:block"
                 />
             </div>

@@ -17,6 +17,7 @@ class Invoice extends Model
         'amount',
         'due_at',
         'paid_at',
+        'snap_token',
     ];
 
     protected $appends = ['status'];

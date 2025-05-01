@@ -72,12 +72,29 @@ class SubscribeController extends Controller
             ],
         ];
 
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        try {
+            DB::beginTransaction();
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
 
-        return ResponseFormatter::success([
-            'snap_token' => $snapToken,
-            'invoice' => $invoice,
-        ], 'Snap token generated successfully');
+            if (!$snapToken) {
+                return ResponseFormatter::error('Failed to generate snap token', 500);
+            }
+
+            // Update invoice with snap token
+            $invoice->update([
+                'snap_token' => $snapToken,
+            ]);
+
+            DB::commit();
+
+            return ResponseFormatter::success([
+                'snap_token' => $snapToken,
+                'invoice' => $invoice,
+            ], 'Snap token generated successfully');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return ResponseFormatter::error('Failed to generate snap token: ' . $e->getMessage(), 500);
+        }
     }
 
     public function setPayment(Request $request) {}
