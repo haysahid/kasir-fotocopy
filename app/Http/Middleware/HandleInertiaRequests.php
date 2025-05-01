@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -35,10 +36,19 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $data = Setting::query()->get();
+
+        $appConfig = [];
+
+        foreach ($data as $setting) {
+            $appConfig[$setting['key']] = $setting['value'];
+        }
+
         return array_merge(parent::share($request), [
             'flash' => [
                 'message' => fn() => $request->session()->get('message'),
             ],
+            'app_config' => $appConfig,
         ]);
     }
 }

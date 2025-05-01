@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseFormatter;
 use App\Models\Invoice;
 use App\Models\Plan;
+use App\Models\Setting;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -38,7 +39,11 @@ class InvoiceController extends Controller
             return ResponseFormatter::error('Plan not found', 404);
         }
 
-        $grossAmount = $plan->price * $quantity * 1.11;
+        $ppn = Setting::where('key', 'app_ppn')->first();
+        $ppn = $ppn ? intval($ppn->value) : 11;
+
+        $grossAmount = $plan->price * $quantity * (1 + ($ppn / 100));
+        $grossAmount = round($grossAmount, 0);
 
         $customer = Auth::user();
         $customer = User::find($customer->id);
@@ -114,6 +119,7 @@ class InvoiceController extends Controller
                 'plan_history_id' => $planHistory->id,
                 'description' => 'Silahkan melakukan pembayaran untuk berlangganan ' . $plan->name,
                 'amount' => $grossAmount,
+                'ppn' => $ppn,
                 'due_at' => now()->addDays(1),
             ]);
 

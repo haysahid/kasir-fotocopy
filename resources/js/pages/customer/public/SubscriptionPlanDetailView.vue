@@ -12,10 +12,16 @@ import BaseLayout from "@/layouts/BaseLayout.vue";
 import BreadcrumbDefault from "@/components/BreadcrumbDefault.vue";
 import CheckoutDetail from "./CheckoutDetail.vue";
 import { useSubscribeStore } from "@/stores/subscribe";
+import { usePage } from "@inertiajs/vue3";
 
 const userStore = useUserStore();
 const planStore = usePlanStore();
 const subscribeStore = useSubscribeStore();
+
+const page = usePage();
+const ppn = computed(() => {
+    return parseInt(page.props?.app_config.app_ppn ?? 0);
+});
 
 const selectedQuantity = ref(1);
 const quantityOptions = [1, 3, 6, 12];
@@ -64,7 +70,7 @@ const amount = computed(() => {
 });
 
 const total = computed(() => {
-    return amount.value * 1.11;
+    return amount.value * (1 + ppn.value / 100);
 });
 
 const getDateRange = computed(() => {
@@ -99,8 +105,6 @@ function translateDurationType(type) {
 }
 
 function getDurationText(duration, type) {
-    console.log(duration, type);
-
     if (duration === 1) {
         return translateDurationType(type);
     }
@@ -236,6 +240,7 @@ onMounted(() => {
                             ]"
                             :total="total"
                             :amount="amount"
+                            :ppn="ppn"
                         />
 
                         <BaseButton

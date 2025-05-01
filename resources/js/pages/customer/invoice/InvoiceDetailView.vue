@@ -1,9 +1,5 @@
 <script setup>
-import BaseNavbar from "@/components/landing/BaseNavbar.vue";
-import { useUserStore } from "@/stores/user";
 import { onMounted } from "vue";
-import { usePlanStore } from "@/stores/plan";
-import SubscriptionPlanItem from "../public/SubscriptionPlanItem.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import { ref, computed } from "vue";
@@ -15,9 +11,12 @@ import CheckoutDetail from "../public/CheckoutDetail.vue";
 import { usePaymentMethodStore } from "@/stores/payment_method";
 import { Link } from "@inertiajs/inertia-vue3";
 
-const userStore = useUserStore();
 const subscribeStore = useSubscribeStore();
 const paymentMethodStore = usePaymentMethodStore();
+
+const ppn = computed(() => {
+    return parseInt(subscribeStore.invoice?.ppn ?? 0);
+});
 
 const snapStatus = ref("");
 
@@ -120,7 +119,7 @@ const amount = computed(() => {
 });
 
 const total = computed(() => {
-    return amount.value * 1.11;
+    return amount.value * (1 + ppn.value / 100);
 });
 
 const getDateRange = computed(() => {
@@ -348,6 +347,7 @@ onMounted(() => {
                             ]"
                             :amount="amount"
                             :total="total"
+                            :ppn="ppn"
                         />
 
                         <CustomButton

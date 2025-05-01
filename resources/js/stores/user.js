@@ -36,8 +36,6 @@ export const useUserStore = defineStore('user', () => {
 
             user.value = data.result.user
 
-            console.log(user.value)
-
             return true
         } catch (error) {
             const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";

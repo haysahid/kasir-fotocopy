@@ -6,6 +6,7 @@ use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Plan;
+use App\Models\Setting;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -33,6 +34,8 @@ class SubscribeController extends Controller
         $quantity = $invoice->planHistory->quantity;
         $grossAmount = $invoice->amount;
         $customer = $invoice->subscription->customer;
+        $ppn = Setting::where('key', 'app_ppn')->first();
+        $ppn = $ppn ? intval($ppn->value) : 11;
 
         // Midtrans
 
@@ -55,9 +58,9 @@ class SubscribeController extends Controller
                 ],
                 [
                     'id' => 'PPN',
-                    'price' => $plan->price * $quantity * 0.11,
+                    'price' => $plan->price * $quantity * ($ppn / 100),
                     'quantity' => 1,
-                    'name' => 'PPN (11%)',
+                    'name' => 'PPN (' . $ppn . '%)',
                 ]
             ],
             'transaction_details' => [

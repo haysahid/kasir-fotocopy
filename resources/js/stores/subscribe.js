@@ -58,6 +58,10 @@ export const useSubscribeStore = defineStore('subscribe', () => {
 
             invoice.value = response.data.result;
 
+            if (response.data.result.snap_token !== null) {
+                snapToken.value = response.data.result.snap_token;
+            }
+
             getInvoiceDetailStatus.value = "success";
 
             return response.data;

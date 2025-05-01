@@ -52,4 +52,5 @@ Route::prefix('admin')->group(function () {
     Route::get('/plan', fn()  => Inertia::render('admin/main/PlanView'))->name('admin.plan');
     Route::get('/option', fn()  => Inertia::render('admin/main/OptionView'))->name('admin.option');
     Route::get('/payment-method', fn()  => Inertia::render('admin/main/PaymentMethodView'))->name('admin.payment-method');
+    Route::get('/setting', fn()  => Inertia::render('admin/main/SettingView'))->name('admin.setting');
 });

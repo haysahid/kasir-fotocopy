@@ -17,6 +17,7 @@ class SettingSeeder extends Seeder
             ['key' => 'app_name', 'value' => 'YurSayur'],
             ['key' => 'app_description', 'value' => ''],
             ['key' => 'app_logo', 'value' => 'public/yursayur-logo.png'],
+            ['key' => 'app_ppn', 'value' => 11],
         ];
 
         foreach ($data as $value) {

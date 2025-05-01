@@ -12,6 +12,10 @@ const props = defineProps({
         type: Number,
         required: true,
     },
+    ppn: {
+        type: Number,
+        required: true,
+    },
 });
 </script>
 
@@ -37,9 +41,11 @@ const props = defineProps({
         </div>
 
         <div class="flex items-center justify-between">
-            <p class="text-gray-500 dark:text-gray-400">PPN (11%)</p>
             <p class="text-gray-500 dark:text-gray-400">
-                Rp {{ $formatCurrency(props.amount * 0.11) }}
+                PPN ({{ props.ppn }}%)
+            </p>
+            <p class="text-gray-500 dark:text-gray-400">
+                Rp {{ $formatCurrency((props.amount * props.ppn) / 100) }}
             </p>
         </div>
 

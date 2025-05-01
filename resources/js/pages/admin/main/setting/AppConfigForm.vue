@@ -5,7 +5,7 @@ import AlertWarning from "@/components/Alerts/AlertWarning.vue";
 import CustomButton from "@/components/Forms/CustomButton.vue";
 import DefaultCard from "@/components/Forms/DefaultCard.vue";
 import SuccessDialog from "@/components/Dialogs/SuccessDialog.vue";
-import { useStoreConfigStore } from "@/stores/store_config";
+import { useAppConfigStore } from "@/stores/admin/app_config";
 
 const props = defineProps({
     showCloseButton: {
@@ -18,7 +18,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
-const storeConfigStore = useStoreConfigStore();
+const appConfigStore = useAppConfigStore();
 
 const initialForm = ref([]);
 
@@ -27,35 +27,55 @@ const form = ref([]);
 const formValidation = ref([]);
 
 function clearErrorMessage() {
-    storeConfigStore.errorMessage = "";
+    appConfigStore.errorMessage = "";
 }
 
 async function getConfig() {
-    await storeConfigStore.getConfig();
+    await appConfigStore.getConfig();
 
-    const requiredFields = ["store_acronym"];
+    const requiredFields = [
+        "app_name",
+        "app_description",
+        "app_logo",
+        "app_ppn",
+    ];
 
     form.value = [];
 
     let i = 0;
-    for (const key in storeConfigStore.data) {
+    for (const key in appConfigStore.data) {
         form.value.push({
             id: i + key,
             key: key,
-            value: storeConfigStore.data[key],
+            value: appConfigStore.data[key],
             required: requiredFields.includes(key),
         });
 
         i++;
     }
 
-    if (form.value.filter((x) => x.key === "store_acronym").length === 0) {
+    console.log("form", form.value);
+
+    for (const key in requiredFields) {
+        if (form.value.some((item) => item.key === requiredFields[key])) {
+            console.log("Key already exists", requiredFields[key]);
+            continue;
+        }
+
         form.value.push({
-            id: i + "store_acronym",
-            key: "store_acronym",
+            id: i + requiredFields[key],
+            key: requiredFields[key],
             value: "",
             required: true,
         });
+
+        formValidation.value.push({
+            id: i + requiredFields[key],
+            key: "",
+            value: "",
+        });
+
+        i++;
     }
 
     initialForm.value = JSON.parse(JSON.stringify(form.value));
@@ -72,7 +92,26 @@ async function getConfig() {
 async function saveItem() {
     if (!validateItem()) return;
 
-    await storeConfigStore.saveItem(form.value);
+    let data = [];
+
+    for (const item of form.value) {
+        // Check if the item is in the initial form and has not changed
+        const initialItem = initialForm.value.find((x) => x.id === item.id);
+        if (
+            initialItem &&
+            initialItem.key === item.key &&
+            initialItem.value === item.value
+        ) {
+            continue;
+        }
+
+        data.push({
+            key: item.key,
+            value: item.value,
+        });
+    }
+
+    await appConfigStore.saveItem(data);
 
     await getConfig();
 }
@@ -113,7 +152,7 @@ async function deleteConfig(item) {
 
     // Check if the item is in the initial form
     if (initialForm.value.find((x) => x.id === item.id)) {
-        await storeConfigStore.deleteItem(item);
+        await appConfigStore.deleteItem(item);
         await getConfig();
         return;
     }
@@ -135,6 +174,7 @@ function reOrderConfig() {
 }
 
 const formChanged = computed(() => {
+    console.log("form changed");
     return JSON.stringify(form.value) !== JSON.stringify(initialForm.value);
 });
 
@@ -149,15 +189,15 @@ onMounted(() => {
 
 <template>
     <DefaultCard
-        card-title="Konfigurasi Toko"
+        card-title="Konfigurasi Aplikasi"
         :show-close-button="props.showCloseButton"
         @close="close(false)"
     >
         <div class="p-6.5">
             <AlertWarning
-                v-if="storeConfigStore.errorMessage"
+                v-if="appConfigStore.errorMessage"
                 @close="clearErrorMessage"
-                :description="storeConfigStore.errorMessage"
+                :description="appConfigStore.errorMessage"
                 class="mb-6"
             />
 
@@ -231,12 +271,12 @@ onMounted(() => {
                         >Petunjuk:</span
                     >
                     <br />
-                    store_acronym: Singkatan Toko (Contoh: ABC)
+                    app_ppn: Pajak PPN (%)
                 </p>
 
                 <CustomButton
                     @click="addConfig"
-                    :loading="storeConfigStore.saveStatus === 'loading'"
+                    :loading="appConfigStore.saveStatus === 'loading'"
                     color="bg-slate-200 dark:bg-slate-700"
                     :is-full="false"
                     padding="py-2 px-4"
@@ -248,8 +288,8 @@ onMounted(() => {
 
             <div class="flex flex-col-reverse gap-x-4 sm:flex-row">
                 <CustomButton
-                    @click="formChanged ? saveItem : null"
-                    :loading="storeConfigStore.saveStatus === 'loading'"
+                    @click="saveItem"
+                    :loading="appConfigStore.saveStatus === 'loading'"
                     color="bg-primary"
                     :is-full="false"
                     padding="py-3 px-8"

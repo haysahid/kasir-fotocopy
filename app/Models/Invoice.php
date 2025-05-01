@@ -15,6 +15,7 @@ class Invoice extends Model
         'plan_history_id',
         'description',
         'amount',
+        'ppn',
         'due_at',
         'paid_at',
         'snap_token',

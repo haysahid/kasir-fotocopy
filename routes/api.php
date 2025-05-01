@@ -23,6 +23,7 @@ use App\Http\Middleware\API\CheckActiveUser;
 use App\Http\Middleware\API\CheckAdminRole;
 use App\Http\Middleware\API\CheckUserRoleAndStore;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -31,8 +32,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/register', [UserController::class, 'register']);
 Route::post('auth/login', [UserController::class, 'login']);
-
-Route::apiResource('setting', SettingController::class)->middleware('auth:sanctum', ['only' => ['store', 'update', 'destroy']]);
+Route::get('setting', [SettingController::class, 'index']);
 
 Route::post('report-pdf', [ReportController::class, 'generatePdf']);
 
@@ -85,6 +85,11 @@ Route::middleware(['auth:sanctum', CheckActiveUser::class])->group(function () {
         Route::put('user/{id}/enable', [UserController::class, 'enable']);
 
         Route::get('admin/summary', [AdminController::class, 'summary']);
+
+        Route::post('setting', [SettingController::class, 'store']);
+        Route::get('setting/{id}', [SettingController::class, 'show']);
+        Route::post('setting/{id}', [SettingController::class, 'update']);
+        Route::delete('setting/{id}', [SettingController::class, 'destroy']);
     });
 
     // Subcription

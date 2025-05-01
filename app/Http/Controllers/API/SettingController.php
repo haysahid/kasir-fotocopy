@@ -26,9 +26,7 @@ class SettingController extends Controller
         }
 
         return ResponseFormatter::success(
-            [
-                'settings' => $settings,
-            ],
+            $settings,
             'Pengaturan ditemukan.',
             200,
         );
@@ -39,13 +37,8 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-        // Checking user role
-        if (Auth::user()->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan admin.', 401);
-        }
-
         $request->validate([
-            'key' => 'required|string|unique:settings,key',
+            'key' => 'required|string',
             'value' => 'required',
         ]);
 
@@ -110,13 +103,8 @@ class SettingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Checking user role
-        if (Auth::user()->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan admin.', 401);
-        }
-
         $request->validate([
-            'key' => 'required',
+            'key' => 'required|string',
             'value' => 'required',
         ]);
 
@@ -144,7 +132,6 @@ class SettingController extends Controller
                 $value = $image_path;
             }
 
-            // Update setting
             Setting::where('key', $key)->update([
                 'value' => $value,
             ]);
@@ -175,11 +162,6 @@ class SettingController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        // Checking user role
-        if (Auth::user()->role != 'admin') {
-            return ResponseFormatter::error('Anda bukan admin.', 401);
-        }
-
         $setting = Setting::where('key', $request->input('key'))->first();
 
         if (!$setting) {
