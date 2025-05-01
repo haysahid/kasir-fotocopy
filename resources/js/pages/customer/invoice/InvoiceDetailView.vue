@@ -10,7 +10,9 @@ import { useSubscribeStore } from "@/stores/subscribe";
 import CheckoutDetail from "../public/CheckoutDetail.vue";
 import { usePaymentMethodStore } from "@/stores/payment_method";
 import { Link } from "@inertiajs/inertia-vue3";
+import { useUserStore } from "@/stores/user";
 
+const userStore = useUserStore();
 const subscribeStore = useSubscribeStore();
 const paymentMethodStore = usePaymentMethodStore();
 
@@ -350,26 +352,30 @@ onMounted(() => {
                             :ppn="ppn"
                         />
 
-                        <CustomButton
-                            v-if="subscribeStore.invoice.status === 'Pending'"
-                            @click="pay"
-                            :disabled="snapStatus === 'loading'"
-                            :loading="snapStatus === 'loading'"
-                            class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-gray-200"
-                        >
-                            Bayar Sekarang
-                        </CustomButton>
-
-                        <Link
-                            v-if="subscribeStore.invoice.status === 'Paid'"
-                            :href="route('create-store')"
-                        >
+                        <template v-if="userStore.user.role?.id === 4">
                             <CustomButton
+                                v-if="
+                                    subscribeStore.invoice.status === 'Pending'
+                                "
+                                @click="pay"
+                                :disabled="snapStatus === 'loading'"
+                                :loading="snapStatus === 'loading'"
                                 class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-gray-200"
                             >
-                                Lanjutkan
+                                Bayar Sekarang
                             </CustomButton>
-                        </Link>
+
+                            <Link
+                                v-if="subscribeStore.invoice.status === 'Paid'"
+                                :href="route('create-store')"
+                            >
+                                <CustomButton
+                                    class="w-full font-medium px-6 py-3 bg-gradient-to-r from-[#468ef9] to-[#0c66ee] border border-[#0c66ee] text-gray-200"
+                                >
+                                    Lanjutkan
+                                </CustomButton>
+                            </Link>
+                        </template>
                     </DefaultCard>
                 </div>
             </div>
