@@ -110,8 +110,6 @@ export const useAdminUserStore = defineStore('admin-user', () => {
         try {
             saveStatus.value = "loading";
 
-            item._method = "PUT";
-
             const response = await axios.post(`/api/user/${id}`, item, {
                 headers: { Authorization: token },
             });

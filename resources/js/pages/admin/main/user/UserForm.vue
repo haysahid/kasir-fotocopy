@@ -8,6 +8,8 @@ import CustomSwitch from "@/components/Forms/CustomSwitch.vue";
 import { useAdminUserStore } from "@/stores/admin/user";
 import { useRoleStore } from "@/stores/admin/role";
 import SearchSelectGroup from "@/components/Forms/SearchSelectGroup.vue";
+import { useConfigStore } from "@/stores/config";
+import InputImageGroup from "@/components/Forms/InputImageGroup.vue";
 
 const props = defineProps({
     showCloseButton: {
@@ -23,6 +25,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["close"]);
 
+const configStore = useConfigStore();
 const adminUserStore = useAdminUserStore();
 
 const roleStore = useRoleStore();
@@ -66,6 +69,7 @@ const form = ref({
     phone: "",
     address: "",
     role_id: "",
+    avatar: "",
 });
 
 const formValidation = ref({
@@ -76,7 +80,10 @@ const formValidation = ref({
     phone: "",
     address: "",
     role_id: "",
+    avatar: "",
 });
+
+const avatarField = ref(null);
 
 function clearErrorMessage() {
     adminUserStore.errorMessage = "";
@@ -85,24 +92,39 @@ function clearErrorMessage() {
 async function updateUser() {
     if (!validateUpdateUser()) return;
 
-    const updatedData = form.value;
+    let formData = new FormData();
 
-    for (const key in updatedData) {
+    for (const key in form.value) {
         if (key === "password" || key === "passwordConfirmation") {
             if (
-                updatedData[key] === null ||
-                updatedData[key] === undefined ||
-                updatedData[key] === ""
+                formData[key] === null ||
+                formData[key] === undefined ||
+                formData[key] === ""
             ) {
-                delete updatedData[key];
+                continue;
             }
         }
+
+        if (key === "avatar") {
+            // Check avatar type is string or File
+            if (typeof form.value[key] === "string") {
+                continue;
+            }
+
+            formData.append("avatar", form.value[key]);
+            continue;
+        }
+
+        if (form.value[key] === null) {
+            continue;
+        }
+
+        formData.append(key, form.value[key]);
     }
 
-    const response = await adminUserStore.updateItem(
-        props.user.id,
-        updatedData
-    );
+    formData.append("_method", "PUT");
+
+    const response = await adminUserStore.updateItem(props.user.id, formData);
 
     if (response && response.meta.code === 200) {
         close(true);
@@ -271,17 +293,53 @@ watch(
     }
 );
 
+function getForm() {
+    form.value = {
+        name: props.user.name,
+        email: props.user.email,
+        password: "",
+        passwordConfirmation: "",
+        phone: props.user.phone,
+        address: props.user.address,
+        role_id: props.user.role_id,
+    };
+
+    form.value.avatar = props.user.avatar
+        ? configStore.getImageUrl(props.user.avatar)
+        : "";
+
+    avatarField.value?.clearImage();
+}
+
+function clearForm() {
+    form.value = {
+        name: "",
+        email: "",
+        password: "",
+        passwordConfirmation: "",
+        phone: "",
+        address: "",
+        role_id: "",
+        avatar: "",
+    };
+
+    formValidation.value = {
+        name: "",
+        email: "",
+        password: "",
+        passwordConfirmation: "",
+        phone: "",
+        address: "",
+        role_id: "",
+        avatar: "",
+    };
+
+    avatarField.value?.clearImage();
+}
+
 onUpdated(() => {
     if (props.user) {
-        form.value = {
-            name: props.user.name,
-            email: props.user.email,
-            password: "",
-            passwordConfirmation: "",
-            phone: props.user.phone,
-            address: props.user.address,
-            role_id: props.user.role_id,
-        };
+        getForm();
     }
 });
 
@@ -291,25 +349,9 @@ onMounted(() => {
 
 function close(value) {
     if (props.autoClearData) {
-        form.value = {
-            name: "",
-            email: "",
-            password: "",
-            passwordConfirmation: "",
-            phone: "",
-            address: "",
-            role_id: "",
-        };
+        clearForm();
     } else {
-        form.value = {
-            name: props.user.name,
-            email: props.user.email,
-            password: "",
-            passwordConfirmation: "",
-            phone: props.user.phone,
-            address: props.user.address,
-            role_id: props.user.role_id,
-        };
+        getForm();
     }
 
     emit("close", value);
@@ -330,6 +372,17 @@ function close(value) {
                 @close="clearErrorMessage"
                 :description="adminUserStore.errorMessage"
                 class="mb-6"
+            />
+
+            <InputImageGroup
+                ref="avatarField"
+                v-model="form.avatar"
+                id="avatar"
+                label="Foto Profil"
+                type="file"
+                placeholder="Pilih foto profil"
+                :warning="formValidation.avatar"
+                class="mb-4"
             />
 
             <InputGroup

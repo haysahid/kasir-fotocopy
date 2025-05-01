@@ -276,15 +276,46 @@ defineExpose({
 
                         <!-- Name -->
                         <td>
-                            <p class="text-gray-900 dark:text-gray-200">
-                                {{ item.name }}
-                            </p>
-                            <p
-                                v-if="item.store.length > 0"
-                                class="mt-0.5 text-xs text-gray-400 dark:text-gray-400"
-                            >
-                                {{ item.store[0].name }}
-                            </p>
+                            <div class="flex items-center gap-3">
+                                <img
+                                    v-if="item.avatar"
+                                    :src="$getImageUrl(item.avatar)"
+                                    alt="Avatar"
+                                    class="object-cover w-10 h-10 rounded-lg"
+                                />
+
+                                <div
+                                    v-else
+                                    class="flex items-center justify-center w-10 h-10 duration-300 ease-linear bg-gray-100 rounded-lg dark:bg-slate-700"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="text-gray-400 dark:text-gray-500 size-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div>
+                                    <p class="text-gray-900 dark:text-gray-200">
+                                        {{ item.name }}
+                                    </p>
+                                    <p
+                                        v-if="item.store.length > 0"
+                                        class="mt-0.5 text-xs text-gray-400 dark:text-gray-400"
+                                    >
+                                        {{ item.store[0].name }}
+                                    </p>
+                                </div>
+                            </div>
                         </td>
 
                         <!-- Email -->
