@@ -175,4 +175,21 @@ class InvoiceController extends Controller
     {
         //
     }
+
+    // Get active invoice
+    public function getActiveInvoice()
+    {
+        $customer = Auth::user();
+        $customer = User::find($customer->id);
+
+        $activeInvoice = $customer->activeInvoices()
+            ->latest()
+            ->first();
+
+        if (!$activeInvoice) {
+            return ResponseFormatter::error('No active invoice found', 404);
+        }
+
+        return ResponseFormatter::success($activeInvoice, 'Active invoice retrieved successfully');
+    }
 }

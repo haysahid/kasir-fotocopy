@@ -108,6 +108,7 @@ Route::middleware(['auth:sanctum', CheckActiveUser::class])->group(function () {
     Route::apiResource('invoice-payment', InvoicePaymentController::class);
 
     Route::apiResource('invoice', InvoiceController::class);
+    Route::get('active-invoice', [InvoiceController::class, 'getActiveInvoice']);
 
     Route::post('subscribe/create-snap-token', [SubscribeController::class, 'createSnapToken']);
 

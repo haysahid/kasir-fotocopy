@@ -90,8 +90,6 @@ class User extends Authenticatable
 
     public function subscriptions()
     {
-
-
         return $this->hasMany(Subscription::class);
     }
 
@@ -145,5 +143,21 @@ class User extends Authenticatable
     public function getHasActiveSubscriptionAttribute()
     {
         return $this->getActiveSubscriptionAttribute() !== null;
+    }
+
+    public function invoices()
+    {
+        return $this->subscriptions()
+            ->join('invoices', 'subscriptions.id', '=', 'invoices.subscription_id')
+            ->select('invoices.*')
+            ->where('subscriptions.user_id', $this->id)
+            ->latest('invoices.created_at');
+    }
+
+    public function activeInvoices()
+    {
+        return $this->invoices()
+            ->where('invoices.paid_at', null)
+            ->where('invoices.due_at', '>', now());
     }
 }
