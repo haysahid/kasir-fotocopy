@@ -392,7 +392,7 @@ class CategoryController extends Controller
      */
     public function dropdown(Request $request)
     {
-        $limit = $request->input('limit');
+        $limit = $request->input('limit', 10);
         $search = $request->input('search');
         $sortBy = $request->input('sort_by');
         $sortOrder = $request->input('sort_order', 'asc');

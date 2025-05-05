@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUpdated, watch, onMounted } from "vue";
+import { ref, onUpdated, watch, onMounted, computed } from "vue";
 import InputGroup from "@/components/Forms/InputGroup.vue";
 import CustomDatePicker from "@/components/Forms/CustomDatePicker.vue";
 import AlertWarning from "@/components/Alerts/AlertWarning.vue";
@@ -9,6 +9,9 @@ import { useProductStore } from "@/stores/product";
 import InputImageGroup from "@/components/Forms/InputImageGroup.vue";
 import { useConfigStore } from "@/stores/config";
 import formatCurrency from "@/plugins/currency_formatter";
+import SearchSelectGroup from "@/components/Forms/SearchSelectGroup.vue";
+import { useCategoryStore } from "@/stores/category";
+import { get } from "@vueuse/core";
 
 const props = defineProps({
     showCloseButton: {
@@ -26,6 +29,26 @@ const emit = defineEmits(["close"]);
 
 const productStore = useProductStore();
 const configStore = useConfigStore();
+const categoryStore = useCategoryStore();
+const categoryDropdown = ref([]);
+
+async function getCategoryDropdown(search = null, limit = 10) {
+    const response = await categoryStore.getDropdown(search, limit);
+    categoryDropdown.value = response.result;
+}
+
+const getCategoryOptions = computed(() => {
+    const options = categoryDropdown.value.map((item) => {
+        return {
+            value: item.name,
+            text: item.name,
+        };
+    });
+
+    return options;
+});
+
+getCategoryDropdown();
 
 const form = ref({
     code: "",
@@ -38,6 +61,14 @@ const form = ref({
     category: "",
     expired_at: "",
     image: "",
+});
+
+const selectedCategories = computed(() => {
+    if (!form.value.category) {
+        return [];
+    }
+
+    return form.value.category.split(", ");
 });
 
 const formValidation = ref({
@@ -363,119 +394,148 @@ function close(value) {
                 class="mb-6"
             />
 
-            <InputImageGroup
-                ref="imageField"
-                v-model="form.image"
-                id="image"
-                label="Gambar"
-                type="file"
-                placeholder="Pilih gambar"
-                :warning="formValidation.image"
-                class="mb-4"
-            />
+            <div class="flex flex-col gap-4 lg:flex-row lg:gap-6">
+                <div class="w-full">
+                    <InputImageGroup
+                        ref="imageField"
+                        v-model="form.image"
+                        id="image"
+                        label="Gambar"
+                        type="file"
+                        placeholder="Pilih gambar"
+                        :warning="formValidation.image"
+                        class="mb-4"
+                    />
+                </div>
 
-            <InputGroup
-                v-model="form.code"
-                id="code"
-                label="Barcode"
-                type="text"
-                placeholder="Masukkan barcode"
-                :warning="formValidation.code"
-            />
+                <div class="w-full">
+                    <InputGroup
+                        v-model="form.code"
+                        id="code"
+                        label="Barcode"
+                        type="text"
+                        placeholder="Masukkan barcode"
+                        :warning="formValidation.code"
+                    />
 
-            <InputGroup
-                v-model="form.name"
-                id="name"
-                label="Nama"
-                type="text"
-                placeholder="Masukkan nama produk"
-                :warning="formValidation.name"
-            />
+                    <InputGroup
+                        v-model="form.name"
+                        id="name"
+                        label="Nama"
+                        type="text"
+                        placeholder="Masukkan nama produk"
+                        :warning="formValidation.name"
+                    />
 
-            <InputGroup
-                v-model="form.description"
-                id="description"
-                label="Deskripsi"
-                type="text"
-                placeholder="Masukkan deskripsi produk"
-                :warning="formValidation.description"
-            />
+                    <InputGroup
+                        v-model="form.description"
+                        id="description"
+                        label="Deskripsi"
+                        type="text"
+                        placeholder="Masukkan deskripsi produk"
+                        :warning="formValidation.description"
+                    />
 
-            <InputGroup
-                v-model="form.purchase_price"
-                id="purchase_price"
-                label="Harga Beli"
-                type="currency"
-                placeholder="Masukkan harga beli"
-                :warning="formValidation.purchase_price"
-            />
+                    <InputGroup
+                        v-model="form.purchase_price"
+                        id="purchase_price"
+                        label="Harga Beli"
+                        type="currency"
+                        placeholder="Masukkan harga beli"
+                        :warning="formValidation.purchase_price"
+                    />
 
-            <InputGroup
-                v-model="form.selling_price"
-                id="selling_price"
-                label="Harga Jual"
-                type="currency"
-                placeholder="Masukkan harga jual"
-                :warning="formValidation.selling_price"
-            />
+                    <InputGroup
+                        v-model="form.selling_price"
+                        id="selling_price"
+                        label="Harga Jual"
+                        type="currency"
+                        placeholder="Masukkan harga jual"
+                        :warning="formValidation.selling_price"
+                    />
 
-            <InputGroup
-                v-model="form.initial_stock"
-                id="initial_stock"
-                label="Stok Awal"
-                type="currency"
-                placeholder="Masukkan stok awal"
-                :warning="formValidation.initial_stock"
-            />
+                    <InputGroup
+                        v-model="form.initial_stock"
+                        id="initial_stock"
+                        label="Stok Awal"
+                        type="currency"
+                        placeholder="Masukkan stok awal"
+                        :warning="formValidation.initial_stock"
+                    />
 
-            <InputGroup
-                v-model="form.unit"
-                id="unit"
-                label="Satuan"
-                type="text"
-                placeholder="Masukkan satuan"
-                :warning="formValidation.unit"
-            />
+                    <InputGroup
+                        v-model="form.unit"
+                        id="unit"
+                        label="Satuan"
+                        type="text"
+                        placeholder="Masukkan satuan"
+                        :warning="formValidation.unit"
+                    />
 
-            <InputGroup
+                    <!-- <InputGroup
                 v-model="form.category"
                 id="category"
                 label="Kategori"
                 type="text"
                 placeholder="Masukkan kategori"
                 :warning="formValidation.category"
-            />
+            /> -->
 
-            <CustomDatePicker
-                v-model="form.expired_at"
-                id="expired_at"
-                label="Kadaluarsa"
-                placeholder="yyyy-mm-dd"
-                :warning="formValidation.expired_at"
-            />
+                    <SearchSelectGroup
+                        :modelValue="selectedCategories"
+                        id="category"
+                        label="Kategori"
+                        type="multiple"
+                        placeholder="Pilih kategori"
+                        :options="getCategoryOptions"
+                        @search="getCategoryDropdown"
+                        @select="
+                            $event.length > 0
+                                ? (form.category = $event.join(', '))
+                                : (form.category = '')
+                        "
+                        @remove="
+                            $event.length > 0
+                                ? (form.category = $event.join(', '))
+                                : (form.category = '')
+                        "
+                        @clear="form.category = ''"
+                        :warning="formValidation.category"
+                        class="mb-4"
+                    />
 
-            <div class="flex flex-col-reverse mt-2 gap-x-4 sm:flex-row">
-                <CustomButton
-                    @click="close(false)"
-                    :enable="productStore.saveStatus !== 'loading'"
-                    color="bg-danger"
-                    :is-full="true"
-                    padding="p-3"
-                    margin="mt-4"
-                >
-                    Batal
-                </CustomButton>
+                    <CustomDatePicker
+                        v-model="form.expired_at"
+                        id="expired_at"
+                        label="Kadaluarsa"
+                        placeholder="yyyy-mm-dd"
+                        :warning="formValidation.expired_at"
+                    />
 
-                <CustomButton
-                    @click="saveItem"
-                    :loading="productStore.saveStatus === 'loading'"
-                    color="bg-primary"
-                    :is-full="true"
-                    padding="p-3"
-                    margin="mt-4"
-                >
-                    Simpan
-                </CustomButton>
+                    <div class="flex flex-col-reverse mt-2 gap-x-4 sm:flex-row">
+                        <CustomButton
+                            @click="close(false)"
+                            :enable="productStore.saveStatus !== 'loading'"
+                            color="bg-danger"
+                            :is-full="true"
+                            padding="p-3"
+                            margin="mt-4"
+                        >
+                            Batal
+                        </CustomButton>
+
+                        <CustomButton
+                            @click="saveItem"
+                            :loading="productStore.saveStatus === 'loading'"
+                            color="bg-primary"
+                            :is-full="true"
+                            padding="p-3"
+                            margin="mt-4"
+                        >
+                            Simpan
+                        </CustomButton>
+                    </div>
+                </div>
             </div>
         </div>
     </DefaultCard>

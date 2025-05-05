@@ -30,6 +30,7 @@ class ProductController extends Controller
 
         $store_id = $request->input('store_id');
         $category = $request->input('category');
+        $categoryId = $request->input('category_id');
         $search = $request->input('search');
         $code = $request->input('code');
         $limit = $request->input('limit', 10);
@@ -80,6 +81,11 @@ class ProductController extends Controller
 
         if ($category) {
             $products->where('products.category', $category);
+        }
+
+        if ($categoryId) {
+            $products->join('product_categories', 'products.id', '=', 'product_categories.product_id')
+                ->where('product_categories.category_id', $categoryId);
         }
 
         if ($search) {

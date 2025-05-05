@@ -12,6 +12,7 @@ export const useProductStore = defineStore('product', () => {
         limit: 10,
         page: 1,
         search: null,
+        category_id: null,
     });
     const getAllItemsStatus = ref("");
     const items = computed(() => data.value.data);

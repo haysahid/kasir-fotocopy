@@ -30,7 +30,7 @@ function close() {
     >
         <div
             v-if="cardTitle"
-            class="flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark duration-300 ease-linear"
+            class="flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark duration-300 ease-linear sticky top-0 z-10 bg-white dark:bg-boxdark"
         >
             <h3 class="font-medium text-gray-900 dark:text-gray-200">
                 {{ props.cardTitle }}

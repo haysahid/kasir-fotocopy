@@ -37,26 +37,41 @@ const props = defineProps({
         type: [Number, String, Array],
         default: "",
     },
+    enforceSelectedInOptions: {
+        type: Boolean,
+        default: true,
+    },
 });
 
-const emit = defineEmits(["search", "select", "clear", "update:modelValue"]);
+const emit = defineEmits([
+    "search",
+    "select",
+    "remove",
+    "clear",
+    "update:modelValue",
+]);
 
 const target = ref(null);
-const options = ref<Option[]>();
+const options = ref<Option[]>([]);
+const addedOptions = ref<Option[]>([]);
 const selectedOptions = ref<Option[]>([]);
-const show = ref(false);
+const expanded = ref(false);
+const searchInput = ref("");
 
 const debounceTimeout = ref(null);
 
 function search(event: InputEvent) {
     window.clearTimeout(debounceTimeout.value);
     debounceTimeout.value = window.setTimeout(() => {
-        emit("search", (event.target as HTMLInputElement).value.trim());
+        const text = (event.target as HTMLInputElement).value.trim();
+
+        emit("search", text);
+        searchInput.value = text;
     }, 300);
 }
 
-const open = () => {
-    show.value = true;
+const expand = () => {
+    expanded.value = true;
 
     // Auto focus input
     if (props.type == "single") {
@@ -72,12 +87,21 @@ const open = () => {
     }
 };
 
-const isOpen = () => {
-    return show.value === true;
+const collapse = () => {
+    expanded.value = false;
 };
 
+const isExpanded = computed(() => {
+    return expanded.value;
+});
+
 onClickOutside(target, () => {
-    show.value = false;
+    expanded.value = false;
+
+    if (selectedOptions.value.length === 0) {
+        const input = document.getElementById(props.id) as HTMLInputElement;
+        input.value = "";
+    }
 });
 
 onMounted(() => {
@@ -92,12 +116,23 @@ watch(
 );
 
 const loadOptions = () => {
-    options.value = props.options.map((option) => ({
-        value: option.value,
-        text: option.text,
-        subtext: option.description,
-        selected: false,
-    }));
+    let newOptions = [
+        ...props.options.map((option) => ({
+            value: option.value,
+            text: option.text,
+            subtext: option.description,
+            selected: false,
+        })),
+        ...addedOptions.value,
+    ];
+
+    // Remove duplicates by value
+    newOptions = newOptions.filter(
+        (option, index, self) =>
+            index === self.findIndex((o) => o.value === option.value)
+    );
+
+    options.value = newOptions;
 };
 
 const select = (indexAndOption, event: MouseEvent) => {
@@ -151,7 +186,7 @@ const select = (indexAndOption, event: MouseEvent) => {
         emit("select", selectedOptions.value[0].value);
         emit("update:modelValue", selectedOptions.value[0].value);
 
-        show.value = false;
+        expanded.value = false;
     }
 };
 
@@ -169,6 +204,11 @@ const remove = (option: Option) => {
     options.value = newOptions;
 
     if (props.type == "multiple") {
+        emit(
+            "remove",
+            selectedOptions.value.map((option) => option.value)
+        );
+
         emit(
             "update:modelValue",
             selectedOptions.value.map((option) => option.value)
@@ -196,44 +236,56 @@ watch(
     () => props.modelValue,
     () => {
         if (props.type == "single") {
-            const newOptions = [...options.value];
-
-            newOptions.forEach((option) => {
+            options.value.forEach((option) => {
                 option.selected = false;
             });
 
-            const selectedOption = newOptions.find(
+            const selectedOption = options.value.find(
                 (option) => option.value === props.modelValue
             );
 
             if (selectedOption) {
                 selectedOption.selected = true;
                 selectedOptions.value = [selectedOption];
-            }
+            } else if (props.enforceSelectedInOptions) {
+                const newOption = {
+                    value: props.modelValue as string,
+                    text: props.modelValue as string,
+                    selected: true,
+                };
 
-            options.value = newOptions;
+                options.value.push(newOption);
+                addedOptions.value.push(newOption);
+                selectedOptions.value = [newOption];
+            }
         }
 
         if (props.type == "multiple") {
-            const newOptions = [...options.value];
-
-            newOptions.forEach((option) => {
+            options.value.forEach((option) => {
                 option.selected = false;
             });
 
             selectedOptions.value = props.modelValue.map((value) => {
-                const selectedOption = newOptions.find(
+                let selectedOption = options.value.find(
                     (option) => option.value === value
                 );
 
                 if (selectedOption) {
                     selectedOption.selected = true;
+                } else if (props.enforceSelectedInOptions) {
+                    const newOption = {
+                        value: value,
+                        text: value,
+                        selected: true,
+                    };
+
+                    options.value.push(newOption);
+                    addedOptions.value.push(newOption);
+                    selectedOption = newOption;
                 }
 
                 return selectedOption;
             });
-
-            options.value = newOptions;
         }
     }
 );
@@ -255,25 +307,25 @@ defineExpose({
 
         <div class="relative flex flex-col items-center">
             <!-- Input -->
-            <div @click="open" class="relative w-full">
+            <div @click="expand" class="relative w-full">
                 <!-- Multiple -->
                 <div
                     v-if="
                         props.type == 'multiple' && selectedOptions.length > 0
                     "
-                    @click="open"
-                    class="flex flex-col w-full gap-1 py-2 pl-3 pr-4 text-base text-gray-900 duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400"
+                    @click="expand"
+                    class="flex flex-col w-full gap-1 py-2 pl-2 pr-8 text-base text-gray-900 duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400"
                     :class="{
                         '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
                             props.warning,
                         'bg-whiten dark:bg-slate-700': props.disabled,
                     }"
                 >
-                    <div class="flex flex-wrap gap-1">
+                    <div class="flex flex-wrap gap-x-1 gap-y-1.5">
                         <div
                             v-for="(option, i) in selectedOptions"
                             :key="i"
-                            class="flex items-center px-2 py-0.5 text-sm rounded-full bg-primary/5 dark:bg-primary/10 w-min text-nowrap"
+                            class="flex items-center pl-3 pr-1 py-0.5 text-sm rounded-full bg-primary/5 dark:bg-gray-700/50 w-min text-nowrap"
                         >
                             <span>{{ option.text }}</span>
                             <button
@@ -300,10 +352,14 @@ defineExpose({
                     </div>
 
                     <input
-                        v-if="isOpen()"
+                        v-if="isExpanded"
                         :id="'multiple_' + props.id"
-                        :placeholder="props.placeholder"
-                        class="w-full p-0 text-gray-900 duration-300 ease-linear bg-transparent border-none rounded-lg !outline-none appearance-none focus:!outline-none stroke-none focus:stroke-none focus-visible:border-none focus:border-none focus:ring-0 focus-visible:shadow-none dark:text-gray-200 placeholder:text-gray-400"
+                        :placeholder="
+                            props.label
+                                ? 'Cari ' + props.label
+                                : props.placeholder
+                        "
+                        class="w-full pl-1 py-0 pr-0 text-gray-900 duration-300 ease-linear bg-transparent border-none rounded-lg !outline-none appearance-none focus:!outline-none stroke-none focus:stroke-none focus-visible:border-none focus:border-none focus:ring-0 focus-visible:shadow-none dark:text-gray-200 placeholder:text-gray-400"
                         :class="{
                             '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
                                 props.warning,
@@ -319,9 +375,9 @@ defineExpose({
                     v-else-if="
                         props.type == 'single' &&
                         selectedOptions.length > 0 &&
-                        !isOpen()
+                        !isExpanded
                     "
-                    @click="open"
+                    @click="expand"
                     class="w-full py-2 pl-3 pr-4 text-base text-gray-900 duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400 overflow-ellipsis"
                     :class="{
                         '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
@@ -335,7 +391,11 @@ defineExpose({
                 <input
                     v-else
                     :id="props.id"
-                    :placeholder="props.placeholder"
+                    :placeholder="
+                        isExpanded && props.label
+                            ? 'Cari ' + props.label
+                            : props.placeholder
+                    "
                     class="w-full py-2 pl-3 pr-4 text-gray-900 duration-300 ease-linear bg-transparent border rounded-lg outline-none border-stroke focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary dark:text-gray-200 placeholder:text-gray-400"
                     :class="{
                         '!border-danger focus:!border-danger dark:!border-danger dark:focus:!border-danger':
@@ -344,6 +404,7 @@ defineExpose({
                     }"
                     autocomplete="off"
                     @input="search"
+                    @focus="expand"
                 />
 
                 <div class="absolute top-[7px] right-2.5">
@@ -375,11 +436,11 @@ defineExpose({
 
                         <button
                             v-else
-                            @click="open"
+                            @click="expand"
                             type="button"
-                            class="p-1"
+                            class="p-1 duration-300 ease-in-out"
                             :class="{
-                                'rotate-180': isOpen(),
+                                'rotate-180': isExpanded,
                             }"
                         >
                             <svg
@@ -405,7 +466,7 @@ defineExpose({
             </div>
 
             <!-- Options -->
-            <div v-if="isOpen()" class="w-full px-4">
+            <div v-if="isExpanded" class="w-full px-4">
                 <div
                     ref="target"
                     class="absolute left-0 z-40 w-full mt-1 overflow-y-auto bg-white rounded shadow max-h-select top-full dark:bg-form-input"
