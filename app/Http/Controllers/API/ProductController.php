@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\ProductDetail;
 use App\Models\ProductImage;
 use App\Models\User;
@@ -26,7 +27,6 @@ class ProductController extends Controller
     {
         $user = Auth::user();
         $user = User::with('store')->find($user->id);
-
 
         $store_id = $request->input('store_id');
         $category = $request->input('category');
@@ -189,6 +189,23 @@ class ProductController extends Controller
                 'store_id' => $store->id,
             ]);
 
+            // Categories
+            if ($request->input('category')) {
+                $category = $request->input('category');
+
+                // Split category by comma with trim
+                $categories = array_map('trim', explode(',', $category));
+
+                foreach ($categories as $categoryName) {
+                    $category = Category::firstOrCreate([
+                        'name' => $categoryName,
+                        'store_id' => $store->id,
+                    ]);
+
+                    $product->categories()->syncWithoutDetaching([$category->id]);
+                }
+            }
+
             // Product images
             if ($request->hasFile('product_images')) {
                 $files = $request->file('product_images');
@@ -243,6 +260,9 @@ class ProductController extends Controller
         if (!$product) {
             return ResponseFormatter::error('Produk tidak ditemukan.', 404);
         }
+
+        // Include product categories_name
+        $product->categories = $product->categoriesName();
 
         return ResponseFormatter::success([
             'product' => $product,
@@ -311,6 +331,31 @@ class ProductController extends Controller
 
             // Update product
             $product->update($request->all());
+
+            // Categories
+            if ($request->input('category')) {
+                $category = $request->input('category');
+
+                // Split category by comma with trim
+                $categories = array_map('trim', explode(',', $category));
+
+                $existingCategories = $product->categories->pluck('name')->toArray();
+                $newCategories = $categories;
+
+                // Check if categories have changed
+                if (array_diff($existingCategories, $newCategories) || array_diff($newCategories, $existingCategories)) {
+                    $product->categories()->detach();
+
+                    foreach ($categories as $category) {
+                        $category = Category::firstOrCreate([
+                            'name' => $category,
+                            'store_id' => $store->id,
+                        ]);
+
+                        $product->categories()->attach($category->id);
+                    }
+                }
+            }
 
             // Product images
             if ($request->hasFile('product_images')) {

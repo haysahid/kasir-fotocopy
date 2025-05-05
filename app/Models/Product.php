@@ -76,4 +76,14 @@ class Product extends Model
     {
         return $this->initial_stock + $this->purchased - $this->sold;
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'product_categories');
+    }
+
+    public function categoriesName()
+    {
+        return $this->categories()->pluck('name')->toArray();
+    }
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\SubscribeController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Controllers\SubscriptionController;
@@ -62,6 +63,9 @@ Route::middleware(['auth:sanctum', CheckActiveUser::class])->group(function () {
     Route::put('product/{id}/disable', [ProductController::class, 'disable']);
     Route::put('product/{id}/enable', [ProductController::class, 'enable']);
     Route::get('product-community', [ProductController::class, 'getCommunityProducts']);
+
+    Route::apiResource('category', CategoryController::class);
+    Route::get('category-dropdown', [CategoryController::class, 'dropdown']);
 
     Route::apiResource('product/{product_id}/image', ProductImageController::class);
 
