@@ -146,12 +146,6 @@ function validateAddItem() {
         result = false;
     }
 
-    if (form.value.description.length < 1) {
-        formValidation.value.description =
-            "Deskripsi produk tidak boleh kosong";
-        result = false;
-    }
-
     if (form.value.purchase_price.length < 1) {
         formValidation.value.purchase_price = "Harga beli tidak boleh kosong";
         result = false;
@@ -231,19 +225,6 @@ watch(
     (newValue, oldValue) => {
         if (newValue && newValue.length > 0 && formValidation.value.name) {
             formValidation.value.name = "";
-        }
-    }
-);
-
-watch(
-    () => form.value.description,
-    (newValue, oldValue) => {
-        if (
-            newValue &&
-            newValue.length > 0 &&
-            formValidation.value.description
-        ) {
-            formValidation.value.description = "";
         }
     }
 );
