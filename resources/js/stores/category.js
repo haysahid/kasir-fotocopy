@@ -57,6 +57,154 @@ export const useCategoryStore = defineStore('category', () => {
         }
     }
 
+    async function addItem(item) {
+        saveStatus.value = "loading";
+
+        try {
+            let formData = new FormData();
+
+            for (const key in item) {
+                if (key === "image") {
+                    formData.append("image", item[key]);
+                    continue;
+                }
+
+                formData.append(key, item[key]);
+            }
+
+            const response = await axios.post("/api/category", formData, {
+                headers: { Authorization: token },
+            });
+
+            Toast.fire({
+                icon: "success",
+                title: response.data.meta.message,
+            });
+
+            saveStatus.value = "success";
+
+            return response;
+        } catch (error) {
+            let errorText = "Terjadi kesalahan";
+
+            if (error.response?.status === 422) {
+                errorText = error.response?.data?.message || "Terjadi kesalahan";
+            } else {
+                errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+            }
+
+            Toast.fire({
+                icon: "warning",
+                title: errorText,
+            });
+
+            saveStatus.value = "error";
+            errorMessage.value = errorText;
+
+            return error.response?.data;
+        }
+    }
+
+    async function updateItem(id, item) {
+        saveStatus.value = "loading";
+
+        try {
+            let formData = new FormData();
+
+            for (const key in item) {
+                if (key === "image") {
+                    // Check image type is string or File
+                    if (typeof item[key] === "string") {
+                        continue;
+                    }
+
+                    formData.append("image", item[key]);
+                    continue;
+                }
+
+                if (item[key] === null) {
+                    continue;
+                }
+
+                formData.append(key, item[key]);
+            }
+
+            formData.append("_method", "PUT");
+
+            const response = await axios.post(`/api/category/${id}`, formData, {
+                headers: { Authorization: token },
+            });
+
+            Toast.fire({
+                icon: "success",
+                title: response.data.meta.message,
+            });
+
+            saveStatus.value = "success";
+
+            return response;
+        } catch (error) {
+            let errorText = "Terjadi kesalahan";
+
+            if (error.response?.status === 422) {
+                errorText = error.response?.data?.message || "Terjadi kesalahan";
+            } else {
+                errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+            }
+
+            Toast.fire({
+                icon: "warning",
+                title: errorText,
+            });
+
+            saveStatus.value = "error";
+            errorMessage.value = errorText;
+
+            return {};
+        }
+    }
+
+    async function deleteItems(items) {
+        try {
+            deleteStatus.value = "loading";
+
+            for (let i = 0; i < items.length; i++) {
+                const response = await axios.delete(
+                    `/api/category/${items[i].id}`,
+                    {
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: token,
+                        },
+                    }
+                );
+
+                deleteProgress.value++;
+            }
+
+            Toast.fire({
+                icon: "success",
+                title: "Item berhasil dihapus",
+            });
+
+            deleteStatus.value = "success";
+            deleteProgress.value = 0;
+
+            return true;
+        } catch (error) {
+            const errorText = error.response?.data?.meta?.message || "Terjadi kesalahan";
+
+            Toast.fire({
+                icon: "warning",
+                title: errorText,
+            });
+
+            deleteStatus.value = "error";
+
+            return false;
+        }
+    }
+
     async function getDropdown(search, limit = 10) {
         try {
             getDropdownStatus.value = "loading";
@@ -106,6 +254,9 @@ export const useCategoryStore = defineStore('category', () => {
         deleteProgress,
         errorMessage,
         getAllItems,
+        addItem,
+        updateItem,
+        deleteItems,
         getDropdown,
         clearStore,
     }

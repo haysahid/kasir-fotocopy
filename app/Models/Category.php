@@ -10,6 +10,8 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $appends = ['total_products'];
+
     protected $fillable = [
         'name',
         'description',
@@ -25,5 +27,10 @@ class Category extends Model
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function getTotalProductsAttribute()
+    {
+        return $this->products()->count();
     }
 }

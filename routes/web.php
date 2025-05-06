@@ -29,6 +29,7 @@ Route::get('/subscription/{id}', fn()  => Inertia::render('customer/public/Subsc
 Route::get('/invoice/{id}', fn()  => Inertia::render('customer/invoice/InvoiceDetailView'))->name('invoice.detail');
 
 Route::get('/dashboard', fn()  => Inertia::render('customer/main/DashboardView'))->name('dashboard');
+Route::get('/category', fn()  => Inertia::render('customer/main/CategoryView'))->name('category');
 Route::get('/product', fn()  => Inertia::render('customer/main/ProductView'))->name('product');
 Route::get('/purchase', fn()  => Inertia::render('customer/main/PurchaseView'))->name('purchase');
 Route::get('/sales', fn()  => Inertia::render('customer/main/SalesView'))->name('sales');
