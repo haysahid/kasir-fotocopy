@@ -64,6 +64,8 @@ class CategoryController extends Controller
             $categories->orderBy($sortBy, $sortOrder);
         }
 
+        $categories->latest();
+
         return ResponseFormatter::success(
             $categories->paginate($limit),
             'Daftar kategori berhasil ditemukan',
